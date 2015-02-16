@@ -1,4 +1,4 @@
-#include "Workspace/HEPHYCMSSWTools/plugins/multMETCorrInfoWriter.h"
+#include "MetTools/MetPhiCorrections/plugins/multMETCorrInfoWriter.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"

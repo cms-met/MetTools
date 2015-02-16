@@ -1,0 +1,8 @@
+<use   name="root"/>
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/ServiceRegistry"/>
+<use   name="JetMETCorrections/Objects"/>
+<library   file="multMETCorrInfoWriter.cc" name="multMETCorrInfoWriter">
+  <flags   EDM_PLUGIN="1"/>
+</library>
