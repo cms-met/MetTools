@@ -1,5 +1,5 @@
 # MetTools
-
+git clone https://github.com/cms-met/MetTools.git
 ## Met performance
   Tools for making the MET performance plots.
   (Laras description)
