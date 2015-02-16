@@ -1,5 +1,7 @@
 # MetTools
+Just do
 git clone https://github.com/cms-met/MetTools.git
+in $CMSSW_BASE/src
 ## Met performance
   Tools for making the MET performance plots.
   (Laras description)
