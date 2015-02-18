@@ -1,4 +1,4 @@
-#include "MetTools/MetPhiCorrections/plugins/multMETCorrInfoWriter.h"
+#include "MetTools/MetPhiCorrections/plugins/metPhiCorrInfoWriter.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
@@ -14,7 +14,7 @@ std::string namePostFix (int varType) {
   return std::string("unknown");
 }
 
-multMETCorrInfoWriter::multMETCorrInfoWriter( const edm::ParameterSet & cfg ): 
+metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ): 
   vertices_ ( cfg.getUntrackedParameter< edm::InputTag >("vertexCollection") ),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
@@ -66,14 +66,14 @@ multMETCorrInfoWriter::multMETCorrInfoWriter( const edm::ParameterSet & cfg ):
   }
 }
 
-void multMETCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup& setup) {
+void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup& setup) {
 
   //get primary vertices
   edm::Handle<std::vector<reco::Vertex> > hpv;
   try {
     evt.getByLabel( vertices_, hpv );
   } catch ( cms::Exception & e ) {
-    std::cout <<"[multMETCorrInfoWriter] error: " << e.what() << std::endl;
+    std::cout <<"[metPhiCorrInfoWriter] error: " << e.what() << std::endl;
   }
   std::vector<reco::Vertex> goodVertices;
   for (unsigned i = 0; i < hpv->size(); i++) {
@@ -133,5 +133,5 @@ void multMETCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetu
 
 //define this as a plug-in
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(multMETCorrInfoWriter);
+DEFINE_FWK_MODULE(metPhiCorrInfoWriter);
 
