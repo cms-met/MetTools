@@ -19,5 +19,3 @@ in $CMSSW_BASE/src
 `python MetTools/MetPhiCorrections/python/tools/writePythonCFG.py --postfix PHYS14`  
  This will give you a file `multPhi_PHYS14_cfi.py`. Change the postfix to your usecase.
 2. Use this file to create the correction histograms
-######## Create cfg
-`git clone https://github.com/cms-met/MetTools.git`
