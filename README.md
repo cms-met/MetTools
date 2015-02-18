@@ -16,7 +16,9 @@ in $CMSSW_BASE/src
 ###### How to derive multiplicity based MET phi corrections
 1. (should usually be skipped) Categories are defined in `MetTools/MetPhiCorrections/python/tools/categories.py`
 Use this file to change eta categories in pfCandidate species. Then, create a cfg issuing
+
 `python MetTools/MetPhiCorrections/python/tools/writePythonCFG.py --postfix PHYS14`
+
 This will give you a file `multPhi_PHYS14_cfi.py`. Change the postfix to your usecase.
 2. Use this file to create the correction histograms
 ######## Create cfg
