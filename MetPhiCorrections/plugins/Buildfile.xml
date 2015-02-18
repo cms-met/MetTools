@@ -9,6 +9,6 @@
 <use name="FWCore/Version"/>
 <use name="IOPool/Common"/>
 <use name="JetMETCorrections/Objects"/>
-<library   file="metPhiCorrInfoWriter.cc" name="metPhiCorrInfoWriter">
-  <flags   EDM_PLUGIN="1"/>
+<library file="metPhiCorrInfoWriter.cc" name="metPhiCorrInfoWriter">
+<flags EDM_PLUGIN="1"/>
 </library>
