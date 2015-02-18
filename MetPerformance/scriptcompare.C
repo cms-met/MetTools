@@ -198,10 +198,9 @@ scriptcompare (TString samplephys14, TString samplecsa14,
   c1->Update ();
 
 
-  TString folder="DY";
-  if (samplephys14.Contains("TT")) folder="TTbar";
+  
 
-  c1->Print ("~/www/METstudies/"+folder+"/" + variablename + ".png");
+  c1->Print (variablename + ".png");
 
 
 }
