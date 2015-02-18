@@ -18,5 +18,5 @@ in $CMSSW_BASE/src
  Use this file to change eta categories in pfCandidate species. Then, create a cfg issuing  
 `python MetTools/MetPhiCorrections/python/tools/writePythonCFG.py --postfix PHYS14`  
  This will give you a file `phiCorr_PHYS14_cfi.py`. Change the postfix to your usecase.  
- Move this file to `MetTools/MetPhiCorrections/python` and create a _cff that imports it. For a start, use the example in `MetTools/MetPhiCorrections/python/phiCorr_PHYS14_cff.py`
+ Move this file to `MetTools/MetPhiCorrections/python` and create a `_cff.py` that imports it; start from `MetTools/MetPhiCorrections/python/phiCorr_PHYS14_cff.py`
 2. Use this file to create the correction histograms
