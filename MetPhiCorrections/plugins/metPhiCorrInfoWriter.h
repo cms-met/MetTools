@@ -1,10 +1,11 @@
-#ifndef HEPHECommonTools_multMETCorrInfoWriter_H
-#define HEPHECommonTools_multMETCorrInfoWriter_H
+#ifndef HEPHECommonTools_metPhiCorrInfoWriter_H
+#define HEPHECommonTools_metPhiCorrInfoWriter_H
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 // #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"                                                                               
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
@@ -13,9 +14,9 @@
 #include <TProfile.h>
 #include <TH2F.h>
 
-class multMETCorrInfoWriter : public edm::EDAnalyzer {
+class metPhiCorrInfoWriter : public edm::EDAnalyzer {
 public:
-  multMETCorrInfoWriter( const edm::ParameterSet & );
+  metPhiCorrInfoWriter( const edm::ParameterSet & );
 
 private:
   edm::EDGetTokenT<std::vector<reco::PFCandidate> > pflowToken_;

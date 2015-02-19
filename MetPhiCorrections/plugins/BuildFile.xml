@@ -1,0 +1,17 @@
+<use name="root"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/ServiceRegistry"/>
+<use name="FWCore/MessageLogger"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/Utilities"/>
+<use name="FWCore/Version"/>
+<use name="CommonTools/UtilAlgos"/>
+<use name="SimGeneral/HepPDTRecord"/>
+<use name="CondFormats/JetMETObjects"/>
+<use   name="TrackingTools/TransientTrack"/>
+<use   name="TrackingTools/Records"/>
+<use   name="DataFormats/VertexReco"/>
+<library file="metPhiCorrInfoWriter.cc" name="MetToolsMetPhiCorrInfoWriter">
+  <flags EDM_PLUGIN="1"/>
+</library>
