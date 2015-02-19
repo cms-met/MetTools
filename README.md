@@ -18,6 +18,6 @@ in $CMSSW_BASE/src
 Once the species are defined (no/only small changes should be necessary in categories.py), the following command creates a cfg that will be used for obtaining the MEx,y profiles which later are parametrized.   
 `python MetTools/MetPhiCorrections/python/tools/writePythonCFG.py --postfix PHYS14`  
  This will create a file `phiCorr_PHYS14_cfi.py`. Change the postfix to your usecase.  
- Move this file to `MetTools/MetPhiCorrections/python` and create a `_cff.py` that imports it starting from `MetTools/MetPhiCorrections/python/phiCorr_PHYS14_cff.py`
+ Move this file to `MetTools/MetPhiCorrections/python` and create a `_cff.py` that imports using the template `MetTools/MetPhiCorrections/python/phiCorr_PHYS14_cff.py`
 2. Use the two files from the previous step to create the MEx,y profiles. Change `MetTools/MetPhiCorrections/test/run_metPhiCorr.py` so that the `_cff.py` from the previous step is used, then issue  
-`cmsRun run_metPhiCorr.py`
+`cmsRun run_metPhiCorr.py`  
