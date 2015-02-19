@@ -5,6 +5,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 // #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"                                                                               
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
