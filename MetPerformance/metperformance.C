@@ -45,7 +45,8 @@
 #include <TSystem.h>
 
 double FWHM (double, double);
-double FWHMError (double,double,double,double,double,double);
+double FWHMError (double, double, double, double, double, double, double,
+		  double);
 void
 metperformance (TString samplephys14, TString variablename)
 {
@@ -87,16 +88,16 @@ metperformance (TString samplephys14, TString variablename)
 
 
   TFile filephys14 (samplephys14);
-  
+
 
 
   TTree *treephys14 = (TTree *) filephys14.Get ("Events");
-  
+
 
 
   std::vector < TH1F * >resolution;
   resolution.clear ();
-  
+
 
 
 
@@ -118,13 +119,18 @@ metperformance (TString samplephys14, TString variablename)
       limitup = (index + 1) * 100;
       strlimitup = Form ("%d", limitup);
 
-      resolution.push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
-      
+      resolution.
+	push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
 
 
 
-      treephys14->Draw (variablename + ">>" +			TString (resolution[index]->GetName ()),			"(channel==1)*(sumEt<"			+ strlimitup + ")*(channel==1)*(sumEt>" +			strlimitdown + ")", "sames");
-      
+
+      treephys14->Draw (variablename + ">>" +
+			TString (resolution[index]->GetName ()),
+			"(channel==1)*(sumEt<" + strlimitup +
+			")*(channel==1)*(sumEt>" + strlimitdown + ")",
+			"sames");
+
 
       limitdown = limitup;
       strlimitdown = Form ("%d", limitdown);
@@ -132,8 +138,10 @@ metperformance (TString samplephys14, TString variablename)
 
 
       double m = resolution[index]->GetMean ();
-      double um =	resolution[index]->GetMean () - resolution[index]->GetRMS ();
-      double uM =	resolution[index]->GetMean () + resolution[index]->GetRMS ();
+      double um =
+	resolution[index]->GetMean () - resolution[index]->GetRMS ();
+      double uM =
+	resolution[index]->GetMean () + resolution[index]->GetRMS ();
       double meU = 0;		//-1* ( bVar[iqt+1] + bVar[iqt] )/2.;
       double mU = -50;		//qt -100;
       double MU = 50;		//qt +100;
@@ -167,10 +175,12 @@ metperformance (TString samplephys14, TString variablename)
       double Vgg = result->correlation (gamma_Z0, gamma_Z0);
 
       double f = FWHM (sigma, gamma);
-      double efwhm = FWHMError( esigma, egamma, Vss, Vsg, Vgs, Vgg);
-  
+      double efwhm =
+	FWHMError (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg);
+
       cout << " f value " << f << endl;
-      if (f/2.3 < 5) continue;
+      if (f / 2.3 < 5)
+	continue;
       RooPlot *xFrame = x.frame ();
       (Hist).plotOn (xFrame);
       TString titlexfit = "";
@@ -183,7 +193,7 @@ metperformance (TString samplephys14, TString variablename)
       //sum.plotOn(xFrame, CMS.RooFit::Components(expo), CMS.RooFit::LineStyle(kDashed)) ;
       xFrame->Draw ();
       TString histoname = resolution[index]->GetName ();
-      c1->Print ( histoname + "_" + folder +"_"+ variablename + ".png");
+      c1->Print (histoname + "_" + folder + "_" + variablename + ".png");
 
 
 
@@ -192,7 +202,7 @@ metperformance (TString samplephys14, TString variablename)
 
       tgraphx[index] = index * 0.1;
       tgraphy[index] = f / 2.3548;
-      etgraphy[index] = efwhm/ 2.3548;
+      etgraphy[index] = efwhm / 2.3548;
       etgraphx[index] = 0;
       c1->Print ("~/www/prueba.png");
 
@@ -201,9 +211,9 @@ metperformance (TString samplephys14, TString variablename)
 
 
 
-  TGraph *gr = new TGraphErrors (25, tgraphx, tgraphy,etgraphx,etgraphy);
-  gr->SetMarkerColor(4);
-  gr->SetMarkerStyle(21);
+  TGraph *gr = new TGraphErrors (25, tgraphx, tgraphy, etgraphx, etgraphy);
+  gr->SetMarkerColor (4);
+  gr->SetMarkerStyle (21);
 
   gr->GetXaxis ()->SetTitle ("sumE_{T} (TeV)");
   gr->GetYaxis ()->SetTitle (titley);
@@ -218,8 +228,8 @@ metperformance (TString samplephys14, TString variablename)
   leg->SetBorderSize (0);
   leg->SetTextSize (0.04);
   leg->SetTextFont (42);
-  
-  
+
+
 
   leg->SetFillColor (0);
 
@@ -239,7 +249,7 @@ metperformance (TString samplephys14, TString variablename)
   //c1->Update ();
 
 
-  c1->Print ( variablename +"_"+folder+ ".png");
+  c1->Print (variablename + "_" + folder + ".png");
 
 
 
@@ -247,7 +257,8 @@ metperformance (TString samplephys14, TString variablename)
 
 
 
-double FWHM (double sigma, double gamma)
+double
+FWHM (double sigma, double gamma)
 {
 
   double f_g = 2 * sigma * sqrt (2 * log (2));
@@ -258,14 +269,29 @@ double FWHM (double sigma, double gamma)
 
 
 
-double FWHMError( double esigma, double egamma, double Vss, double Vsg, double Vgs, double Vgg){
-  double ef_g =  2*esigma*sqrt(2*log(2));
-    double ef_l = 2* egamma;
-      
-        double p1 = ef_l*ef_l*Vgg;
-          double p2 = ef_g*ef_l*Vsg; 
-            double p3 = ef_g*ef_l*Vgs;
-              double p4 = ef_g*ef_g*Vss;
-                
-                  return sqrt(p1 + p2 + p3 + p4);
-                  }
+double
+FWHMError (double sigma, double gamma, double esigma, double egamma,
+	   double Vss, double Vsg, double Vgs, double Vgg)
+{
+
+
+  double a = 0.5346;
+  double b = 0.2166;
+  double ef_g = 2 * esigma * sqrt (2 * log (2));
+  double ef_l = 2 * egamma;
+
+  double dg =
+    2 * a + 4 * b * gamma / sqrt (4 * b * pow (gamma, 2) +
+				  4 * pow (sigma, 2) * log (2));
+  double ds =
+    (sigma * log (4)) / sqrt (b * pow (gamma, 2) + pow (sigma, 2) * log (2));
+
+  double p1 = ef_l * ef_l * Vgg * dg;
+  double p2 = ef_g * ef_l * Vsg * dg * ds;	//identical (should be)
+  double p3 = ef_g * ef_l * Vgs * dg * ds;
+  double p4 = ef_g * ef_g * Vss * ds;
+
+
+  return sqrt (p1 + p2 + p3 + p4);
+
+}
