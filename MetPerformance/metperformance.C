@@ -292,6 +292,6 @@ FWHMError (double sigma, double gamma, double esigma, double egamma,
   double p4 = ef_g * ef_g * Vss * ds;
 
 
-  return sqrt (p1 + p2 + p3 + p4);
+  return sqrt (abs(p1) + abs(p2) + abs(p3) + abs(p4));
 
 }
