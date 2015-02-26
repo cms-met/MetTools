@@ -4,8 +4,8 @@ pfTypes = ["X", "h", "e", "mu", "gamma", "h0", "h_HF", "egamma_HF"]
 #Translation of pfCandidate enum to labels and vice versa
 label = {"X":0,"h":1, "e":2, "mu":3,"gamma":4, 'h0':5, 'h_HF':6, 'egamma_HF':7, 0:"X",1:"h", 2:"e", 3:"mu",4:"gamma", 5:'h0', 6:'h_HF', 7:'egamma_HF'}
 #Translation of variable type and vice versa 
-varTypes = ["multiplicity","sumPt","nvtx"]
-varType = {"multiplicity":0, "sumPt":1, "nvtx":2, 0:"multiplicity",1:"sumPt", 2:"nvtx"}
+varTypes = ["multiplicity","nvtx","sumPt"]
+varType = {"multiplicity":0, "nvtx":1, "sumPt":2, 0:"multiplicity",1:"nvtx", 2:"sumPt"}
 
 #Define categories for MET phi corrections below
 h                 = {'name':'h', 'type':'h',  'etaPhiBinning':[108,-2.7,2.7,160,-pi,pi]}

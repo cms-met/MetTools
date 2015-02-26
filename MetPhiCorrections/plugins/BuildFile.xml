@@ -9,9 +9,13 @@
 <use name="CommonTools/UtilAlgos"/>
 <use name="SimGeneral/HepPDTRecord"/>
 <use name="CondFormats/JetMETObjects"/>
-<use   name="TrackingTools/TransientTrack"/>
-<use   name="TrackingTools/Records"/>
-<use   name="DataFormats/VertexReco"/>
+<use name="TrackingTools/TransientTrack"/>
+<use name="TrackingTools/Records"/>
+<use name="DataFormats/VertexReco"/>
+<use name="DataFormats/Common"/>
+<use name="DataFormats/TrackReco/interface/TrackFwd.h">
+<use name="DataFormats/ParticleFlowCandidate">
+
 <library file="metPhiCorrInfoWriter.cc" name="MetToolsMetPhiCorrInfoWriter">
   <flags EDM_PLUGIN="1"/>
 </library>

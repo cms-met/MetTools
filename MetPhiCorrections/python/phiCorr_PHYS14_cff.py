@@ -6,7 +6,7 @@ from MetTools.MetPhiCorrections.phiCorrBins_PHYS14_cfi import phiCorrBins_PHYS14
 
 metPhiCorrInfoWriter = cms.EDAnalyzer("metPhiCorrInfoWriter",
     vertexCollection = cms.untracked.InputTag('offlinePrimaryVertices'),
-    srcPFlow = cms.InputTag('particleFlow', ''),
+    srcPFlow = cms.untracked.InputTag('particleFlow', ''),
     parameters = phiCorrBins
 )
 metPhiCorrInfoWriterSequence = cms.Sequence( metPhiCorrInfoWriter )

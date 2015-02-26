@@ -8,6 +8,7 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 
 #include <string>
 #include <vector>
@@ -32,6 +33,7 @@ private:
   std::vector<double> etaMin_, etaMax_, MEx_, MEy_, sumPt_;
   std::vector<int> type_, varType_, nbins_, counts_, etaNBins_;
 
+  static int translateTypeToAbsPdgId( reco::PFCandidate::ParticleType type );
 
 };
 
