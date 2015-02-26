@@ -19,7 +19,7 @@ public:
   metPhiCorrInfoWriter( const edm::ParameterSet & );
 
 private:
-  edm::EDGetTokenT<std::vector<reco::PFCandidate> > pflowToken_;
+  edm::InputTag pflow_;
 
   void analyze( const edm::Event& , const edm::EventSetup& );
   edm::InputTag vertices_;

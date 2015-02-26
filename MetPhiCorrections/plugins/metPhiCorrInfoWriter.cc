@@ -17,11 +17,10 @@ std::string namePostFix (int varType) {
 
 metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ): 
   vertices_ ( cfg.getUntrackedParameter< edm::InputTag >("vertexCollection") ),
+  pflow_ ( cfg.getUntrackedParameter< edm::InputTag >("srcPFlow") ),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
   edm::Service<TFileService> fs;
-
-  pflowToken_ = consumes<std::vector<reco::PFCandidate> >(cfg.getParameter<edm::InputTag>("srcPFlow"));
 
   cfgCorrParameters_ = cfg.getParameter<std::vector<edm::ParameterSet> >("parameters");
 //  etaNBins_.clear();
@@ -93,7 +92,7 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
   } 
 //  typedef std::vector<reco::PFCandidate>  pfCand;
   edm::Handle<std::vector<reco::PFCandidate> > particleFlow;
-  evt.getByToken(pflowToken_, particleFlow);
+  evt.getByLabel(pflow_, particleFlow);
   for (unsigned i = 0; i < particleFlow->size(); ++i) {
     const reco::PFCandidate& c = particleFlow->at(i);
     for (unsigned j=0; j<type_.size(); j++) {
