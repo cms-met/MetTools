@@ -16,8 +16,8 @@ std::string namePostFix (int varType) {
 }
 
 metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ): 
-  vertices_ ( cfg.getUntrackedParameter< edm::InputTag >("vertexCollection") ),
   pflow_ ( cfg.getUntrackedParameter< edm::InputTag >("srcPFlow") ),
+  vertices_ ( cfg.getUntrackedParameter< edm::InputTag >("vertexCollection") ),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
   edm::Service<TFileService> fs;
