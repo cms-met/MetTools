@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-phiCorr_PHYS14 = cms.VPSet(
+phiCorrBins_PHYS14 = cms.VPSet(
     cms.PSet(
       name=cms.string("h"),
       type=cms.int32(1),

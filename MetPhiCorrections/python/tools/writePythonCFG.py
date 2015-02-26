@@ -11,10 +11,10 @@ parser.add_option("--postfix", dest="postfix", default="PHYS14", type="string", 
 (options, args) = parser.parse_args()
 
 if options.infile=="":
-  fileName = "phiCorr_"+options.postfix+"_cfi.py" 
+  fileName = "phiCorrBins_"+options.postfix+"_cfi.py" 
   ofile = file(fileName, 'w')
   ofile.write('import FWCore.ParameterSet.Config as cms\n')
-  ofile.write("phiCorr_"+options.postfix+' = cms.VPSet(\n')
+  ofile.write("phiCorrBins_"+options.postfix+' = cms.VPSet(\n')
   for v in varTypes:
     for map in allMaps:
       ofile.write('    cms.PSet(\n')
