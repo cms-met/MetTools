@@ -19,7 +19,7 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string("histo.
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'POSTLS170_V6::All'
+process.GlobalTag.globaltag = 'PHYS14_50_V1::All'
 
 process.load('MetTools.MetPhiCorrections.phiCorr_PHYS14_cff')
 #Replacements for mAOD
