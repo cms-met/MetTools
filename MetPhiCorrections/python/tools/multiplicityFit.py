@@ -1,12 +1,3 @@
-import ROOT
-import pickle, os
-
-from math import pi, cos, sin, sqrt, atan2
-ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/MetTools/MetPhiCorrections/python/tools/tdrstyle.C")
-ROOT.setTDRStyle()
-from MetTools.MetPhiCorrections.tools.categories import *
-from MetTools.MetPhiCorrections.tools.helpers import getObjFromFile
-
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--map", dest="map", default='h', type="string", action="store", help="Which map. Default:h (charged hadrons)")
@@ -20,8 +11,18 @@ parser.add_option("--input", dest="input", default='DYJetsToLL_M-50_HT-100toInf_
 parser.add_option("--rootGDir", dest="rootGDir", default='metPhiCorrInfoWriter', type="string", action="store", help="Which gDir was used in the production of the MEx,y profile [metPhiCorrInfoWriter/pfMEtMultCorrInfoWriter].")
 parser.add_option("--plotFileName", dest="plotFileName", default="plot.pdf", type="string", action="store", help="Filename the plot. Default:test.pdf")
 parser.add_option("--textFileName", dest="textFileName", default="metPhiCorrections_cfi.py", type="string", action="store", help="Text file name that the corrections are appended to. Default:metPhiCorrections_cfi.py.")
-
 (options, args) = parser.parse_args()
+
+import ROOT
+import pickle, os
+
+from math import pi, cos, sin, sqrt, atan2
+ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/MetTools/Commons/scripts/tdrstyle.C")
+ROOT.setTDRStyle()
+from MetTools.MetPhiCorrections.tools.categories import *
+from MetTools.MetPhiCorrections.tools.helpers import getObjFromFile
+
+
 assert options.map in [m['name'].replace('HF','HF_') for m in allMaps],("map %s not in "+",".join([m['name'].replace('HF','HF_') for m in allMaps])) % options.map
 exec("map = " +options.map)
 exec("yZoomRange = (" +options.yZoomRange+ ")")

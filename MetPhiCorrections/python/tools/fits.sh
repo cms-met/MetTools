@@ -1,8 +1,13 @@
 #!/bin/sh
-outputTextFile="multPhiCorr_$1_cfi.py"
+if [ -n "$1" ]; then
+    argum=$1
+  else
+    argum="tmp"
+fi
+outputTextFile="multPhiCorr_${argum}_cfi.py"
 rm -rf $outputTextFile
 echo "import FWCore.ParameterSet.Config as cms">>$outputTextFile
-echo "multPhiCorr_$1 = cms.VPSet(">>$outputTextFile
+echo "multPhiCorr_${argum} = cms.VPSet(">>$outputTextFile
 python multiplicityFit.py --textFileName=$outputTextFile --input=DYJetsToLL_M-50_HT-100toInf_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1_AODSIM.root --rootGDir=pfMEtMultCorrInfoWriter --plotFileName="/afs/hephy.at/user/s/schoefbeck/www/pngPF2/h_DY_mult.pdf" --map=h --mode=multiplicity --func='(x*[0]+x**2*[1])' --fitRange=0,3000 --rebin=5 --yZoomRange=-40,40 --xZoomRange=0,4000
 #python multiplicityFit.py --textFileName=$outputTextFile --input=TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1_AODSIM.root --rootGDir=pfMEtMultCorrInfoWriter --plotFileName="/afs/hephy.at/user/s/schoefbeck/www/pngPF2/h_TT_mult.pdf" --map=h --mode=multiplicity --func='(x*[0]+x**2*[1])' --fitRange=0,3000 --rebin=5 --yZoomRange=-40,40 --xZoomRange=0,4000
 #python multiplicityFit.py --textFileName=$outputTextFile --input=DYJetsToLL_M-50_HT-100toInf_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1_AODSIM.root --rootGDir=pfMEtMultCorrInfoWriter --plotFileName="/afs/hephy.at/user/s/schoefbeck/www/pngPF2/h_DY.pdf" --map=h --mode=sumPt --func='(x*[0]+x**2*[1])*(x<1000) + (x*[2]+x**2*[3])*(x>1000)' --fitRange=0,3000 --rebin=5 --yZoomRange=-40,40 --xZoomRange=0,4000
