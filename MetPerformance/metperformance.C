@@ -48,7 +48,8 @@ double FWHM (double, double);
 double FWHMError (double, double, double, double, double, double, double,
 		  double);
 void
-metperformance (TString samplephys14, TString variablename)
+metperformance (TString samplephys14, TString variablename, TString xvariable,
+		bool drawchi2)
 {
 
   TString folder = "DY";
@@ -105,18 +106,30 @@ metperformance (TString samplephys14, TString variablename)
   TString strlimitup = "0";
   TString strlimitdown = "0";
 
+  int sizexarray = 0;
 
+  if (xvariable == "nvtx")
+    sizexarray = 6;
+  if (xvariable == "sumEt")
+    sizexarray = 6;
+  if (xvariable == "qt")
+    sizexarray = 10;
+
+
+  //double xaxisarray=
 //treephys14->Draw (variablename + ">>histoprueba", "(channel==1)*(sumEt> 400)*(sumEt< 500) ");
 
-  Double_t tgraphx[25], tgraphy[25], etgraphy[25], etgraphx[25];
+  Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray],
+    etgraphx[sizexarray], tgraphxchi2[sizexarray], tgraphychi2[sizexarray];
 
-  for (int index = 0; index <= 24; index++)
+  for (int index = 0; index < sizexarray; index++)
     {
-
-//if (index !=11) continue;
-
-//cout << " y vuelve a empezar " << endl;
-      limitup = (index + 1) * 100;
+      if (xvariable == "nvtx")
+	limitup = (index + 1) * 5;
+      if (xvariable == "sumEt")
+	limitup = (index + 1) * 200;
+      if (xvariable == "qt")
+	limitup = (index + 1) * 12;
       strlimitup = Form ("%d", limitup);
 
       resolution.
@@ -124,16 +137,31 @@ metperformance (TString samplephys14, TString variablename)
 
 
 
+      TString variablenameaux = variablename;
+      if (variablename == "uparaqt")
+	variablenameaux = "upara/qt";
+      if (variablename == "upararawqt")
+	variablenameaux = "upararaw/qt";
 
-      treephys14->Draw (variablename + ">>" +
-			TString (resolution[index]->GetName ()),
-			"(channel==1)*(sumEt<" + strlimitup +
-			")*(channel==1)*(sumEt>" + strlimitdown + ")",
-			"sames");
+
+      if (xvariable == "nvtx")
+	{
+	  treephys14->Draw (variablenameaux + ">>" +
+			    TString (resolution[index]->GetName ()),
+			    "(channel==1)*(" + xvariable + "==" + strlimitup +
+			    ")", "sames");
+	}
+      else
+	{
+	  treephys14->Draw (variablenameaux + ">>" +
+			    TString (resolution[index]->GetName ()),
+			    "(channel==1)*(" + xvariable + "<" + strlimitup +
+			    ")*(" + xvariable + ">" + strlimitdown + ")",
+			    "sames");
+	}
 
 
-      limitdown = limitup;
-      strlimitdown = Form ("%d", limitdown);
+
 
 
 
@@ -142,9 +170,8 @@ metperformance (TString samplephys14, TString variablename)
 	resolution[index]->GetMean () - resolution[index]->GetRMS ();
       double uM =
 	resolution[index]->GetMean () + resolution[index]->GetRMS ();
-      double meU = 0;		//-1* ( bVar[iqt+1] + bVar[iqt] )/2.;
-      double mU = -50;		//qt -100;
-      double MU = 50;		//qt +100;
+
+
 
 
 
@@ -173,14 +200,13 @@ metperformance (TString samplephys14, TString variablename)
       double Vgs = result->correlation (gamma_Z0, g_w);
       double Vss = result->correlation (g_w, g_w);
       double Vgg = result->correlation (gamma_Z0, gamma_Z0);
-
+      cout << "correlacion Vgs " << Vgs << " y correlación Vsg" << Vsg <<
+	endl;
       double f = FWHM (sigma, gamma);
       double efwhm =
 	FWHMError (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg);
 
-      cout << " f value " << f << endl;
-      if (f / 2.3 < 5)
-	continue;
+      //if (f/2.3 < 5) continue;
       RooPlot *xFrame = x.frame ();
       (Hist).plotOn (xFrame);
       TString titlexfit = "";
@@ -190,39 +216,100 @@ metperformance (TString samplephys14, TString variablename)
 	titlexfit = "MET_{y} (GeV)";
       xFrame->SetXTitle (titlexfit);
       voigt->plotOn (xFrame);
-      //sum.plotOn(xFrame, CMS.RooFit::Components(expo), CMS.RooFit::LineStyle(kDashed)) ;
+      
       xFrame->Draw ();
       TString histoname = resolution[index]->GetName ();
-      c1->Print (histoname + "_" + folder + "_" + variablename + ".png");
+      c1->Print ("~/www/METfits/" + folder + "/" + histoname + "_" +		 variablename + "_vs_" + xvariable + ".png");
+
+      //Print chi2/dof value
+
+      Double_t chi2 = xFrame->chiSquare ();	//"voigt", "Hist", 3);
+      //cout << "chi2 = " << chi2 << endl;
 
 
-
+      
       cout << " index " << index << " -- sigma " << sigma << endl;
       cout << "index " << index << " -- gamma " << gamma << endl;
+      tgraphx[index] = index;
 
-      tgraphx[index] = index * 0.1;
+      if (xvariable == "nvtx")
+	tgraphx[index] = limitup;
+      if (xvariable == "sumEt")
+	tgraphx[index] = limitup * 0.001;	//For the x axis to be in TEV
+      if (xvariable == "qt")
+	tgraphx[index] = limitup;
+
+      tgraphxchi2[index] = tgraphx[index];
+      tgraphychi2[index] = chi2;
+
+      if (chi2 != chi2 || chi2 >= 100)
+	tgraphychi2[index] = -0.2;
       tgraphy[index] = f / 2.3548;
+      if (variablename == "uparaqt" || variablename == "upararawqt")
+	tgraphy[index] = -resolution[index]->GetMean ();
       etgraphy[index] = efwhm / 2.3548;
+      if (variablename == "uparaqt" || variablename == "upararawqt")
+	etgraphy[index] = resolution[index]->GetMeanError ();
       etgraphx[index] = 0;
-      c1->Print ("~/www/prueba.png");
+
+
+      //Set limit down
+      limitdown = limitup;
+      strlimitdown = Form ("%d", limitdown);
+
 
     }
 
 
 
 
-  TGraph *gr = new TGraphErrors (25, tgraphx, tgraphy, etgraphx, etgraphy);
+  TGraph *gr =  new TGraphErrors (sizexarray, tgraphx, tgraphy, etgraphx, etgraphy);
   gr->SetMarkerColor (4);
   gr->SetMarkerStyle (21);
 
-  gr->GetXaxis ()->SetTitle ("sumE_{T} (TeV)");
+  TGraph *grchi2 = new TGraph (sizexarray, tgraphxchi2, tgraphychi2);
+  grchi2->SetMarkerColor (2);
+  grchi2->SetMarkerStyle (34);
+  
+  
+  if (xvariable == "sumEt")
+    {
+      gr->GetXaxis ()->SetTitle ("sumE_{T} (TeV)");
+      grchi2->GetXaxis ()->SetTitle ("sumE_{T} (TeV)");
+    }
+  if (xvariable == "nvtx")
+    {
+      gr->GetXaxis ()->SetTitle ("Number of Vertices");
+      grchi2->GetXaxis ()->SetTitle ("Number of Vertices");
+    }
+  if (xvariable == "qt")
+    {
+      gr->GetXaxis ()->SetTitle ("qt (GeV)");
+      grchi2->GetXaxis ()->SetTitle ("qt (GeV)");
+    }
+
+
+
   gr->GetYaxis ()->SetTitle (titley);
-  gr->Draw ("AP");
+  if (variablename.Contains ("upara"))
+  gr->GetYaxis ()->SetTitle ("#sigma(u_{||}) [GeV]");
+  if (variablename.Contains("uperp"))
+  gr->GetYaxis ()->SetTitle ("#sigma(u_{#perp}  ) [GeV]");
+  
+
+  if (drawchi2) {
+  grchi2->GetYaxis ()->SetTitle ("#Chi^{2}");
+  grchi2->Draw ("AP");
+  c1->Print ("~/www/METResolution/" + folder + "/" + variablename + "_vs_" +	     xvariable + "_chi2.png");
+  c1->Clear (); }
+
+  TFile f (folder + "_tgraphs.root", "UPDATE");
+  gr->Write (variablename + "_vs_" + xvariable);
+
 
   c1->Update ();
-  TLegendEntry *legge;
-  TLegend *leg;
 
+  TLegend *leg;
   leg = new TLegend (0.60, 0.6, 0.91, 0.81);
   leg->SetFillStyle (0);
   leg->SetBorderSize (0);
@@ -245,11 +332,36 @@ metperformance (TString samplephys14, TString variablename)
   l1.DrawLatex (0.155, 0.98, "CMS Preliminary, #sqrt{s} = 13 TeV");
 
 
-  // c1->Modified ();
-  //c1->Update ();
+  
+
+  gr->Draw ("AP");
+  gr->GetYaxis()->SetRangeUser(-100,100);
+  c1->Update();
+  
+  
+  if (variablename == "uparaqt" || "upararawqt")
+    {
+      TLine *lineR =  new TLine ( gr->GetHistogram ()->GetXaxis ()->GetXmin (), 1, gr->GetHistogram ()->GetXaxis ()->GetXmax (), 1);
+      lineR->SetLineColor (kBlue + 1);
+      lineR->SetLineWidth (2);
+      lineR->SetLineStyle (2);
+      lineR->Draw ();
+    }
+
+  else
+    {
+      
+      TLine *lineR =	new TLine (gr->GetHistogram ()->GetXaxis ()->GetXmin (), 0,  gr->GetHistogram ()->GetXaxis ()->GetXmax (), 0);
+      lineR->SetLineColor (kBlue + 1);
+      lineR->SetLineWidth (2);
+      lineR->SetLineStyle (2);
+      lineR->Draw ();
 
 
-  c1->Print (variablename + "_" + folder + ".png");
+    }
+
+
+  c1->Print ("~/www/METResolution/" + folder + "/" + variablename + "_vs_" +	     xvariable + ".png");
 
 
 
@@ -283,15 +395,15 @@ FWHMError (double sigma, double gamma, double esigma, double egamma,
   double dg =
     2 * a + 4 * b * gamma / sqrt (4 * b * pow (gamma, 2) +
 				  4 * pow (sigma, 2) * log (2));
+
   double ds =
     (sigma * log (4)) / sqrt (b * pow (gamma, 2) + pow (sigma, 2) * log (2));
-
+  cout << " dg vale   " << dg << "   ------ gs vale " << ds << endl;
   double p1 = ef_l * ef_l * Vgg * dg;
   double p2 = ef_g * ef_l * Vsg * dg * ds;	//identical (should be)
   double p3 = ef_g * ef_l * Vgs * dg * ds;
   double p4 = ef_g * ef_g * Vss * ds;
 
-
-  return sqrt (abs(p1) + abs(p2) + abs(p3) + abs(p4));
+  return sqrt (abs (p1) + abs (p2) + abs (p3) + abs (p4));
 
 }
