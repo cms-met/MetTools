@@ -146,18 +146,11 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
 
       if (xvariable == "nvtx")
 	{
-	  treephys14->Draw (variablenameaux + ">>" +
-			    TString (resolution[index]->GetName ()),
-			    "(channel==1)*(" + xvariable + "==" + strlimitup +
-			    ")", "sames");
+	  treephys14->Draw (variablenameaux + ">>" +			    TString (resolution[index]->GetName ()),			    "(channel==1)*(" + xvariable + "==" + strlimitup +			    ")", "sames");
 	}
       else
 	{
-	  treephys14->Draw (variablenameaux + ">>" +
-			    TString (resolution[index]->GetName ()),
-			    "(channel==1)*(" + xvariable + "<" + strlimitup +
-			    ")*(" + xvariable + ">" + strlimitdown + ")",
-			    "sames");
+	  treephys14->Draw (variablenameaux + ">>" +			    TString (resolution[index]->GetName ()),			    "(channel==1)*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">" + strlimitdown + ")",			    "sames");
 	}
 
 
@@ -166,10 +159,8 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
 
 
       double m = resolution[index]->GetMean ();
-      double um =
-	resolution[index]->GetMean () - resolution[index]->GetRMS ();
-      double uM =
-	resolution[index]->GetMean () + resolution[index]->GetRMS ();
+      double um =	resolution[index]->GetMean () - resolution[index]->GetRMS ();
+      double uM =	resolution[index]->GetMean () + resolution[index]->GetRMS ();
 
 
 
@@ -203,8 +194,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
       cout << "correlacion Vgs " << Vgs << " y correlación Vsg" << Vsg <<
 	endl;
       double f = FWHM (sigma, gamma);
-      double efwhm =
-	FWHMError (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg);
+      double efwhm =	FWHMError (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg);
 
       //if (f/2.3 < 5) continue;
       RooPlot *xFrame = x.frame ();
@@ -219,7 +209,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
       
       xFrame->Draw ();
       TString histoname = resolution[index]->GetName ();
-      c1->Print ("~/www/METfits/" + folder + "/" + histoname + "_" +		 variablename + "_vs_" + xvariable + ".png");
+      c1->Print (histoname + "_" +		 variablename + "_vs_" + xvariable + ".png");
 
       //Print chi2/dof value
 
@@ -243,13 +233,13 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
       tgraphychi2[index] = chi2;
 
       if (chi2 != chi2 || chi2 >= 100)
-	tgraphychi2[index] = -0.2;
+    	tgraphychi2[index] = -0.2;
       tgraphy[index] = f / 2.3548;
       if (variablename == "uparaqt" || variablename == "upararawqt")
-	tgraphy[index] = -resolution[index]->GetMean ();
+	    tgraphy[index] = -resolution[index]->GetMean (); 
       etgraphy[index] = efwhm / 2.3548;
       if (variablename == "uparaqt" || variablename == "upararawqt")
-	etgraphy[index] = resolution[index]->GetMeanError ();
+	    etgraphy[index] = resolution[index]->GetMeanError ();
       etgraphx[index] = 0;
 
 
@@ -300,7 +290,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
   if (drawchi2) {
   grchi2->GetYaxis ()->SetTitle ("#Chi^{2}");
   grchi2->Draw ("AP");
-  c1->Print ("~/www/METResolution/" + folder + "/" + variablename + "_vs_" +	     xvariable + "_chi2.png");
+  c1->Print (variablename + "_vs_" +	     xvariable + "_chi2.png");
   c1->Clear (); }
 
   TFile f (folder + "_tgraphs.root", "UPDATE");
@@ -335,7 +325,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
   
 
   gr->Draw ("AP");
-  gr->GetYaxis()->SetRangeUser(-100,100);
+  if (variablename!="uparaqt" && variablename!="upararawqt") gr->GetYaxis()->SetRangeUser(-100,100);
   c1->Update();
   
   
@@ -361,7 +351,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
     }
 
 
-  c1->Print ("~/www/METResolution/" + folder + "/" + variablename + "_vs_" +	     xvariable + ".png");
+  c1->Print (variablename + "_vs_" +	     xvariable + ".png");
 
 
 
