@@ -17,8 +17,19 @@ In principle the histogram with the comparison will be saved in the current work
 
 #### How to run metresolution 
 
+To run it standalone
 ```bash
 .L metresolution.C+
-metresolution("input.root","pfmetx")
+metresolution("input.root","variable1","variable2", false)
 ```
-This generates the sigma(pfmetx) vs the sumET of the event (this will be customizable in next versions :stuck_out_tongue:) and plots it in a tgraph. It also generates the png with the result of the fits per bin so that one can inspect them easily.
+This generates the sigma(variable1) vs the variable2 plots in a tgraph. It also generates the png with the result of the fits per bin so that one can inspect them easily.
+If the last option of the funcion is set to true, it will also generate a plot showing the chi2 for all the fits.
+
+If variable1 is uparaqt or upararawqt and variable2 is qt, it will generate the scale plots.
+
+To run all the plots in one shot:
+
+.L runmetresolution.C
+metresolution("input.root")
+
+
