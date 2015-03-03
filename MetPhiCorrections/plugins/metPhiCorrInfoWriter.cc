@@ -4,7 +4,8 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-
+#include "DataFormats/Common/interface/View.h"
+#include "DataFormats/Common/interface/Association.h"
 #include <string>
 
 std::string namePostFix (int varType) {
@@ -15,13 +16,26 @@ std::string namePostFix (int varType) {
   return std::string("unknown");
 }
 
+int metPhiCorrInfoWriter::translateTypeToAbsPdgId( reco::PFCandidate::ParticleType type ) {
+  switch( type ) {
+  case reco::PFCandidate::ParticleType::h: return 211; // pi+
+  case reco::PFCandidate::ParticleType::e: return 11;
+  case reco::PFCandidate::ParticleType::mu: return 13;
+  case reco::PFCandidate::ParticleType::gamma: return 22;
+  case reco::PFCandidate::ParticleType::h0: return 130; // K_L0
+  case reco::PFCandidate::ParticleType::h_HF: return 1; // dummy pdg code
+  case reco::PFCandidate::ParticleType::egamma_HF: return 2; // dummy pdg code
+  case reco::PFCandidate::ParticleType::X:
+  default: return 0;
+  }
+}
+
 metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ): 
+  pflow_ ( cfg.getUntrackedParameter< edm::InputTag >("srcPFlow") ),
   vertices_ ( cfg.getUntrackedParameter< edm::InputTag >("vertexCollection") ),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
   edm::Service<TFileService> fs;
-
-  pflowToken_ = consumes<std::vector<reco::PFCandidate> >(cfg.getParameter<edm::InputTag>("srcPFlow"));
 
   cfgCorrParameters_ = cfg.getParameter<std::vector<edm::ParameterSet> >("parameters");
 //  etaNBins_.clear();
@@ -70,7 +84,7 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
 void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup& setup) {
 
   //get primary vertices
-  edm::Handle<std::vector<reco::Vertex> > hpv;
+  edm::Handle<edm::View<reco::Vertex> > hpv;
   try {
     evt.getByLabel( vertices_, hpv );
   } catch ( cms::Exception & e ) {
@@ -91,13 +105,16 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
     MEx_[i]=0.;
     MEy_[i]=0.;
   } 
-//  typedef std::vector<reco::PFCandidate>  pfCand;
-  edm::Handle<std::vector<reco::PFCandidate> > particleFlow;
-  evt.getByToken(pflowToken_, particleFlow);
+
+  edm::Handle<edm::View<reco::Candidate> > particleFlow;
+  evt.getByLabel(pflow_, particleFlow);
   for (unsigned i = 0; i < particleFlow->size(); ++i) {
-    const reco::PFCandidate& c = particleFlow->at(i);
+    const reco::Candidate& c = particleFlow->at(i);
     for (unsigned j=0; j<type_.size(); j++) {
-      if (c.particleId()==type_[j]) {
+//      if (abs(c.pdgId())==211) {
+//        std::cout<<"cand pdgId "<<c.pdgId()<<" testing type:"<<type_[j]<<" translated to pdg:"<<translateTypeToAbsPdgId(reco::PFCandidate::ParticleType(type_[j]))<<std::endl;
+//      }
+      if (abs(c.pdgId())== translateTypeToAbsPdgId(reco::PFCandidate::ParticleType(type_[j]))) {
         if ((c.eta()>etaMin_[j]) and (c.eta()<etaMax_[j])) {
           counts_[j]+=1;
           sumPt_[j]+=c.pt();
