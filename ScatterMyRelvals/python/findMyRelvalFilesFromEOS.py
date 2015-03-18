@@ -34,7 +34,8 @@ for rel in releases:
         subDirs = oneLevelDeeper(cond)
         for s in subDirs:
           files+= oneLevelDeeper(s)
+        if files==[]:continue
         results[cond] = files
-
+        print "Found",cond
 pickle.dump(results, file(ofile,'w'))
 print "Written",ofile 
