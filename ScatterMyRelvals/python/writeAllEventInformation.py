@@ -14,22 +14,35 @@ import sys, os, copy, random, subprocess, datetime
 import pickle
 
 small = False
-
-ROOT.gSystem.Load("libFWCoreFWLite.so")
-ROOT.AutoLibraryLoader.enable()
-
 maxEvts=-1
 
-print "Retrieving information on architecture from https://cmssdt.cern.ch/SDT/cgi-bin/ReleasesXML"
-os.system('wget https://cmssdt.cern.ch/SDT/cgi-bin/ReleasesXML -P '+options.tmpdir)
-from xml.dom import minidom
-xmldoc = minidom.parse(options.tmpdir+'/ReleasesXML')
-de=xmldoc.documentElement
 archDict={}
-archs = de.getElementsByTagName('architecture')
-for a in archs:
-  archDict.update({str(r.getAttribute('label')): str(a.getAttribute('name')) for r in a.getElementsByTagName('project')})
- 
+
+p = os.popen("/cvmfs/cms.cern.ch/common/scramv1 list -a CMSSW","r")
+while True:
+  l = p.readline()
+  if not l:break
+  if not ('slc' in l and 'CMSSW' in l): continue
+  l=l[:-1]
+  s=l.split('/')
+  arch = filter(lambda x:x.startswith('slc'),s)
+  rel = filter(lambda x:x.startswith('CMSSW'),s)
+  if not (len(arch)==1 and len(rel)>=1):
+    print "Don't understand",l
+  else:
+    archDict[rel[0]]=arch[0]
+    print "Architecture:", rel[0],'->',arch[0] 
+
+#print "Retrieving information on architecture from https://cmssdt.cern.ch/SDT/cgi-bin/ReleasesXML"
+#os.system('wget https://cmssdt.cern.ch/SDT/cgi-bin/ReleasesXML -P '+options.tmpdir)
+#from xml.dom import minidom
+#xmldoc = minidom.parse(options.tmpdir+'/ReleasesXML')
+#de=xmldoc.documentElement
+#archs = de.getElementsByTagName('architecture')
+#for a in archs:
+#  archDict.update({str(r.getAttribute('label')): str(a.getAttribute('name')) for r in a.getElementsByTagName('project')})
+
+
 assert options.input!='', "Need to specify input file created with findMyRelvalsFromEOS.py. Syntax: --input=fileName.pkl"
 allRelVals=pickle.load(file(options.input))
 
