@@ -16,7 +16,8 @@ def oneLevelDeeper(dir, subdir=None):
 
 eosRelValDir = "/eos/cms/store/relval"
 eosCMD = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
-relVal = "RelValTTbar_13"
+#relVal = "RelValTTbar_13"
+relVal = "RelValSingleMuPt10_UP15"
 p = os.popen(" ".join([eosCMD, "ls", eosRelValDir]),"r")
 results={}
 while True:
@@ -41,8 +42,8 @@ while True:
     if len(files)>0:
       results[d]=files
       print "Found %i files for %s"%(len(files), d)
-pickle.dump(results, file("relValFiles.pkl",'w'))
-print "Written relValFiles.pkl"
+pickle.dump(results, file(relVal+"_relValFiles.pkl",'w'))
+print "Written "+relVal+"_relValFiles.pkl"
 #of = file('relValFiles.txt','w')
 #for k in results.keys():
 #  of.write(k+'\n')
