@@ -18,9 +18,8 @@ maxEvts=-1
 
 #ifile1='/data/schoef/relValData/relValData_relval_CMSSW_7_4_0_pre1_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V5-v1_00000.pkl'
 #ifile2='/data/schoef/relValData/relValData_relval_CMSSW_7_4_0_pre2_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V7-v1_00000.pkl'
-ifile1='/data/schoef/relValData/relValData_relval_CMSSW_7_3_0_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V7-v1_00000.pkl'
-ifile2='/data/schoef/relValData/relValData_relval_CMSSW_7_3_0_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V9_71XGENSIM_FIXGT-v1_00000.pkl'
-
+ifile1='/data/schoef/relValData/relValData_relval_CMSSW_7_1_13_RelValSingleMuPt10_UP15_GEN-SIM-RECO_MCRUN2_71_V1-v3_00000.pkl' 
+ifile2='/data/schoef/relValData/relValData_relval_CMSSW_7_1_14_RelValSingleMuPt10_UP15_GEN-SIM-RECO_MCRUN2_71_V1-v1_00000.pkl'
 
 evts1 = pickle.load(file(ifile1))
 evts2 = pickle.load(file(ifile2))
@@ -42,7 +41,9 @@ scatterPlots = [val for val in ks1 if val in ks2]
 
 for s in scatterPlots:
   maxVal = max([evts1[k][s] for k in commonKeys] + [evts2[k][s] for k in commonKeys])
-  assert maxVal>0,"maxVal non-positive %f"%maxVal
+  if not  maxVal>0:
+    print "maxVal non-positive %f"%maxVal
+    continue
   if 'mult' in s:
     binning=[min(100,maxVal),0,maxVal]
     pbinning=[min(20,maxVal),0,maxVal]
@@ -68,7 +69,6 @@ for s in scatterPlots:
   profile.SetLineColor(ROOT.kGray)
   profile.SetMarkerStyle(0)
   profile.SetMarkerSize(0)
-
 
   c1 = ROOT.TCanvas()
   histo.Draw('colz')

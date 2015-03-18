@@ -58,6 +58,7 @@ for nev in range(size):
   MEx={"MEx_"+t['name']:0. for t in allCategories}
   MEy={"MEy_"+t['name']:0. for t in allCategories}
   mult={"mult_"+t['name']:0 for t in allCategories}
+  print "Event",nev,'size',products['particleFlow'].size()
   for p in range(products['particleFlow'].size()):
     cand = products['particleFlow'][p]
     l=label[cand.particleId()]

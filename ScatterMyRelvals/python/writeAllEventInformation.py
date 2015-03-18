@@ -29,7 +29,6 @@ archDict={}
 archs = de.getElementsByTagName('architecture')
 for a in archs:
   archDict.update({str(r.getAttribute('label')): str(a.getAttribute('name')) for r in a.getElementsByTagName('project')})
-  
  
 assert options.input!='', "Need to specify input file created with findMyRelvalsFromEOS.py. Syntax: --input=fileName.pkl"
 allRelVals=pickle.load(file(options.input))
