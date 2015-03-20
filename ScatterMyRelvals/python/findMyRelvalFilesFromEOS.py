@@ -1,8 +1,12 @@
 import subprocess
 import os, pickle
 
-pattern = "CMSSW_7"
-ofile = 'relValFiles_73X.pkl' 
+parser = OptionParser()
+parser.add_option("--pattern", dest="pattern", default='CMSSW_7', type="string", action="store", help="pattern to define a subset")
+parser.add_option("--outputFile", dest="outputFile", default='relValFiles_73X.pkl', type="string", action="store", help="output pickle file")
+
+(options, args) = parser.parse_args()
+
 eosRelValDir = "/eos/cms/store/relval"
 eosCMD = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
 
@@ -22,7 +26,7 @@ def oneLevelDeeper(dir, subdir=None):
 results={}
 releases = oneLevelDeeper(eosRelValDir)
 for rel in releases:
-  if pattern not in rel:continue
+  if options.pattern not in rel:continue
   relVals = oneLevelDeeper(rel)
   for relVal in relVals:
     dataTiers = oneLevelDeeper(relVal)
@@ -37,5 +41,6 @@ for rel in releases:
         if files==[]:continue
         results[cond] = files
         print "Found",cond
-pickle.dump(results, file(ofile,'w'))
-print "Written",ofile 
+
+pickle.dump(results, file(options.outputFile,'w'))
+print "Written",options.outputFile

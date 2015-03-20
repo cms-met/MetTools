@@ -68,15 +68,14 @@ for k in allRelVals.keys():
 #  assert archDict.has_key('release'), "No architecture found for release %s"%release
   try:
     arch = archDict[release]
-    print "Using architecture",arch,'for release',release,'. Creating temporary release area in ', options.tmpdir
   except:
     arch = "slc6_amd64_gcc481"
     print "No information on release %s using default %s"%(release,arch)
 
-  print "Now doing",k,"release:",release
   if options.pretend: 
-    print "Just pretending..."
+    print "Release: %s Architecture: %s tmpDir: %s RelVal: %s"%(release, arch, options.tmpdir, k)
   else:
+    print "Now doing relval:",k,"in release:",release
     sfile = file('exec.sh','w')
     sfile.write('#!/bin/sh\n')
     sfile.write("export chm=$PWD\n")
@@ -89,7 +88,7 @@ for k in allRelVals.keys():
     sfile.write('eval `scramv1 runtime -sh`\n')
     opts = ['--inputFiles='+','.join(['root://eoscms.cern.ch/'+x for x in allRelVals[k]]), '--outputFile='+fname]
     if 'miniaod' in k.lower():
-      opt.append('--miniAOD')
+      opts.append('--miniAOD')
     sfile.write('python $chm/writeEventInformation.py '+' '.join(opts)+'\n')
     sfile.close()
     time.sleep(1)

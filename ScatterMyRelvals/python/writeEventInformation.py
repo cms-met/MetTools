@@ -55,7 +55,7 @@ for nev in range(size):
   event=eaux.event()
   lumi=eaux.luminosityBlock()
   evkey = ":".join(str(x) for x in [run,lumi,event])
-  for k in [ x for x in edmCollections.keys() if x[1] not in missingCollections]:
+  for k in [ x for x in edmCollections.keys() if x not in missingCollections]:
     try:
       events.getByLabel(edmCollections[k][1:],handles[k])
       products[k]=handles[k].product()
@@ -63,31 +63,32 @@ for nev in range(size):
       products[k]=None
       print "Not found:",k
       missingCollections.append(k)
-  sumPt={"sumPt_"+t['name']:0. for t in allCategories}
-  MEx={"MEx_"+t['name']:0. for t in allCategories}
-  MEy={"MEy_"+t['name']:0. for t in allCategories}
-  mult={"mult_"+t['name']:0 for t in allCategories}
-#  print "Event",nev,'size',products['pfCandidates'].size()
-  for p in range(products['pfCandidates'].size()):
-    cand = products['pfCandidates'][p]
-    candID = translatePdgIdToType(cand.pdgId()) if options.miniAOD else cand.particleId() 
-    l=label[candID]
-    for c in allCategories:
-      if c['type']==l:
-        aeta=abs(cand.eta())
-        if aeta>=c['etaRange'][0] and aeta<c['etaRange'][1]:
-          sumPt["sumPt_"+c['name']]+=cand.pt() 
-          mult["mult_"  +c['name']]+=1 
-          MEx["MEx_"    +c['name']]+=-cand.px() 
-          MEy["MEy_"    +c['name']]+=-cand.py()
   d={}
+#  print "Event",nev,'size',products['pfCandidates'].size()
+  if products['pfCandidates']:
+    sumPt={"sumPt_"+t['name']:0. for t in allCategories}
+    MEx={"MEx_"+t['name']:0. for t in allCategories}
+    MEy={"MEy_"+t['name']:0. for t in allCategories}
+    mult={"mult_"+t['name']:0 for t in allCategories}
+    for p in range(products['pfCandidates'].size()):
+      cand = products['pfCandidates'][p]
+      candID = translatePdgIdToType(cand.pdgId()) if options.miniAOD else cand.particleId() 
+      l=label[candID]
+      for c in allCategories:
+        if c['type']==l:
+          aeta=abs(cand.eta())
+          if aeta>=c['etaRange'][0] and aeta<c['etaRange'][1]:
+            sumPt["sumPt_"+c['name']]+=cand.pt() 
+            mult["mult_"  +c['name']]+=1 
+            MEx["MEx_"    +c['name']]+=-cand.px() 
+            MEy["MEy_"    +c['name']]+=-cand.py()
+    d.update({'MET_'+c['name']:sqrt(MEx["MEx_"+c['name']]**2+MEy["MEy_"+c['name']]**2) for c in allCategories })
+    d.update(sumPt)
+    d.update(mult)
   if products["pfMet"] and "pfMet" not in missingCollections:
     d.update({'met':products["pfMet"][0].pt(),  'sumEt':products["pfMet"][0].sumEt(), 'metPhi':products["pfMet"][0].phi()})
   if not options.miniAOD and products["caloMet"] and "caloMet" not in missingCollections:
     d.update({'caloMet':products["caloMet"][0].pt(),  'caloSumEt':products["caloMet"][0].sumEt(), 'caloMetPhi':products["caloMet"][0].phi()})
-  d.update(sumPt)
-  d.update(mult)
-  d.update({'MET_'+c['name']:sqrt(MEx["MEx_"+c['name']]**2+MEy["MEy_"+c['name']]**2) for c in allCategories })
   res[evkey]=d
 
 print "Does the last event look ok?"
