@@ -93,7 +93,7 @@ for nev in range(size):
 
 if len(res)>0:
   print "Does the first event look ok?"
-  res(list(res)[0]) 
+  res[res.keys()[0]]
 
 save(res, options.outputFile)
 print "Written",options.outputFile
