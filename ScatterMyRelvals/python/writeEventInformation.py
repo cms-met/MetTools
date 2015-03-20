@@ -91,8 +91,9 @@ for nev in range(size):
     d.update({'caloMet':products["caloMet"][0].pt(),  'caloSumEt':products["caloMet"][0].sumEt(), 'caloMetPhi':products["caloMet"][0].phi()})
   res[evkey]=d
 
-print "Does the last event look ok?"
-print res[evkey]
+if len(res)>0:
+  print "Does the first event look ok?"
+  res(list(res)[0]) 
 
 save(res, options.outputFile)
 print "Written",options.outputFile
