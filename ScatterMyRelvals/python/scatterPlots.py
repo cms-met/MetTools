@@ -16,10 +16,14 @@ if not hasattr(ROOT, "tdrStyle"):
 printDir = "/afs/hephy.at/user/s/schoefbeck/www/pngRelVal/"
 maxEvts=-1
 
-#ifile1='/data/schoef/relValData/relValData_relval_CMSSW_7_4_0_pre1_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V5-v1_00000.pkl'
-#ifile2='/data/schoef/relValData/relValData_relval_CMSSW_7_4_0_pre2_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V7-v1_00000.pkl'
-ifile1='/data/schoef/relValData/relValData_relval_CMSSW_7_1_13_RelValSingleMuPt10_UP15_GEN-SIM-RECO_MCRUN2_71_V1-v3_00000.pkl' 
-ifile2='/data/schoef/relValData/relValData_relval_CMSSW_7_1_14_RelValSingleMuPt10_UP15_GEN-SIM-RECO_MCRUN2_71_V1-v1_00000.pkl'
+ifile="/data/schoef/relValData_relval_CMSSW_7_4_0_pre1_RelValTTbar_13_MINIAODSIM_PU25ns_MCRUN2_73_V5-v1.zpkl"
+ifile="/data/schoef/relValData_relval_CMSSW_7_4_0_pre2_RelValQQH1352T_13_MINIAODSIM_PU25ns_MCRUN2_73_V7-v1.zpkl"
+ifile="/data/schoef/relValData_relval_CMSSW_7_4_0_pre5_RelValCosmics_UP15_GEN-SIM-RECO_MCRUN2_73_V7-v1.zpkl"
+ifile="/data/schoef/relValData_relval_CMSSW_7_4_0_pre5_RelValH130GGgluonfusion_13_GEN-SIM-RECO_PU25ns_MCRUN2_73_V9_postLS1beamspot-v1.zpkl"
+ifile="/data/schoef/relValData_relval_CMSSW_7_4_0_pre6_RelValProdQCD_Pt_3000_3500_13_MINIAODSIM_MCRUN2_74_V1-v1.zpkl"
+ifile="/data/schoef/relValData_relval_CMSSW_7_4_0_pre8_RelValH130GGgluonfusion_13_MINIAODSIM_PUpmx50ns_MCRUN2_74_V6-v1.zpkl"
+ifile="/data/schoef/relValData_relval_CMSSW_7_4_0_pre8_RelValQCD_FlatPt_15_3000_13_GEN-SIM-DIGI-RECO_MCRUN2_74_V7_FastSim-v1.zpkl"
+ifile="/data/schoef/relValData_relval_CMSSW_7_4_0_pre8_RelValZTT_13_MINIAODSIM_PUpmx25ns_MCRUN2_74_V7_gs_pre7-v1.zpkl"
 
 evts1 = pickle.load(file(ifile1))
 evts2 = pickle.load(file(ifile2))

@@ -9,7 +9,7 @@ parser.add_option("--miniAOD", dest="miniAOD", action="store_true", help="Just d
 import ROOT
 from DataFormats.FWLite import Events, Handle
 from PhysicsTools.PythonAnalysis import *
-from helpers import translatePdgIdToType, save
+from MetTools.Commons.helpers import translatePdgIdToType, save
 from math import *
 import sys, os, copy, random, subprocess, datetime
 
