@@ -8,15 +8,17 @@ parser.add_option("--outputFile", dest="outputFile", default='relValFiles_73X.pk
 
 (options, args) = parser.parse_args()
 
-#if not os.path.ismount('~/eos'):
-os.system('mkdir -p ~/eos;/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select -b fuse mount ~/eos')
+#if not os.path.exists(os.path.expanduser('~/eos')):
+#  print "Trying to create EOS mount under",os.path.expanduser('~/eos')
+#  os.system('mkdir -p ~/eos;/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select -b fuse mount ~/eos')
+#eosRelValDir = "~/eos/cms/store/relval"
 
-eosRelValDir = "~/eos/cms/store/relval"
-#eosCMD = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
+eosRelValDir = "/eos/cms/store/relval"
+eosCMD = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
 
-def oneLevelDeeper(dir, subdir=None):
-#  p = os.popen(" ".join([eosCMD, "ls", dir]),"r")
-  p = os.popen(" ".join(["ls", dir]),"r")
+def makeLS(dir, subdir=None):
+  p = os.popen(" ".join([eosCMD, "ls", dir]),"r")
+#  p = os.popen(" ".join(["ls", dir]),"r")
   all=[]
   while True:
     l = p.readline()
@@ -29,20 +31,20 @@ def oneLevelDeeper(dir, subdir=None):
   return all 
 
 results={}
-releases = oneLevelDeeper(eosRelValDir)
+releases = makeLS(eosRelValDir)
 for rel in releases:
   if options.pattern not in rel:continue
-  relVals = oneLevelDeeper(rel)
+  relVals = makeLS(rel)
   for relVal in relVals:
-    dataTiers = oneLevelDeeper(relVal)
+    dataTiers = makeLS(relVal)
     for dt in dataTiers:
       if (not 'RECO' in dt) and (not 'AOD' in dt): continue
-      conditions = oneLevelDeeper(dt)
+      conditions = makeLS(dt)
       for cond in conditions:
         files=[]
-        subDirs = oneLevelDeeper(cond)
+        subDirs = makeLS(cond)
         for s in subDirs:
-          files+= oneLevelDeeper(s)
+          files+= makeLS(s)
         if files==[]:continue
         results[cond] = files
         print "Found",cond
