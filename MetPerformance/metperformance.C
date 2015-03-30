@@ -1,3 +1,4 @@
+
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -48,9 +49,13 @@ double FWHM (double, double);
 double FWHMError (double, double, double, double, double, double, double,
 		  double);
 void
-metperformance (TString samplephys14, TString variablename, TString xvariable,
-		bool drawchi2)
+metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2)
 {
+
+  TString variablenamepng=variablename;
+        variablenamepng.ReplaceAll("/","over");
+
+TH1::SetDefaultSumw2() ;
 
   TString folder = "DY";
   if (samplephys14.Contains ("TT"))
@@ -116,8 +121,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
     sizexarray = 10;
 
 
-  //double xaxisarray=
-//treephys14->Draw (variablename + ">>histoprueba", "(channel==1)*(sumEt> 400)*(sumEt< 500) ");
+  
 
   Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray],
     etgraphx[sizexarray], tgraphxchi2[sizexarray], tgraphychi2[sizexarray];
@@ -132,25 +136,20 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
 	limitup = (index + 1) * 12;
       strlimitup = Form ("%d", limitup);
 
-      resolution.
-	push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
+      resolution.	push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
+      
+       
+  TString dileptonch="";
+  if (tchannel=="MuMu")  dileptonch="1";
+  if (tchannel=="EE") dileptonch="0";
 
-
-
-      TString variablenameaux = variablename;
-      if (variablename == "uparaqt")
-	variablenameaux = "upara/qt";
-      if (variablename == "upararawqt")
-	variablenameaux = "upararaw/qt";
-
-
-      if (xvariable == "nvtx")
+  if (xvariable == "nvtx")
 	{
-	  treephys14->Draw (variablenameaux + ">>" +			    TString (resolution[index]->GetName ()),			    "(channel==1)*(" + xvariable + "==" + strlimitup +			    ")", "sames");
+	  treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()),			    "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "==" + strlimitup +			    ")", "sames");
 	}
       else
 	{
-	  treephys14->Draw (variablenameaux + ">>" +			    TString (resolution[index]->GetName ()),			    "(channel==1)*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">" + strlimitdown + ")",			    "sames");
+	  treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()),			    "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">" + strlimitdown + ")",			    "sames");
 	}
 
 
@@ -177,7 +176,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
       RooRealVar gamma_Z0 ("gamma_Z0_U", "Z0 width", 2.3, 0, 100, "GeV");	//20
       RooRealVar v_m ("v_m", "v_m", m, um, uM, "GeV");
       RooVoigtian *voigt =
-	new RooVoigtian ("voigt", "Voightian", x, v_m, gamma_Z0, g_w);
+	new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
 
       RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
 
@@ -209,7 +208,9 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
       
       xFrame->Draw ();
       TString histoname = resolution[index]->GetName ();
-      c1->Print (histoname + "_" +		 variablename + "_vs_" + xvariable + ".png");
+      
+              
+      c1->Print ("~/www/METfits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
       //Print chi2/dof value
 
@@ -218,8 +219,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
 
 
       
-      cout << " index " << index << " -- sigma " << sigma << endl;
-      cout << "index " << index << " -- gamma " << gamma << endl;
+   
       tgraphx[index] = index;
 
       if (xvariable == "nvtx")
@@ -290,7 +290,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
   if (drawchi2) {
   grchi2->GetYaxis ()->SetTitle ("#Chi^{2}");
   grchi2->Draw ("AP");
-  c1->Print (variablename + "_vs_" +	     xvariable + "_chi2.png");
+  c1->Print ("~/www/METResolution/" + folder + "/" + tchannel + "/" +  variablenamepng  + "_vs_" +	     xvariable + "_chi2.png");
   c1->Clear (); }
 
   TFile f (folder + "_tgraphs.root", "UPDATE");
@@ -321,15 +321,16 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
   l1.SetNDC ();
   l1.DrawLatex (0.155, 0.98, "CMS Preliminary, #sqrt{s} = 13 TeV");
 
-
+  
   
 
   gr->Draw ("AP");
-  if (variablename!="uparaqt" && variablename!="upararawqt") gr->GetYaxis()->SetRangeUser(-100,100);
+  if (variablename!="uparaqt" && variablename!="upararawqt") gr->GetYaxis()->SetRangeUser(-40,40);
+  else gr->GetYaxis()->SetRangeUser(0.5,1.1);
   c1->Update();
   
   
-  if (variablename == "uparaqt" || "upararawqt")
+  if (variablename == "uparaqt" || variablename=="upararawqt")
     {
       TLine *lineR =  new TLine ( gr->GetHistogram ()->GetXaxis ()->GetXmin (), 1, gr->GetHistogram ()->GetXaxis ()->GetXmax (), 1);
       lineR->SetLineColor (kBlue + 1);
@@ -350,8 +351,9 @@ metperformance (TString samplephys14, TString variablename, TString xvariable,
 
     }
 
+  
 
-  c1->Print (variablename + "_vs_" +	     xvariable + ".png");
+  c1->Print ("~/www/METResolution/" + folder + "/" + tchannel + "/" + variablenamepng  + "_vs_" +	     xvariable + ".png");
 
 
 
@@ -388,7 +390,7 @@ FWHMError (double sigma, double gamma, double esigma, double egamma,
 
   double ds =
     (sigma * log (4)) / sqrt (b * pow (gamma, 2) + pow (sigma, 2) * log (2));
-  cout << " dg vale   " << dg << "   ------ gs vale " << ds << endl;
+  
   double p1 = ef_l * ef_l * Vgg * dg;
   double p2 = ef_g * ef_l * Vsg * dg * ds;	//identical (should be)
   double p3 = ef_g * ef_l * Vgs * dg * ds;
@@ -397,3 +399,4 @@ FWHMError (double sigma, double gamma, double esigma, double egamma,
   return sqrt (abs (p1) + abs (p2) + abs (p3) + abs (p4));
 
 }
+
