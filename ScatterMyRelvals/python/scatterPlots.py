@@ -1,9 +1,18 @@
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("--xAxis", dest="xAxis", default='', type="string", action="store", help="[moniker:filname.zpkl for x-axis")
+parser.add_option("--yAxis", dest="yAxis", default='', type="string", action="store", help="[moniker:filname.zpkl for y-axis]")
+parser.add_option("--plotDirectory", dest="plotDirectory", default='.', type="string", action="store", help="Where should the plots go?")
+
+(options, args) = parser.parse_args()
+
 import ROOT
 from DataFormats.FWLite import Events, Handle
 from PhysicsTools.PythonAnalysis import *
 from math import *
 import sys, os, copy, random, subprocess, datetime
-import pickle
+
+from MetTools.Commons.helpers import load
 
 ROOT.gStyle.SetOptStat(0)
 if not hasattr(ROOT, "tdrStyle"):
@@ -13,17 +22,22 @@ if not hasattr(ROOT, "tdrStyle"):
   ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/MetTools/Commons/scripts/useNiceColorPalette.C")
   ROOT.useNiceColorPalette(255)
 
-printDir = "/afs/hephy.at/user/s/schoefbeck/www/pngRelVal/"
 maxEvts=-1
 
-#ifile1='/data/schoef/relValData/relValData_relval_CMSSW_7_4_0_pre1_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V5-v1_00000.pkl'
-#ifile2='/data/schoef/relValData/relValData_relval_CMSSW_7_4_0_pre2_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V7-v1_00000.pkl'
-ifile1='/data/schoef/relValData/relValData_relval_CMSSW_7_3_0_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V7-v1_00000.pkl'
-ifile2='/data/schoef/relValData/relValData_relval_CMSSW_7_3_0_RelValTTbar_13_GEN-SIM-RECO_MCRUN2_73_V9_71XGENSIM_FIXGT-v1_00000.pkl'
+if ':' in options.xAxis:
+  moniker_x, ifile_x = options.xAxis.split(':')
+else:
+  moniker_x, ifile_x = None, options.xAxis
+if ':' in options.yAxis:
+  moniker_y, ifile_y = options.yAxis.split(':')
+else:
+  moniker_y, ifile_y = None, options.yAxis
 
+evts1 = load(ifile_x)
+evts2 = load(ifile_y)
 
-evts1 = pickle.load(file(ifile1))
-evts2 = pickle.load(file(ifile2))
+print "File %s for x-axis has %i events"%(ifile_x,len(evts1))
+print "File %s for y-axis has %i events"%(ifile_y,len(evts2))
 
 commonKeys =  [val for val in evts1.keys() if val in evts2.keys()]
 assert len(commonKeys)>0, "0 events!"
@@ -42,7 +56,9 @@ scatterPlots = [val for val in ks1 if val in ks2]
 
 for s in scatterPlots:
   maxVal = max([evts1[k][s] for k in commonKeys] + [evts2[k][s] for k in commonKeys])
-  assert maxVal>0,"maxVal non-positive %f"%maxVal
+  if not  maxVal>0:
+    print "maxVal non-positive %f"%maxVal
+    continue
   if 'mult' in s:
     binning=[min(100,maxVal),0,maxVal]
     pbinning=[min(20,maxVal),0,maxVal]
@@ -56,36 +72,45 @@ for s in scatterPlots:
   for k in commonKeys:
     histo.Fill(evts1[k][s], evts2[k][s])
     profile.Fill(evts1[k][s], evts2[k][s])
-
-  histo.GetXaxis().SetTitle(s)
+  mstr_x = ' ('+moniker_x+')' if moniker_x else ''
+  mstr_y = ' ('+moniker_y+')' if moniker_y else ''
+  histo.GetXaxis().SetTitle(s+mstr_x)
   histo.GetXaxis().SetLabelSize(0.04)
-  histo.GetYaxis().SetTitle(s)
+  histo.GetYaxis().SetTitle(s+mstr_y)
   histo.GetYaxis().SetLabelSize(0.04)
-  profile.GetXaxis().SetTitle(s)
+  profile.GetXaxis().SetTitle(s+mstr_x)
   profile.GetXaxis().SetLabelSize(0.04)
-  profile.GetYaxis().SetTitle(s)
+  profile.GetYaxis().SetTitle(s+mstr_y)
   profile.GetYaxis().SetLabelSize(0.04)
   profile.SetLineColor(ROOT.kGray)
   profile.SetMarkerStyle(0)
   profile.SetMarkerSize(0)
 
-
   c1 = ROOT.TCanvas()
   histo.Draw('colz')
+  fit=True
   tf1=ROOT.TF1("lin","pol1",0,histo.GetXaxis().GetXmax())
-  profile.Fit(tf1)
+  try:
+    frs=profile.Fit(tf1,'S')
+#    print "Status", frs.Status()
+    fit=(frs.Status()==0)
+  except:
+    fit=False 
   c1.SetLogz()
   histo.Draw('colz')
   profile.Draw("eh1same")
   l=ROOT.TLine(0,0,histo.GetXaxis().GetXmax(),histo.GetXaxis().GetXmax())
   l.Draw()
-  text=ROOT.TLatex()
-  text.SetNDC()
-  text.SetTextSize(0.04)
-  text.SetTextAlign(11)
-  text.SetTextColor(ROOT.kRed)
-  text.DrawLatex(0.2,0.9,str(round(tf1.GetParameter(0),4))+"+("+str(round(tf1.GetParameter(1),4))+")*x")
-  c1.Print(printDir+'/'+s+'.png')
+  if fit:
+    text=ROOT.TLatex()
+    text.SetNDC()
+    text.SetTextSize(0.04)
+    text.SetTextAlign(11)
+    text.SetTextColor(ROOT.kRed)
+    text.DrawLatex(0.2,0.9,"Fit: "+str(round(tf1.GetParameter(0),4))+"+("+str(round(tf1.GetParameter(1),4))+")*x")
+  c1.Print(options.plotDirectory+'/'+s+'.png')
+  c1.Print(options.plotDirectory+'/'+s+'.pdf')
+  c1.Print(options.plotDirectory+'/'+s+'.root')
   c1.RedrawAxis()
   del profile
   del histo
