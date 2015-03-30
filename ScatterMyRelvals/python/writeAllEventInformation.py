@@ -56,7 +56,7 @@ print
 
 for k in allRelVals.keys():
   if options.pattern not in k:continue
-  ofile= k.replace('/eos/cms/store/','').replace('/','_')
+  ofile= k.replace('/eos/cms/store/','').replace('/','_').replace('~','')
   fname = '/tmp/relValData_'+ofile+'.zpkl'
   if os.path.isfile(fname):
     print "Found",fname,"->skipping!"
@@ -76,7 +76,8 @@ for k in allRelVals.keys():
     print "Release: %s Architecture: %s tmpDir: %s RelVal: %s"%(release, arch, options.tmpdir, k)
   else:
     print "Now doing relval:",k,"in release:",release
-    sfile = file('exec.sh','w')
+    execFileName = options.tmpdir+'/exec.sh'
+    sfile = file(execFileName,'w')
     sfile.write('#!/bin/sh\n')
     sfile.write("export chm=$PWD\n")
     sfile.write("export SCRAM_ARCH="+arch+"\n")
@@ -86,10 +87,10 @@ for k in allRelVals.keys():
     sfile.write("scramv1 project CMSSW "+release+'\n')
     sfile.write('cd '+release+'/src\n')
     sfile.write('eval `scramv1 runtime -sh`\n')
-    opts = ['--inputFiles='+','.join(['root://eoscms.cern.ch/'+x for x in allRelVals[k]]), '--outputFile='+fname]
+    opts = ['--inputFiles='+','.join(['root://eoscms.cern.ch/'+x.replace('~','') for x in allRelVals[k]]), '--outputFile='+fname]
     if 'miniaod' in k.lower():
       opts.append('--miniAOD')
     sfile.write('python $chm/writeEventInformation.py '+' '.join(opts)+'\n')
     sfile.close()
     time.sleep(1)
-    os.system('chmod +x exec.sh;./exec.sh;rm exec.sh')
+    os.system('chmod +x '+execFileName+';sh '+execFileName+';rm '+execFileName)

@@ -1,5 +1,6 @@
 import subprocess
 import os, pickle
+from optparse import OptionParser
 
 parser = OptionParser()
 parser.add_option("--pattern", dest="pattern", default='CMSSW_7', type="string", action="store", help="pattern to define a subset")
@@ -7,11 +8,15 @@ parser.add_option("--outputFile", dest="outputFile", default='relValFiles_73X.pk
 
 (options, args) = parser.parse_args()
 
-eosRelValDir = "/eos/cms/store/relval"
-eosCMD = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
+#if not os.path.ismount('~/eos'):
+os.system('mkdir -p ~/eos;/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select -b fuse mount ~/eos')
+
+eosRelValDir = "~/eos/cms/store/relval"
+#eosCMD = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
 
 def oneLevelDeeper(dir, subdir=None):
-  p = os.popen(" ".join([eosCMD, "ls", dir]),"r")
+#  p = os.popen(" ".join([eosCMD, "ls", dir]),"r")
+  p = os.popen(" ".join(["ls", dir]),"r")
   all=[]
   while True:
     l = p.readline()

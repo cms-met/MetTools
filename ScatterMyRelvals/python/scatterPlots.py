@@ -1,11 +1,3 @@
-import ROOT
-from DataFormats.FWLite import Events, Handle
-from PhysicsTools.PythonAnalysis import *
-from math import *
-import sys, os, copy, random, subprocess, datetime
-
-from MetTools.Commons.helpers import load
-
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--xAxis", dest="xAxis", default='', type="string", action="store", help="[moniker:filname.zpkl for x-axis")
@@ -13,6 +5,14 @@ parser.add_option("--yAxis", dest="yAxis", default='', type="string", action="st
 parser.add_option("--plotDirectory", dest="plotDirectory", default='.', type="string", action="store", help="Where should the plots go?")
 
 (options, args) = parser.parse_args()
+
+import ROOT
+from DataFormats.FWLite import Events, Handle
+from PhysicsTools.PythonAnalysis import *
+from math import *
+import sys, os, copy, random, subprocess, datetime
+
+from MetTools.Commons.helpers import load
 
 ROOT.gStyle.SetOptStat(0)
 if not hasattr(ROOT, "tdrStyle"):
