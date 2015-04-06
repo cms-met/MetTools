@@ -31,19 +31,19 @@
 #include "TStyle.h"
 #include "TLatex.h"
 #include "TString.h"
+#include "TSystem.h"
 
 //#include "METFunctions.hh"
 
-#include "RooRealVar.h"
+#include <RooRealVar.h>
 #include <RooDataSet.h>
 #include <RooDataHist.h>
 #include <RooFitResult.h>
 //#include <RooGaussian.h>
 #include <RooAddPdf.h>
 #include <RooPlot.h>
-#include <TStyle.h>
 #include <RooVoigtian.h>
-#include <TSystem.h>
+
 
 using namespace RooFit;
 
@@ -71,9 +71,9 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
     titley = "#sigma(MET_{x}) GeV";
   if (variablename == "pfmety")
     titley = "#sigma(MET_{y}) GeV";
-//gSystem->Load("libRooFit") ;
-  gSystem->Load ("libRooFit");
-  gSystem->Load ("RooRealVar");
+  //  gSystem->Load("libRooFit") ;
+  //  gSystem->Load ("libRooFit");
+  //  gSystem->Load ("RooRealVar");
 
   gStyle->SetOptStat (0);
   gStyle->SetCanvasColor (0);
@@ -161,11 +161,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
 
 
-
-
       ////////
-
-
 
       RooRealVar x ("x", "x", -200, 200);
       RooDataHist Hist ("Hist", "Hist", x,
@@ -176,7 +172,12 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       RooVoigtian *voigt =
 	new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
 
-      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+      //      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+      RooFitResult *result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+
+      //https://root.cern.ch/phpBB3/viewtopic.php?f=15&t=16764
+      //status=0 ok
+      //      if(result->status()!=0) voigt=0;
 
       //Get the FWHM
       double sigma = g_w.getVal ();
@@ -188,25 +189,39 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       double Vgs = result->correlation (gamma_Z0, g_w);
       double Vss = result->correlation (g_w, g_w);
       double Vgg = result->correlation (gamma_Z0, gamma_Z0);
-      cout << "correlacion Vgs " << Vgs << " y correlación Vsg" << Vsg <<
-	endl;
+      cout << "correlation Vgs " << Vgs << " y correlation Vsg" << Vsg << endl;
       double f = FWHM (sigma, gamma);
       double efwhm =	FWHMError (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg);
 
       //if (f/2.3 < 5) continue;
       RooPlot *xFrame = x.frame ();
-      (Hist).plotOn (xFrame);
+      Hist.plotOn (xFrame);
+
       TString titlexfit = "";
       if (variablename == "pfmetx")
 	titlexfit = "MET_{x} (GeV)";
       if (variablename == "pfmety")
 	titlexfit = "MET_{y} (GeV)";
       xFrame->SetXTitle (titlexfit);
-      voigt->plotOn (xFrame);
-      
+
+      int color=kBlack;
+      if (xvariable == "nvtx")
+	color = kRed;
+      if (xvariable == "sumEt")
+	color = kGreen+1;
+      if (xvariable == "qt")
+	color = kBlue;
+
+      cout << "plot made " << endl;
+      voigt->plotOn(xFrame,FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band
+      voigt->plotOn(xFrame,RooFit::LineColor(color));
+      //      voigt->paramOn(xFrame, Format("NELU", AutoPrecision(2)), Layout(0.1, 0.45,0.99) );
+
+      c1->cd();
       xFrame->Draw ();
+      cout << "frame made " << endl;
       TString histoname = resolution[index]->GetName ();
-      
+      cout << "histoname=" << histoname.Data() << endl;
               
       c1->Print ("~/www/METfits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
