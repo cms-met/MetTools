@@ -1,4 +1,3 @@
-
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -31,6 +30,7 @@
 #include "THStack.h"
 #include "TStyle.h"
 #include "TLatex.h"
+#include "TString.h"
 
 //#include "METFunctions.hh"
 
@@ -45,21 +45,25 @@
 #include <RooVoigtian.h>
 #include <TSystem.h>
 
+using namespace RooFit;
+
 double FWHM (double, double);
 double FWHMError (double, double, double, double, double, double, double,
 		  double);
 void
-metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2)
+metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel, bool drawchi2)
 {
 
   TString variablenamepng=variablename;
-        variablenamepng.ReplaceAll("/","over");
+  variablenamepng.ReplaceAll("/","over");
 
-TH1::SetDefaultSumw2() ;
+  TH1::SetDefaultSumw2() ;
 
   TString folder = "DY";
   if (samplephys14.Contains ("TT"))
     folder = "TTbar";
+  if (samplephys14.Contains ("GJet"))
+    folder = "Gamma";
 
 
   TString titley = "";
@@ -121,7 +125,7 @@ TH1::SetDefaultSumw2() ;
     sizexarray = 10;
 
 
-  
+
 
   Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray],
     etgraphx[sizexarray], tgraphxchi2[sizexarray], tgraphychi2[sizexarray];
@@ -136,30 +140,24 @@ TH1::SetDefaultSumw2() ;
 	limitup = (index + 1) * 12;
       strlimitup = Form ("%d", limitup);
 
-      resolution.	push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
+      resolution.push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
       
        
-  TString dileptonch="";
-  if (tchannel=="MuMu")  dileptonch="1";
-  if (tchannel=="EE") dileptonch="0";
+      TString dileptonch="";
+      if (tchannel=="MuMu")  dileptonch="1";
+      if (tchannel=="EE") dileptonch="0";
 
-  if (xvariable == "nvtx")
-	{
-	  treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()),			    "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "==" + strlimitup +			    ")", "sames");
-	}
-      else
-	{
-	  treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()),			    "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">" + strlimitdown + ")",			    "sames");
-	}
+      TString condition="(weighttotal)*(channel=="+dileptonch +")*";
+      if (tchannel == "Gamma") condition="";
+      if (xvariable == "nvtx") condition += "(" + xvariable + "==" + strlimitup +")";
+      else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
 
+      treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
+			condition.Data(),"sames");
 
-
-
-
-
-      double m = resolution[index]->GetMean ();
-      double um =	resolution[index]->GetMean () - resolution[index]->GetRMS ();
-      double uM =	resolution[index]->GetMean () + resolution[index]->GetRMS ();
+      double m =  resolution[index]->GetMean ();
+      double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
+      double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
 
 
 
