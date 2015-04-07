@@ -43,7 +43,8 @@
 #include <RooAddPdf.h>
 #include <RooPlot.h>
 #include <RooVoigtian.h>
-
+#include <RooHistPdf.h>
+#include <RooFormulaVar.h>
 
 using namespace RooFit;
 
@@ -172,8 +173,26 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       RooVoigtian *voigt =
 	new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
 
-      //      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
-      RooFitResult *result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+      //      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));        // -1 verbose
+
+      RooFitResult *result;
+      RooAddPdf * model;
+      if(false) {
+	TFile *file_ = TFile::Open("BKGfile.root");
+	TH1F * h_ = (TH1F*) file_->Get(resolution[index]->GetName());
+	RooDataHist * bkg_hist= new RooDataHist("bkghist","bkghist",x,h_);;
+	RooHistPdf * bkg_pdf = new RooHistPdf("bkg_pdf","bkg_pdf",RooArgSet(x),*bkg_hist);
+	RooRealVar lAbkgFrac("AbkgFrac","AbkgFrac",0.5,0.,1.);
+	RooFormulaVar * sigbkgFrac= new RooFormulaVar("bkgfrac","@0",RooArgSet(lAbkgFrac));
+	model = new RooAddPdf("modelSB","modelSB",*voigt,*bkg_pdf,*sigbkgFrac);
+	result = model->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+
+      } else {
+
+	result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+
+      }
+
 
       //https://root.cern.ch/phpBB3/viewtopic.php?f=15&t=16764
       //status=0 ok
