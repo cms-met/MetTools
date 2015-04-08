@@ -13,7 +13,7 @@
 <use name="TrackingTools/Records"/>
 <use name="DataFormats/VertexReco"/>
 <use name="DataFormats/Common"/>
-<use name="DataFormats/ParticleFlowCandidate">
+<use name="DataFormats/ParticleFlowCandidate"/>
 
 <library file="metPhiCorrInfoWriter.cc" name="MetToolsMetPhiCorrInfoWriter">
   <flags EDM_PLUGIN="1"/>
