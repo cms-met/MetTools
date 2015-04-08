@@ -1,4 +1,4 @@
-
+ 
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -143,14 +143,8 @@ TH1::SetDefaultSumw2() ;
   if (tchannel=="MuMu")  dileptonch="1";
   if (tchannel=="EE") dileptonch="0";
 
-  if (xvariable == "nvtx")
-	{
-	  treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()),			    "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "==" + strlimitup +			    ")", "sames");
-	}
-      else
-	{
-	  treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()),			    "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">" + strlimitdown + ")",			    "sames");
-	}
+ 
+	  treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()),			    "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">=" + strlimitdown + ")",			    "sames");
 
 
 
