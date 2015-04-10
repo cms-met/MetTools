@@ -3,7 +3,7 @@ import os, pickle
 from optparse import OptionParser
 
 parser = OptionParser()
-parser.add_option("--pattern", dest="pattern", default='CMSSW_7', type="string", action="store", help="pattern to define a subset")
+parser.add_option("--releasePattern", dest="releasePattern", default='CMSSW_7', type="string", action="store", help="releasePattern to define a subset")
 parser.add_option("--outputFile", dest="outputFile", default='relValFiles_73X.pkl', type="string", action="store", help="output pickle file")
 
 (options, args) = parser.parse_args()
@@ -33,7 +33,7 @@ def makeLS(dir, subdir=None):
 results={}
 releases = makeLS(eosRelValDir)
 for rel in releases:
-  if options.pattern not in rel:continue
+  if options.releasePattern not in rel:continue
   relVals = makeLS(rel)
   for relVal in relVals:
     dataTiers = makeLS(relVal)

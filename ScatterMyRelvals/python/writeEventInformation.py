@@ -12,16 +12,7 @@ from PhysicsTools.PythonAnalysis import *
 from math import *
 import sys, os, copy, random, subprocess, datetime
 
-def translatePdgIdToType(pdg): 
-  apdg = abs(pdg)
-  if apdg==211: return 1
-  if apdg==11:  return 2
-  if apdg==13:  return 3
-  if apdg==22:  return 4
-  if apdg==130: return 5
-  if apdg==1:   return 6
-  if apdg==2:   return 7
-  return 0
+from helpers import translatePdgIdToType
 
 def save(object, filename, protocol = -1):
   import cPickle, gzip
