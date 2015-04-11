@@ -1,4 +1,4 @@
-def architectures():
+def architectures(tmpDir='/tmp/'):
   archDict = {}
   import os
   print "\nRetrieving information on architecture from scramv1"
@@ -18,9 +18,9 @@ def architectures():
 #      print "[scramv1] Architecture:", rel[0],'->',arch[0] 
 
   print "\nRetrieving information on architecture from https://cmssdt.cern.ch/SDT/cgi-bin/ReleasesXML"
-  os.system('wget https://cmssdt.cern.ch/SDT/cgi-bin/ReleasesXML --no-check-certificate')
+  os.system('wget https://cmssdt.cern.ch/SDT/cgi-bin/ReleasesXML -O '+tmpDir+'/ReleasesXML --no-check-certificate')
   from xml.dom import minidom
-  xmldoc = minidom.parse('ReleasesXML')
+  xmldoc = minidom.parse(tmpDir+'/ReleasesXML')
   de=xmldoc.documentElement
   archs = de.getElementsByTagName('architecture')
   for a in archs:
@@ -28,7 +28,7 @@ def architectures():
     archDict.update(dict)
 #    for k in dict.keys():
 #      print "[ReleasesXML] Architecture:", k,'->',archDict[k]
-  os.system('rm ReleasesXML')
+  os.system('rm '+tmpDir+'/ReleasesXML')
   return archDict
 
 def translatePdgIdToType(pdg): 

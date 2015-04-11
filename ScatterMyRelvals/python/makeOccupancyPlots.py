@@ -3,6 +3,7 @@ import time
 parser = OptionParser()
 parser.add_option("--input", dest="input", default='', type="string", action="store", help="input pickle file created by findMyRelvalFilesFromEOS.py")
 parser.add_option("--plotDir", dest="plotDir", default='/tmp/', type="string", action="store", help="temporary directory")
+parser.add_option("--run", dest="run", default=-1, type=int, action="store", help="run?")
 parser.add_option("--tmpDir", dest="tmpDir", default='/tmp/', type="string", action="store", help="temporary directory")
 parser.add_option("--relValKey", dest="relValKey", default='', type="string", action="store", help="relValKey in the input pickle")
 
@@ -30,6 +31,9 @@ archDict = architectures()
 k = options.relValKey
 osubdir= k.replace('/eos/cms/store/','').replace('/','_').replace('~','')
 plotDir = options.plotDir+'/'+osubdir
+if options.run>0:
+  plotDir+='_'+str(options.run)
+if not os.path.exists(plotDir):os.makedirs(plotDir)
 print "Will store plots in %s"%plotDir
 try:
   release = filter(lambda x:x.startswith('CMSSW_'), k.split('/'))[0]
@@ -54,7 +58,7 @@ sfile.write("rm -rf "+release+'\n')
 sfile.write("scramv1 project CMSSW "+release+'\n')
 sfile.write('cd '+release+'/src\n')
 sfile.write('eval `scramv1 runtime -sh`\n')
-opts = ['--inputFiles='+','.join(['root://eoscms.cern.ch/'+x.replace('~','') for x in allRelVals[k]]), '--plotDir='+plotDir]
+opts = ['--inputFiles='+','.join(['root://eoscms.cern.ch/'+x.replace('~','') for x in allRelVals[k]]), '--plotDir='+plotDir, '--CMSSW_BASE='+os.environ['CMSSW_BASE'], '--run='+str(options.run)]
 if 'miniaod' in k.lower():
   opts.append('--miniAOD')
 sfile.write('python $chm/occupancyPlotsFromFiles.py '+' '.join(opts)+'\n')

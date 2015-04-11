@@ -1,6 +1,7 @@
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--inputFiles", dest="inputFiles", default='relValFiles.pkl', type="string", action="store", help="pkl file with eos filenames")
+parser.add_option("--run", dest="run", default=-1, type=int, action="store", help="run?")
 parser.add_option("--outputFile", dest="outputFile", default='relValData.zpkl', type="string", action="store", help="zpkl file with output data")
 parser.add_option("--miniAOD", dest="miniAOD", action="store_true", help="Just do a miniAOD subset.")
 
@@ -61,7 +62,10 @@ for nev in range(size):
   if nev%1000==0:print nev,'/',size
   events.to(nev)
   eaux=events.eventAuxiliary()
-  run=eaux.run()            
+  run=eaux.run()           
+  if options.run>0 and not run==options.run:
+#    print run, options.run
+    continue
   event=eaux.event()
   lumi=eaux.luminosityBlock()
   evkey = ":".join(str(x) for x in [run,lumi,event])

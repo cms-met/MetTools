@@ -2,6 +2,7 @@ from optparse import OptionParser
 import time
 parser = OptionParser()
 parser.add_option("--input", dest="input", default='', type="string", action="store", help="input pickle file created by findMyRelvalFilesFromEOS.py")
+parser.add_option("--run", dest="run", default=-1, type="int", action="store", help="restrict to run?")
 parser.add_option("--tmpDir", dest="tmpDir", default='/tmp/', type="string", action="store", help="temporary directory")
 parser.add_option("--pattern", dest="pattern", default='', type="string", action="store", help="pattern to define a subset")
 parser.add_option("--p", dest="pretend", action="store_true", help="just pretend")
@@ -30,6 +31,8 @@ print
 for k in allRelVals.keys():
   if options.pattern not in k:continue
   ofile= k.replace('/eos/cms/store/','').replace('/','_').replace('~','')
+  if options.run>0:
+    ofile+="_run"+str(options.run)
   fname = '/tmp/relValData_'+ofile+'.zpkl'
   if os.path.isfile(fname):
     print "Found",fname,"->skipping!"
@@ -60,7 +63,7 @@ for k in allRelVals.keys():
     sfile.write("scramv1 project CMSSW "+release+'\n')
     sfile.write('cd '+release+'/src\n')
     sfile.write('eval `scramv1 runtime -sh`\n')
-    opts = ['--inputFiles='+','.join(['root://eoscms.cern.ch/'+x.replace('~','') for x in allRelVals[k]]), '--outputFile='+fname]
+    opts = ['--inputFiles='+','.join(['root://eoscms.cern.ch/'+x.replace('~','') for x in allRelVals[k]]), '--outputFile='+fname, '--run='+str(options.run)]
     if 'miniaod' in k.lower():
       opts.append('--miniAOD')
     sfile.write('python $chm/writeEventInformation.py '+' '.join(opts)+'\n')
