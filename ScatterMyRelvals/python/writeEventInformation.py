@@ -1,6 +1,7 @@
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--inputFiles", dest="inputFiles", default='relValFiles.pkl', type="string", action="store", help="pkl file with eos filenames")
+parser.add_option("--run", dest="run", default=-1, type=int, action="store", help="run?")
 parser.add_option("--outputFile", dest="outputFile", default='relValData.zpkl', type="string", action="store", help="zpkl file with output data")
 parser.add_option("--miniAOD", dest="miniAOD", action="store_true", help="Just do a miniAOD subset.")
 
@@ -12,16 +13,7 @@ from PhysicsTools.PythonAnalysis import *
 from math import *
 import sys, os, copy, random, subprocess, datetime
 
-def translatePdgIdToType(pdg): 
-  apdg = abs(pdg)
-  if apdg==211: return 1
-  if apdg==11:  return 2
-  if apdg==13:  return 3
-  if apdg==22:  return 4
-  if apdg==130: return 5
-  if apdg==1:   return 6
-  if apdg==2:   return 7
-  return 0
+from helpers import translatePdgIdToType
 
 def save(object, filename, protocol = -1):
   import cPickle, gzip
@@ -70,7 +62,10 @@ for nev in range(size):
   if nev%1000==0:print nev,'/',size
   events.to(nev)
   eaux=events.eventAuxiliary()
-  run=eaux.run()            
+  run=eaux.run()           
+  if options.run>0 and not run==options.run:
+#    print run, options.run
+    continue
   event=eaux.event()
   lumi=eaux.luminosityBlock()
   evkey = ":".join(str(x) for x in [run,lumi,event])

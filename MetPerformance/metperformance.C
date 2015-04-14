@@ -1,4 +1,7 @@
+<<<<<<< HEAD
  
+=======
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -31,24 +34,42 @@
 #include "THStack.h"
 #include "TStyle.h"
 #include "TLatex.h"
+<<<<<<< HEAD
 
 //#include "METFunctions.hh"
 
 #include "RooRealVar.h"
+=======
+#include "TString.h"
+#include "TSystem.h"
+
+//#include "METFunctions.hh"
+
+#include <RooRealVar.h>
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 #include <RooDataSet.h>
 #include <RooDataHist.h>
 #include <RooFitResult.h>
 //#include <RooGaussian.h>
 #include <RooAddPdf.h>
 #include <RooPlot.h>
+<<<<<<< HEAD
 #include <TStyle.h>
 #include <RooVoigtian.h>
 #include <TSystem.h>
+=======
+#include <RooVoigtian.h>
+#include <RooHistPdf.h>
+#include <RooFormulaVar.h>
+
+using namespace RooFit;
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
 double FWHM (double, double);
 double FWHMError (double, double, double, double, double, double, double,
 		  double);
 void
+<<<<<<< HEAD
 metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2)
 {
 
@@ -56,10 +77,24 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
         variablenamepng.ReplaceAll("/","over");
 
 TH1::SetDefaultSumw2() ;
+=======
+metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel, bool drawchi2)
+{
+
+  TString variablenamepng=variablename;
+  variablenamepng.ReplaceAll("/","over");
+
+  TH1::SetDefaultSumw2() ;
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
   TString folder = "DY";
   if (samplephys14.Contains ("TT"))
     folder = "TTbar";
+<<<<<<< HEAD
+=======
+  if (samplephys14.Contains ("GJet"))
+    folder = "Gamma";
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
 
   TString titley = "";
@@ -67,9 +102,15 @@ TH1::SetDefaultSumw2() ;
     titley = "#sigma(MET_{x}) GeV";
   if (variablename == "pfmety")
     titley = "#sigma(MET_{y}) GeV";
+<<<<<<< HEAD
 //gSystem->Load("libRooFit") ;
   gSystem->Load ("libRooFit");
   gSystem->Load ("RooRealVar");
+=======
+  //  gSystem->Load("libRooFit") ;
+  //  gSystem->Load ("libRooFit");
+  //  gSystem->Load ("RooRealVar");
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
   gStyle->SetOptStat (0);
   gStyle->SetCanvasColor (0);
@@ -121,7 +162,11 @@ TH1::SetDefaultSumw2() ;
     sizexarray = 10;
 
 
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
   Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray],
     etgraphx[sizexarray], tgraphxchi2[sizexarray], tgraphychi2[sizexarray];
@@ -136,6 +181,7 @@ TH1::SetDefaultSumw2() ;
 	limitup = (index + 1) * 12;
       strlimitup = Form ("%d", limitup);
 
+<<<<<<< HEAD
       resolution.	push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
       
        
@@ -156,13 +202,36 @@ TH1::SetDefaultSumw2() ;
       double uM =	resolution[index]->GetMean () + resolution[index]->GetRMS ();
 
 
+=======
+      resolution.push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
+      
+       
+      TString dileptonch="";
+      if (tchannel=="MuMu")  dileptonch="1";
+      if (tchannel=="EE") dileptonch="0";
+
+      TString condition="(weighttotal)*(channel=="+dileptonch +")*";
+      if (tchannel == "Gamma") condition="";
+      if (xvariable == "nvtx") condition += "(" + xvariable + "==" + strlimitup +")";
+      else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
+
+      treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
+			condition.Data(),"sames");
+
+      double m =  resolution[index]->GetMean ();
+      double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
+      double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
 
 
       ////////
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
       RooRealVar x ("x", "x", -200, 200);
       RooDataHist Hist ("Hist", "Hist", x,
 			(TH1 *) resolution[index]->Clone ());
@@ -172,7 +241,34 @@ TH1::SetDefaultSumw2() ;
       RooVoigtian *voigt =
 	new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
 
+<<<<<<< HEAD
       RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+=======
+      //      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));        // -1 verbose
+
+      RooFitResult *result;
+      RooAddPdf * model;
+      if(false) {
+	TFile *file_ = TFile::Open("BKGfile.root");
+	TH1F * h_ = (TH1F*) file_->Get(resolution[index]->GetName());
+	RooDataHist * bkg_hist= new RooDataHist("bkghist","bkghist",x,h_);;
+	RooHistPdf * bkg_pdf = new RooHistPdf("bkg_pdf","bkg_pdf",RooArgSet(x),*bkg_hist);
+	RooRealVar lAbkgFrac("AbkgFrac","AbkgFrac",0.5,0.,1.);
+	RooFormulaVar * sigbkgFrac= new RooFormulaVar("bkgfrac","@0",RooArgSet(lAbkgFrac));
+	model = new RooAddPdf("modelSB","modelSB",*voigt,*bkg_pdf,*sigbkgFrac);
+	result = model->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+
+      } else {
+
+	result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+
+      }
+
+
+      //https://root.cern.ch/phpBB3/viewtopic.php?f=15&t=16764
+      //status=0 ok
+      //      if(result->status()!=0) voigt=0;
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
       //Get the FWHM
       double sigma = g_w.getVal ();
@@ -184,25 +280,56 @@ TH1::SetDefaultSumw2() ;
       double Vgs = result->correlation (gamma_Z0, g_w);
       double Vss = result->correlation (g_w, g_w);
       double Vgg = result->correlation (gamma_Z0, gamma_Z0);
+<<<<<<< HEAD
       cout << "correlacion Vgs " << Vgs << " y correlación Vsg" << Vsg <<
 	endl;
+=======
+      cout << "correlation Vgs " << Vgs << " y correlation Vsg" << Vsg << endl;
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
       double f = FWHM (sigma, gamma);
       double efwhm =	FWHMError (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg);
 
       //if (f/2.3 < 5) continue;
       RooPlot *xFrame = x.frame ();
+<<<<<<< HEAD
       (Hist).plotOn (xFrame);
+=======
+      Hist.plotOn (xFrame);
+
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
       TString titlexfit = "";
       if (variablename == "pfmetx")
 	titlexfit = "MET_{x} (GeV)";
       if (variablename == "pfmety")
 	titlexfit = "MET_{y} (GeV)";
       xFrame->SetXTitle (titlexfit);
+<<<<<<< HEAD
       voigt->plotOn (xFrame);
       
       xFrame->Draw ();
       TString histoname = resolution[index]->GetName ();
       
+=======
+
+      int color=kBlack;
+      if (xvariable == "nvtx")
+	color = kRed;
+      if (xvariable == "sumEt")
+	color = kGreen+1;
+      if (xvariable == "qt")
+	color = kBlue;
+
+      cout << "plot made " << endl;
+      voigt->plotOn(xFrame,FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band
+      voigt->plotOn(xFrame,RooFit::LineColor(color));
+      //      voigt->paramOn(xFrame, Format("NELU", AutoPrecision(2)), Layout(0.1, 0.45,0.99) );
+
+      c1->cd();
+      xFrame->Draw ();
+      cout << "frame made " << endl;
+      TString histoname = resolution[index]->GetName ();
+      cout << "histoname=" << histoname.Data() << endl;
+>>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
               
       c1->Print ("~/www/METfits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 

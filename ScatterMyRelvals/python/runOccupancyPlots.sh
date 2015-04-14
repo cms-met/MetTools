@@ -1,0 +1,4 @@
+#python makeOccupancyPlots.py --input=relValFiles_740pre9_100415.pkl --plotDir=/afs/hephy.at/user/s/schoefbeck/www/pngPF740pre9 --relValKey=/eos/cms/store/relval/CMSSW_7_4_0_pre9_ROOT6/DoubleMuParked/MINIAOD/GR_R_74_V8_1Apr_RelVal_dm2012D-v2 --run=208307 &
+#python makeOccupancyPlots.py --input=relValFiles_732p1_100415.pkl --plotDir=/afs/hephy.at/user/s/schoefbeck/www/pngPF732p1 --relValKey=/eos/cms/store/relval/CMSSW_7_3_2_patch1/DoubleMuParked/MINIAOD/GR_R_73_V0_HcalExtValid_RelVal_zMu2012D-v1 --run=208307 &
+
+python scatterPlots.py --xAxis=732patch1:/data/schoef/relValData/relValData_relval_CMSSW_7_3_2_patch1_DoubleMuParked_MINIAOD_GR_R_73_V0_HcalExtValid_RelVal_zMu2012D-v1_run208307.zpkl --yAxis=740pre9:/data/schoef/relValData/relValData_relval_CMSSW_7_4_0_pre9_ROOT6_DoubleMuParked_MINIAOD_GR_R_74_V8_1Apr_RelVal_dm2012D-v2_run208307.zpkl  --plotDirectory=/afs/hephy.at/user/s/schoefbeck/www/png_732patch1_vs_740pre9
