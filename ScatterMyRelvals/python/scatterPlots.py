@@ -54,6 +54,9 @@ if ks1!=ks2:
 
 scatterPlots = [val for val in ks1 if val in ks2]
 
+if not os.path.exists(options.plotDirectory):
+  os.makedirs(options.plotDirectory)
+
 for s in scatterPlots:
   maxVal = max([evts1[k][s] for k in commonKeys] + [evts2[k][s] for k in commonKeys])
   if not  maxVal>0:
@@ -75,38 +78,42 @@ for s in scatterPlots:
   mstr_x = ' ('+moniker_x+')' if moniker_x else ''
   mstr_y = ' ('+moniker_y+')' if moniker_y else ''
   histo.GetXaxis().SetTitle(s+mstr_x)
-  histo.GetXaxis().SetLabelSize(0.04)
+  histo.GetXaxis().SetLabelSize(0.03)
+  histo.GetXaxis().SetTitleSize(0.0385)
   histo.GetYaxis().SetTitle(s+mstr_y)
-  histo.GetYaxis().SetLabelSize(0.04)
+  histo.GetYaxis().SetLabelSize(0.03)
+  histo.GetYaxis().SetTitleSize(0.0385)
   profile.GetXaxis().SetTitle(s+mstr_x)
-  profile.GetXaxis().SetLabelSize(0.04)
+  profile.GetXaxis().SetLabelSize(0.03)
+  profile.GetXaxis().SetTitleSize(0.0385)
   profile.GetYaxis().SetTitle(s+mstr_y)
-  profile.GetYaxis().SetLabelSize(0.04)
+  profile.GetYaxis().SetLabelSize(0.03)
+  profile.GetYaxis().SetTitleSize(0.0385)
   profile.SetLineColor(ROOT.kGray)
   profile.SetMarkerStyle(0)
   profile.SetMarkerSize(0)
 
   c1 = ROOT.TCanvas()
   histo.Draw('colz')
-  fit=True
-  tf1=ROOT.TF1("lin","pol1",0,histo.GetXaxis().GetXmax())
-  try:
-    frs=profile.Fit(tf1,'S')
-    fit=(frs.Status()==0)
-  except:
-    fit=False 
+#  fit=True
+#  tf1=ROOT.TF1("lin","pol1",0,histo.GetXaxis().GetXmax())
+#  try:
+#    frs=profile.Fit(tf1,'S')
+#    fit=(frs.Status()==0)
+#  except:
+#    fit=False 
   c1.SetLogz()
   histo.Draw('colz')
   profile.Draw("eh1same")
   l=ROOT.TLine(0,0,histo.GetXaxis().GetXmax(),histo.GetXaxis().GetXmax())
   l.Draw()
-  if fit:
-    text=ROOT.TLatex()
-    text.SetNDC()
-    text.SetTextSize(0.04)
-    text.SetTextAlign(11)
-    text.SetTextColor(ROOT.kRed)
-    text.DrawLatex(0.2,0.9,"Fit: "+str(round(tf1.GetParameter(0),4))+"+("+str(round(tf1.GetParameter(1),4))+")*x")
+#  if fit:
+#    text=ROOT.TLatex()
+#    text.SetNDC()
+#    text.SetTextSize(0.04)
+#    text.SetTextAlign(11)
+#    text.SetTextColor(ROOT.kRed)
+#    text.DrawLatex(0.2,0.9,"Fit: "+str(round(tf1.GetParameter(0),4))+"+("+str(round(tf1.GetParameter(1),4))+")*x")
   c1.Print(options.plotDirectory+'/'+s+'.png')
   c1.Print(options.plotDirectory+'/'+s+'.pdf')
   c1.Print(options.plotDirectory+'/'+s+'.root')
