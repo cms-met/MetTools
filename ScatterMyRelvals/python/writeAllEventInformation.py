@@ -4,6 +4,8 @@ parser = OptionParser()
 parser.add_option("--input", dest="input", default='', type="string", action="store", help="input pickle file created by findMyRelvalFilesFromEOS.py")
 parser.add_option("--run", dest="run", default=-1, type="int", action="store", help="restrict to run?")
 parser.add_option("--tmpDir", dest="tmpDir", default='/tmp/', type="string", action="store", help="temporary directory")
+parser.add_option("--release", dest="release", default='', type="string", action="store", help="override release (if it is not in the dict key)")
+parser.add_option("--maxEvents", dest="maxEvents", default=-1, type="int", action="store", help="how many events (max)")
 parser.add_option("--pattern", dest="pattern", default='', type="string", action="store", help="pattern to define a subset")
 parser.add_option("--p", dest="pretend", action="store_true", help="just pretend")
 
@@ -28,6 +30,12 @@ archDict = architectures()
 
 print
 
+def dressFileName(x, prefix='root://eoscms.cern.ch/'):
+  if x.startswith('root://'):
+    return x
+  else: 
+    return prefix+x.replace('~','')
+
 for k in allRelVals.keys():
   if options.pattern not in k:continue
   ofile= k.replace('/eos/cms/store/','').replace('/','_').replace('~','')
@@ -37,10 +45,13 @@ for k in allRelVals.keys():
   if os.path.isfile(fname):
     print "Found",fname,"->skipping!"
     continue
-  try:
-    release = filter(lambda x:x.startswith('CMSSW_'), k.split('/'))[0]
-  except:
-    print "Could not determine release from key",k
+  if options.release!='':
+    release=options.release
+  else:
+    try:
+      release = filter(lambda x:x.startswith('CMSSW_'), k.split('/'))[0]
+    except:
+      print "Could not determine release from key",k
 #  assert archDict.has_key('release'), "No architecture found for release %s"%release
   try:
     arch = archDict[release]
@@ -63,9 +74,10 @@ for k in allRelVals.keys():
     sfile.write("scramv1 project CMSSW "+release+'\n')
     sfile.write('cd '+release+'/src\n')
     sfile.write('eval `scramv1 runtime -sh`\n')
-    opts = ['--inputFiles='+','.join(['root://eoscms.cern.ch/'+x.replace('~','') for x in allRelVals[k]]), '--outputFile='+fname, '--run='+str(options.run)]
+    opts = ['--inputFiles='+','.join([dressFileName(x) for x in allRelVals[k]]), '--outputFile='+fname, '--run='+str(options.run), '--maxEvents='+str(options.maxEvents)]
     if 'miniaod' in k.lower():
       opts.append('--miniAOD')
+    print 'python $chm/writeEventInformation.py '+' '.join(opts)
     sfile.write('python $chm/writeEventInformation.py '+' '.join(opts)+'\n')
     sfile.close()
     time.sleep(1)
