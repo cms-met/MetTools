@@ -1,7 +1,4 @@
-<<<<<<< HEAD
  
-=======
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -34,67 +31,49 @@
 #include "THStack.h"
 #include "TStyle.h"
 #include "TLatex.h"
-<<<<<<< HEAD
 
 //#include "METFunctions.hh"
 
 #include "RooRealVar.h"
-=======
-#include "TString.h"
-#include "TSystem.h"
-
-//#include "METFunctions.hh"
-
-#include <RooRealVar.h>
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 #include <RooDataSet.h>
 #include <RooDataHist.h>
 #include <RooFitResult.h>
 //#include <RooGaussian.h>
 #include <RooAddPdf.h>
 #include <RooPlot.h>
-<<<<<<< HEAD
 #include <TStyle.h>
 #include <RooVoigtian.h>
 #include <TSystem.h>
-=======
-#include <RooVoigtian.h>
-#include <RooHistPdf.h>
-#include <RooFormulaVar.h>
 
-using namespace RooFit;
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
+
+                           
 
 double FWHM (double, double);
 double FWHMError (double, double, double, double, double, double, double,
 		  double);
 void
-<<<<<<< HEAD
 metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2)
 {
 
-  TString variablenamepng=variablename;
-        variablenamepng.ReplaceAll("/","over");
-
-TH1::SetDefaultSumw2() ;
-=======
-metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel, bool drawchi2)
-{
-
+  //gROOT->ProcessLine(".L tdrstyle.C");
+  //setTDRStyle();
+         gROOT->SetStyle("tdrStyle");
+         gROOT->ForceStyle(true);
+                                                  
+  
+  
   TString variablenamepng=variablename;
   variablenamepng.ReplaceAll("/","over");
 
-  TH1::SetDefaultSumw2() ;
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
+
+
+TH1::SetDefaultSumw2() ;
+
+   
 
   TString folder = "DY";
   if (samplephys14.Contains ("TT"))
     folder = "TTbar";
-<<<<<<< HEAD
-=======
-  if (samplephys14.Contains ("GJet"))
-    folder = "Gamma";
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
 
   TString titley = "";
@@ -102,17 +81,11 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
     titley = "#sigma(MET_{x}) GeV";
   if (variablename == "pfmety")
     titley = "#sigma(MET_{y}) GeV";
-<<<<<<< HEAD
 //gSystem->Load("libRooFit") ;
   gSystem->Load ("libRooFit");
   gSystem->Load ("RooRealVar");
-=======
-  //  gSystem->Load("libRooFit") ;
-  //  gSystem->Load ("libRooFit");
-  //  gSystem->Load ("RooRealVar");
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
-  gStyle->SetOptStat (0);
+/*  gStyle->SetOptStat (0);
   gStyle->SetCanvasColor (0);
   gStyle->SetPadColor (0);
   gStyle->SetPalette (1);
@@ -122,6 +95,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   gStyle->SetMarkerColor (1);
   gStyle->SetOptTitle (0);
 
+*/
   TCanvas *c1 = new TCanvas ("c1", "c1", 800, 800);
 
   c1->SetTickx ();
@@ -139,6 +113,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
 
   TTree *treephys14 = (TTree *) filephys14.Get ("Events");
+
 
 
 
@@ -160,16 +135,49 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
     sizexarray = 6;
   if (xvariable == "qt")
     sizexarray = 10;
+    
+    
+    TH1F *histonvertex=new TH1F("histonvertex","",50,0,50);
+    TH1F *histoqt=new TH1F("histoqt","",100,0,1200);
+    TH1F *histosumEt=new TH1F("histosumEt","",100,0,4);
+    TH1F *histouparaqt=new TH1F("histouparaqt","",50,-300,300);
+    TH1F *histouperp=new TH1F("histouperp","",50,-300,300);
+    
+    
 
 
-<<<<<<< HEAD
-  
-=======
+ TString dileptonch="";
+   if (tchannel=="MuMu")  dileptonch="1";
+     if (tchannel=="EE") dileptonch="0";
+     
+     
+     // Plot inclusive distributions of the main variables
+      treephys14->Draw ("nvtx >> histonvertex","(weighttotal)*(channel=="+ dileptonch+")", "sames");
+       treephys14->Draw ("qt >> histoqt","(weighttotal)*(channel=="+ dileptonch+")", "sames");
+        treephys14->Draw ("sumEt/1000 >> histosumEt","(weighttotal)*(channel=="+ dileptonch+")", "sames");
+         treephys14->Draw ("upara+qt >> histouparaqt","(weighttotal)*(channel=="+ dileptonch+")", "sames");
+          treephys14->Draw ("uperp >> histouperp","(weighttotal)*(channel=="+ dileptonch+")", "sames");
+          
+          
+          histonvertex->Draw();
+          histonvertex->GetXaxis ()->SetTitle ("Number of Vertices");
+          c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/nvtx_inclusive_.png");
+          c1->SetLogy();
+          histoqt->Draw();
+          histoqt->GetXaxis ()->SetTitle ("qt [GeV]");
+          c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/qt_inclusive_.png");
+          histosumEt->Draw();
+          histosumEt->GetXaxis ()->SetTitle("sumE_{T} [TeV]");
+          c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/sumEt_inclusive_.png");
+          histouparaqt->Draw();
+          histouparaqt->GetXaxis ()->SetTitle ("u_{||}+qt [GeV]");
+          c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/uparaqt_inclusive_.png");
+          histouperp->Draw();
+          histouperp->GetXaxis ()->SetTitle ("u_{#perp}   [GeV]");
+          c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/uperp_inclusive_.png");
+          c1->SetLogy(0);
 
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
-
-  Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray],
-    etgraphx[sizexarray], tgraphxchi2[sizexarray], tgraphychi2[sizexarray];
+      Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray], etgraphx[sizexarray], tgraphxchi2[sizexarray], tgraphychi2[sizexarray];
 
   for (int index = 0; index < sizexarray; index++)
     {
@@ -181,16 +189,10 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 	limitup = (index + 1) * 12;
       strlimitup = Form ("%d", limitup);
 
-<<<<<<< HEAD
       resolution.	push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
-      
-       
-  TString dileptonch="";
-  if (tchannel=="MuMu")  dileptonch="1";
-  if (tchannel=="EE") dileptonch="0";
 
- 
-	  treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()),			    "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">=" + strlimitdown + ")",			    "sames");
+
+ treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()), "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">=" + strlimitdown + ")",			    "sames");
 
 
 
@@ -202,36 +204,13 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       double uM =	resolution[index]->GetMean () + resolution[index]->GetRMS ();
 
 
-=======
-      resolution.push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
-      
-       
-      TString dileptonch="";
-      if (tchannel=="MuMu")  dileptonch="1";
-      if (tchannel=="EE") dileptonch="0";
-
-      TString condition="(weighttotal)*(channel=="+dileptonch +")*";
-      if (tchannel == "Gamma") condition="";
-      if (xvariable == "nvtx") condition += "(" + xvariable + "==" + strlimitup +")";
-      else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
-
-      treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
-			condition.Data(),"sames");
-
-      double m =  resolution[index]->GetMean ();
-      double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
-      double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
 
 
       ////////
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
       RooRealVar x ("x", "x", -200, 200);
       RooDataHist Hist ("Hist", "Hist", x,
 			(TH1 *) resolution[index]->Clone ());
@@ -239,36 +218,9 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       RooRealVar gamma_Z0 ("gamma_Z0_U", "Z0 width", 2.3, 0, 100, "GeV");	//20
       RooRealVar v_m ("v_m", "v_m", m, um, uM, "GeV");
       RooVoigtian *voigt =
-	new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
+    	new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
 
-<<<<<<< HEAD
       RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
-=======
-      //      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));        // -1 verbose
-
-      RooFitResult *result;
-      RooAddPdf * model;
-      if(false) {
-	TFile *file_ = TFile::Open("BKGfile.root");
-	TH1F * h_ = (TH1F*) file_->Get(resolution[index]->GetName());
-	RooDataHist * bkg_hist= new RooDataHist("bkghist","bkghist",x,h_);;
-	RooHistPdf * bkg_pdf = new RooHistPdf("bkg_pdf","bkg_pdf",RooArgSet(x),*bkg_hist);
-	RooRealVar lAbkgFrac("AbkgFrac","AbkgFrac",0.5,0.,1.);
-	RooFormulaVar * sigbkgFrac= new RooFormulaVar("bkgfrac","@0",RooArgSet(lAbkgFrac));
-	model = new RooAddPdf("modelSB","modelSB",*voigt,*bkg_pdf,*sigbkgFrac);
-	result = model->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
-
-      } else {
-
-	result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
-
-      }
-
-
-      //https://root.cern.ch/phpBB3/viewtopic.php?f=15&t=16764
-      //status=0 ok
-      //      if(result->status()!=0) voigt=0;
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
 
       //Get the FWHM
       double sigma = g_w.getVal ();
@@ -280,56 +232,25 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       double Vgs = result->correlation (gamma_Z0, g_w);
       double Vss = result->correlation (g_w, g_w);
       double Vgg = result->correlation (gamma_Z0, gamma_Z0);
-<<<<<<< HEAD
       cout << "correlacion Vgs " << Vgs << " y correlación Vsg" << Vsg <<
 	endl;
-=======
-      cout << "correlation Vgs " << Vgs << " y correlation Vsg" << Vsg << endl;
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
       double f = FWHM (sigma, gamma);
       double efwhm =	FWHMError (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg);
 
       //if (f/2.3 < 5) continue;
       RooPlot *xFrame = x.frame ();
-<<<<<<< HEAD
       (Hist).plotOn (xFrame);
-=======
-      Hist.plotOn (xFrame);
-
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
       TString titlexfit = "";
       if (variablename == "pfmetx")
-	titlexfit = "MET_{x} (GeV)";
+	titlexfit = "MET_{x} [GeV]";
       if (variablename == "pfmety")
-	titlexfit = "MET_{y} (GeV)";
+	titlexfit = "MET_{y} [GeV]";
       xFrame->SetXTitle (titlexfit);
-<<<<<<< HEAD
       voigt->plotOn (xFrame);
       
       xFrame->Draw ();
       TString histoname = resolution[index]->GetName ();
       
-=======
-
-      int color=kBlack;
-      if (xvariable == "nvtx")
-	color = kRed;
-      if (xvariable == "sumEt")
-	color = kGreen+1;
-      if (xvariable == "qt")
-	color = kBlue;
-
-      cout << "plot made " << endl;
-      voigt->plotOn(xFrame,FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band
-      voigt->plotOn(xFrame,RooFit::LineColor(color));
-      //      voigt->paramOn(xFrame, Format("NELU", AutoPrecision(2)), Layout(0.1, 0.45,0.99) );
-
-      c1->cd();
-      xFrame->Draw ();
-      cout << "frame made " << endl;
-      TString histoname = resolution[index]->GetName ();
-      cout << "histoname=" << histoname.Data() << endl;
->>>>>>> f0eb7e9b22db0bd712fe39ca161132b7b340e7f9
               
       c1->Print ("~/www/METfits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
@@ -375,18 +296,18 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
 
   TGraph *gr =  new TGraphErrors (sizexarray, tgraphx, tgraphy, etgraphx, etgraphy);
-  gr->SetMarkerColor (4);
-  gr->SetMarkerStyle (21);
+  //gr->SetMarkerColor (4);
+  //gr->SetMarkerStyle (21);
 
   TGraph *grchi2 = new TGraph (sizexarray, tgraphxchi2, tgraphychi2);
-  grchi2->SetMarkerColor (2);
-  grchi2->SetMarkerStyle (34);
+  //grchi2->SetMarkerColor (2);
+  //grchi2->SetMarkerStyle (34);
   
   
   if (xvariable == "sumEt")
     {
-      gr->GetXaxis ()->SetTitle ("sumE_{T} (TeV)");
-      grchi2->GetXaxis ()->SetTitle ("sumE_{T} (TeV)");
+      gr->GetXaxis ()->SetTitle ("sumE_{T} [TeV]");
+      grchi2->GetXaxis ()->SetTitle ("sumE_{T} [TeV]");
     }
   if (xvariable == "nvtx")
     {
@@ -395,8 +316,8 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
     }
   if (xvariable == "qt")
     {
-      gr->GetXaxis ()->SetTitle ("qt (GeV)");
-      grchi2->GetXaxis ()->SetTitle ("qt (GeV)");
+      gr->GetXaxis ()->SetTitle ("qt [GeV]");
+      grchi2->GetXaxis ()->SetTitle ("qt [GeV]");
     }
 
 
