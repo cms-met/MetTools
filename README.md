@@ -12,12 +12,12 @@ to update:
 
 to commit new things:
 
-# create a new branch
+create a new branch
 `git checkout -b maria_test`
-# add file
+add file
 `git add FILETOCOMMIT` 
-# commit the file
+commit the file
 `git commit -m 'new test file for Maria'`
-# pust your branch
+push your branch
 `git push origin maria_test`
 
