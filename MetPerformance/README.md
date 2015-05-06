@@ -1,5 +1,7 @@
-Copy the sample file from:
+Copy the sample files from:
 /eos/cms/store/cmst3/user/dalfonso/MET/DY_phys14.root
+/eos/cms/store/cmst3/user/dalfonso/MET/GJet_Ntuple_AllHt.root
+
 
 #### How to run scriptcompare 
 
