@@ -51,6 +51,8 @@
 double FWHM (double, double);
 double FWHMError (double, double, double, double, double, double, double,
 		  double);
+double FWHMError_fixed (double, double, double, double, double, double, double,
+		  double);
 void
 metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2)
 {
@@ -440,5 +442,34 @@ FWHMError (double sigma, double gamma, double esigma, double egamma,
 
   return sqrt (abs (p1) + abs (p2) + abs (p3) + abs (p4));
 
+}
+
+
+double
+FWHMError_fixed (double sigma, double gamma, double esigma, double egamma,
+	   double Vss, double Vsg, double Vgs, double Vgg)
+{
+  // Vss = correlation(sigma, sigma)
+  // Vsg = correlation(sigma, gamma)
+  // etc
+  double a = 0.5346;
+  double b = 0.2166;
+  double c = 2 * sqrt( 2*log(2) );
+  double f_g = c * sigma;
+  double f_l = 2 * gamma;
+  double sq = sqrt( b * pow(f_l, 2) + pow(f_g, 2) );
+  
+  // Partial derivatives of f_voigtian w.r.t sigma and gamma
+  // f = a * f_l + sqrt( b * f_l^2 + f_g^2 )
+  double dfds = c * ( f_g / sq ) ;
+  double dfdg = 2 * ( a + b * f_l / sq ) ;
+  
+  // esigma * esigma * pow( Vss, 2 ) gives covariance(sigma, sigma) etc
+  double p1 = dfds * dfds * esigma * esigma * pow( Vss, 2 );
+  double p2 = dfds * dfdg * esigma * egamma * pow( Vsg, 2 );
+  double p3 = dfdg * dfds * egamma * esigma * pow( Vgs, 2 );
+  double p4 = dfdg * dfdg * egamma * egamma * pow( Vgg, 2 );
+
+  return sqrt ( p1 + p2 + p3 + p4 );
 }
 
