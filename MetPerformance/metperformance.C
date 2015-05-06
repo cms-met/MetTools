@@ -419,26 +419,27 @@ double
 FWHMError (double sigma, double gamma, double esigma, double egamma,
 	   double Vss, double Vsg, double Vgs, double Vgg)
 {
-
-
+  // Vss = correlation(sigma, sigma)
+  // Vsg = correlation(sigma, gamma)
+  // etc
   double a = 0.5346;
   double b = 0.2166;
-  double ef_g = 2 * esigma * sqrt (2 * log (2));
-  double ef_l = 2 * egamma;
-
-  double dg =
-    2 * a + 4 * b * gamma / sqrt (4 * b * pow (gamma, 2) +
-				  4 * pow (sigma, 2) * log (2));
-
-  double ds =
-    (sigma * log (4)) / sqrt (b * pow (gamma, 2) + pow (sigma, 2) * log (2));
+  double c = 2 * sqrt( 2*log(2) );
+  double f_g = c * sigma;
+  double f_l = 2 * gamma;
+  double sq = sqrt( b * pow(f_l, 2) + pow(f_g, 2) );
   
-  double p1 = ef_l * ef_l * Vgg * dg;
-  double p2 = ef_g * ef_l * Vsg * dg * ds;	//identical (should be)
-  double p3 = ef_g * ef_l * Vgs * dg * ds;
-  double p4 = ef_g * ef_g * Vss * ds;
+  // Partial derivatives of f_voigtian w.r.t sigma and gamma
+  // f = a * f_l + sqrt( b * f_l^2 + f_g^2 )
+  double dfds = c * ( f_g / sq ) ;
+  double dfdg = 2 * ( a + b * f_l / sq ) ;
+  
+  // esigma * esigma * pow( Vss, 2 ) gives covariance(sigma, sigma) etc
+  double p1 = dfds * dfds * esigma * esigma * pow( Vss, 2 );
+  double p2 = dfds * dfdg * esigma * egamma * pow( Vsg, 2 );
+  double p3 = dfdg * dfds * egamma * esigma * pow( Vgs, 2 );
+  double p4 = dfdg * dfdg * egamma * egamma * pow( Vgg, 2 );
 
-  return sqrt (abs (p1) + abs (p2) + abs (p3) + abs (p4));
-
+  return sqrt ( p1 + p2 + p3 + p4 );
 }
 
