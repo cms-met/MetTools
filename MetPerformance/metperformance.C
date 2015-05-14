@@ -191,7 +191,7 @@ TH1::SetDefaultSumw2() ;
 	limitup = (index + 1) * 12;
       strlimitup = Form ("%d", limitup);
 
-      resolution.	push_back (new TH1F (Form ("resx%d", index), " ", 50, -200, 200));
+      resolution.	push_back (new TH1F (Form ("resx%d", index), " ", 200, -800, 800));
 
 
  treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()), "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">=" + strlimitdown + ")",			    "sames");
@@ -213,7 +213,7 @@ TH1::SetDefaultSumw2() ;
 
 
 
-      RooRealVar x ("x", "x", -200, 200);
+      RooRealVar x ("x", "x", -800, 800);
       RooDataHist Hist ("Hist", "Hist", x,
 			(TH1 *) resolution[index]->Clone ());
       RooRealVar g_w ("g_w", "width Gaus", 10., 0., 100., "GeV");	//40
