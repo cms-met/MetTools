@@ -1,4 +1,3 @@
- 
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -31,21 +30,21 @@
 #include "THStack.h"
 #include "TStyle.h"
 #include "TLatex.h"
+#include "TSystem.h"
 
 //#include "METFunctions.hh"
 
 #include "RooRealVar.h"
-#include <RooDataSet.h>
-#include <RooDataHist.h>
-#include <RooFitResult.h>
-//#include <RooGaussian.h>
-#include <RooAddPdf.h>
-#include <RooPlot.h>
-#include <TStyle.h>
-#include <RooVoigtian.h>
-#include <TSystem.h>
+#include "RooDataSet.h"
+#include "RooDataHist.h"
+#include "RooFitResult.h"
+//#include "RooGaussian.h"
+#include "RooAddPdf.h"
+#include "RooPlot.h"
+#include "RooVoigtian.h"
 
 
+using namespace RooFit;
                            
 
 double FWHM (double, double);
@@ -53,6 +52,55 @@ double FWHMError (double, double, double, double, double, double, double,
 		  double);
 double FWHMError_fixed (double, double, double, double, double, double, double,
 		  double);
+
+
+
+RooRealVar x ("x", "x", -800, 800);
+RooRealVar g_w ("g_w", "width Gaus", 10., 0., 100., "GeV");	//40
+RooRealVar gamma_Z0 ("gamma_Z0_U", "Z0 width", 2.3, 0, 100, "GeV");	//20
+RooRealVar v_m ("v_m", "v_m",0,-10.,10.);
+
+RooVoigtian *voigt;
+RooFitResult *result;
+
+double f;
+double efwhm;
+
+void constructModel(RooDataHist Hist,double m,double um,double uM) {
+
+  f=0;
+  efwhm=0;
+
+  v_m.setVal(m);
+  v_m.setRange(um,uM);
+
+  voigt =new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
+
+  //      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+  result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));// -1 verbose
+  //https://root.cern.ch/phpBB3/viewtopic.php?f=15&t=16764
+  //status=0 ok
+  if(result->status()!=0) voigt=0;
+
+  //Get the FWHM
+  double sigma = g_w.getVal ();
+  double gamma = gamma_Z0.getVal ();
+  double esigma = g_w.getError ();
+  double egamma = gamma_Z0.getError ();
+
+  double Vsg = result->correlation (g_w, gamma_Z0);
+  double Vgs = result->correlation (gamma_Z0, g_w);
+  double Vss = result->correlation (g_w, g_w);
+  double Vgg = result->correlation (gamma_Z0, gamma_Z0);
+  cout << "correlacion Vgs " << Vgs << " y correlacion Vsg" << Vsg << endl;
+  double f = FWHM (sigma, gamma);
+  double efwhm =	FWHMError (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg);
+
+  return;
+
+}
+
+
 void
 metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2)
 {
@@ -69,7 +117,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
 
 
-TH1::SetDefaultSumw2() ;
+  TH1::SetDefaultSumw2() ;
 
    
 
@@ -83,9 +131,8 @@ TH1::SetDefaultSumw2() ;
     titley = "#sigma(MET_{x}) GeV";
   if (variablename == "pfmety")
     titley = "#sigma(MET_{y}) GeV";
-//gSystem->Load("libRooFit") ;
-  gSystem->Load ("libRooFit");
-  gSystem->Load ("RooRealVar");
+  //  gSystem->Load ("libRooFit");
+  //  gSystem->Load ("RooRealVar");
 
 /*  gStyle->SetOptStat (0);
   gStyle->SetCanvasColor (0);
@@ -148,11 +195,11 @@ TH1::SetDefaultSumw2() ;
     
 
 
- TString dileptonch="";
-   if (tchannel=="MuMu")  dileptonch="1";
-     if (tchannel=="EE") dileptonch="0";
+    TString dileptonch="";
+    if (tchannel=="MuMu")  dileptonch="1";
+    if (tchannel=="EE") dileptonch="0";
      
-     
+
      // Plot inclusive distributions of the main variables
       treephys14->Draw ("nvtx >> histonvertex","(weighttotal)*(channel=="+ dileptonch+")", "sames");
        treephys14->Draw ("qt >> histoqt","(weighttotal)*(channel=="+ dileptonch+")", "sames");
@@ -191,53 +238,34 @@ TH1::SetDefaultSumw2() ;
 	limitup = (index + 1) * 12;
       strlimitup = Form ("%d", limitup);
 
-      resolution.	push_back (new TH1F (Form ("resx%d", index), " ", 200, -800, 800));
+      resolution.push_back (new TH1F (Form ("resx%d", index), " ", 200, -800, 800));
 
 
- treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()), "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">=" + strlimitdown + ")",			    "sames");
+      //      TString condition="(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">=" + strlimitdown + ")";
+
+      TString condition="(weighttotal)*(channel=="+dileptonch +")*";
+      //      if (tchannel == "Gamma") condition="(weighttotal)*";
+      if (xvariable == "nvtx") condition += "(" + xvariable + "==" + strlimitup +")";
+      else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
+
+      treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
+			condition.Data(), "sames");
 
 
-
-
-
-
-      double m = resolution[index]->GetMean ();
-      double um =	resolution[index]->GetMean () - resolution[index]->GetRMS ();
-      double uM =	resolution[index]->GetMean () + resolution[index]->GetRMS ();
-
-
-
+      double m  = resolution[index]->GetMean ();
+      double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
+      double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
 
 
       ////////
 
-
-
-      RooRealVar x ("x", "x", -800, 800);
       RooDataHist Hist ("Hist", "Hist", x,
 			(TH1 *) resolution[index]->Clone ());
-      RooRealVar g_w ("g_w", "width Gaus", 10., 0., 100., "GeV");	//40
-      RooRealVar gamma_Z0 ("gamma_Z0_U", "Z0 width", 2.3, 0, 100, "GeV");	//20
-      RooRealVar v_m ("v_m", "v_m", m, um, uM, "GeV");
-      RooVoigtian *voigt =
-    	new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
 
-      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
-
-      //Get the FWHM
-      double sigma = g_w.getVal ();
-      double gamma = gamma_Z0.getVal ();
-      double esigma = g_w.getError ();
-      double egamma = gamma_Z0.getError ();
-
-      double Vsg = result->correlation (g_w, gamma_Z0);
-      double Vgs = result->correlation (gamma_Z0, g_w);
-      double Vss = result->correlation (g_w, g_w);
-      double Vgg = result->correlation (gamma_Z0, gamma_Z0);
-      cout << "correlacion Vgs " << Vgs << " y correlación Vsg" << Vsg <<
-	endl;
-      double f = FWHM (sigma, gamma);
-      double efwhm =	FWHMError (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg);
+      // construct the voightian model
+      // fit the Hist Dataset also
+      // fill f and efwhm that are the parameter of the voightian
+      constructModel(Hist,m,um,uM);
 
       //if (f/2.3 < 5) continue;
       RooPlot *xFrame = x.frame ();
@@ -248,12 +276,23 @@ TH1::SetDefaultSumw2() ;
       if (variablename == "pfmety")
 	titlexfit = "MET_{y} [GeV]";
       xFrame->SetXTitle (titlexfit);
-      voigt->plotOn (xFrame);
-      
+
+      int color=kBlack;
+      if (xvariable == "nvtx")
+	color = kRed;
+      if (xvariable == "sumEt")
+	color = kGreen+1;
+      if (xvariable == "qt")
+	color = kBlue;
+
+      if(voigt) voigt->plotOn(xFrame,RooFit::FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band in gray
+      if(voigt) voigt->plotOn(xFrame,RooFit::LineColor(color));
+      //      voigt->paramOn(xFrame, Format("NELU", AutoPrecision(2)), Layout(0.1, 0.45,0.99) ); // to add the legend of parameters
+
+      c1->cd();
       xFrame->Draw ();
       TString histoname = resolution[index]->GetName ();
       
-              
       c1->Print ("~/www/METfits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
       //Print chi2/dof value
@@ -262,7 +301,6 @@ TH1::SetDefaultSumw2() ;
       //cout << "chi2 = " << chi2 << endl;
 
 
-      
    
       tgraphx[index] = index;
 
