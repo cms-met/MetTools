@@ -127,7 +127,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   
   TString variablenamepng=variablename;
   variablenamepng.ReplaceAll("/","over");
-  TString DestFolder = "BKG_Subtraction/";//"Not_BKG_Subtracted/";
+  //TString DestFolder = "BKG_Subtraction/";//"Not_BKG_Subtracted/";
 
   TH1::SetDefaultSumw2() ;
 
@@ -224,20 +224,20 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
           
   histonvertex->Draw();
   histonvertex->GetXaxis ()->SetTitle ("Number of Vertices");
-  c1->Print (DestFolder + "METResolution/" + folder + "/"+tchannel +"/nvtx_inclusive_.png");
+  c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/nvtx_inclusive_.png");
   c1->SetLogy();
   histoqt->Draw();
   histoqt->GetXaxis ()->SetTitle ("qt [GeV]");
-  c1->Print (DestFolder + "METResolution/"+ folder + "/"+tchannel +"/qt_inclusive_.png");
+  c1->Print ("~/www/METResolution/"+ folder + "/"+tchannel +"/qt_inclusive_.png");
   histosumEt->Draw();
   histosumEt->GetXaxis ()->SetTitle("sumE_{T} [TeV]");
-  c1->Print (DestFolder + "METResolution/" + folder + "/"+tchannel +"/sumEt_inclusive_.png");
+  c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/sumEt_inclusive_.png");
   histouparaqt->Draw();
   histouparaqt->GetXaxis ()->SetTitle ("u_{||}+qt [GeV]");
-  c1->Print (DestFolder + "METResolution/"+ folder + "/"+tchannel +"/uparaqt_inclusive_.png");
+  c1->Print ("~/www/METResolution/"+ folder + "/"+tchannel +"/uparaqt_inclusive_.png");
   histouperp->Draw();
   histouperp->GetXaxis ()->SetTitle ("u_{#perp}   [GeV]");
-  c1->Print (DestFolder + "METResolution/" + folder + "/"+tchannel +"/uperp_inclusive_.png");
+  c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/uperp_inclusive_.png");
   c1->SetLogy(0);
 
 
@@ -315,7 +315,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       //model->plotOn(xFrame2,RooFit::LineColor(kBlack));
       TString histoname = resolution[index]->GetName ();
       xFrame2->Draw();
-      c1->Print (DestFolder + "METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
+      c1->Print ("~/www/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
       
       
       if(voigt) voigt->plotOn(xFrame,RooFit::FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band in gray
@@ -329,7 +329,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       //TString histoname = resolution[index]->GetName ();
       //cout << "histoname=" << histoname.Data() << endl;
               
-      c1->Print (DestFolder + "METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
+      c1->Print ("~/www/METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
       //Print chi2/dof value
 
@@ -366,11 +366,11 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
                NumberStr = convert.str(); 
 	       upararesponse1->Draw("hist");
                upararesponse1->GetXaxis ()->SetTitle ("u_{|| }   [GeV]");
-               c1->Print (DestFolder + "METResolution/" + folder + "/"+tchannel +"/upara_response1_"+NumberStr+".png");
+               c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/upara_response1_"+NumberStr+".png");
                c1->SetLogy(0);
 	       qtresponse1->Draw("hist");
                qtresponse1->GetXaxis ()->SetTitle ("qt   [GeV]");
-               c1->Print (DestFolder + "METResolution/" + folder + "/"+tchannel +"/qt_response1_"+NumberStr+".png");
+               c1->Print ("~/www/METResolution/" + folder + "/"+tchannel +"/qt_response1_"+NumberStr+".png");
                c1->SetLogy(0);
 	    }
 	    //cout << index << "  and mean: " << -resolution[index]->GetMean () << endl;
@@ -440,7 +440,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   if (drawchi2) {
   grchi2->GetYaxis ()->SetTitle ("#Chi^{2}");
   grchi2->Draw ("AP");
-  c1->Print (DestFolder + "METResolution/" + folder + "/" + tchannel + "/" +  variablenamepng  + "_vs_" +	     xvariable + "_chi2.png");
+  c1->Print ("~/www/METResolution/" + folder + "/" + tchannel + "/" +  variablenamepng  + "_vs_" +	     xvariable + "_chi2.png");
   c1->Clear (); }
 
   TFile f (folder + "_tgraphs.root", "UPDATE");
@@ -503,7 +503,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
   
 
-  c1->Print (DestFolder + "METResolution/" + folder + "/" + tchannel + "/" + variablenamepng  + "_vs_" +	     xvariable + ".png");
+  c1->Print ("~/www/METResolution/" + folder + "/" + tchannel + "/" + variablenamepng  + "_vs_" +	     xvariable + ".png");
 
 
 
