@@ -1,8 +1,24 @@
 import subprocess
 import os, pickle
+from optparse import OptionParser
 
-def oneLevelDeeper(dir, subdir=None):
+parser = OptionParser()
+parser.add_option("--releasePattern", dest="releasePattern", default='CMSSW_7', type="string", action="store", help="releasePattern to define a subset")
+parser.add_option("--outputFile", dest="outputFile", default='relValFiles_73X.pkl', type="string", action="store", help="output pickle file")
+
+(options, args) = parser.parse_args()
+
+#if not os.path.exists(os.path.expanduser('~/eos')):
+#  print "Trying to create EOS mount under",os.path.expanduser('~/eos')
+#  os.system('mkdir -p ~/eos;/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select -b fuse mount ~/eos')
+#eosRelValDir = "~/eos/cms/store/relval"
+
+eosRelValDir = "/eos/cms/store/relval"
+eosCMD = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
+
+def makeLS(dir, subdir=None):
   p = os.popen(" ".join([eosCMD, "ls", dir]),"r")
+#  p = os.popen(" ".join(["ls", dir]),"r")
   all=[]
   while True:
     l = p.readline()
@@ -14,45 +30,24 @@ def oneLevelDeeper(dir, subdir=None):
       all.append(dir+'/'+dn)
   return all 
 
-eosRelValDir = "/eos/cms/store/relval"
-eosCMD = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
-relVal = "RelValTTbar_13"
-p = os.popen(" ".join([eosCMD, "ls", eosRelValDir]),"r")
 results={}
-while True:
-  l = p.readline()
-  if not l: break
-  dn=l[:-1]
-  if not dn.startswith('CMSSW_7'):continue
-  rvd = oneLevelDeeper(eosRelValDir+'/'+dn, relVal)
-  if rvd: pass #print rvd
-  else: 
-    print "Couldn't find "+relVal+" in "+eosRelValDir+'/'+dn
-    continue
-  recoDir = oneLevelDeeper(rvd, 'GEN-SIM-RECO')
-  if not recoDir: recoDir = oneLevelDeeper(rvd, 'GEN-SIM-DIGI-RECO')
-  if not recoDir: 
-    print "No RECO found"
-    continue
-  dirsWithTags = oneLevelDeeper(recoDir)
-  dirsWithTags = [oneLevelDeeper(d,"*") for d in dirsWithTags]
-  for d in dirsWithTags:
-    files = ['root://eoscms.cern.ch/'+f for f in oneLevelDeeper(d) ]
-    if len(files)>0:
-      results[d]=files
-      print "Found %i files for %s"%(len(files), d)
-pickle.dump(results, file("relValFiles.pkl",'w'))
-print "Written relValFiles.pkl"
-#of = file('relValFiles.txt','w')
-#for k in results.keys():
-#  of.write(k+'\n')
-#  for f in results[k]:
-#    of.write('  '+f+'\n')
-#of.close()
-#print "Written relValFiles.txt"
-#of = file('relValFiles_keys.txt','w')
-#for k in results.keys():
-#  of.write(k+'\n')
-#of.close()
-#print "Written relValFiles_keys.txt"
-#  
+releases = makeLS(eosRelValDir)
+for rel in releases:
+  if options.releasePattern not in rel:continue
+  relVals = makeLS(rel)
+  for relVal in relVals:
+    dataTiers = makeLS(relVal)
+    for dt in dataTiers:
+      if (not 'RECO' in dt) and (not 'AOD' in dt): continue
+      conditions = makeLS(dt)
+      for cond in conditions:
+        files=[]
+        subDirs = makeLS(cond)
+        for s in subDirs:
+          files+= makeLS(s)
+        if files==[]:continue
+        results[cond] = files
+        print "Found",cond
+
+pickle.dump(results, file(options.outputFile,'w'))
+print "Written",options.outputFile

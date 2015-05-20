@@ -30,30 +30,29 @@
 #include "THStack.h"
 #include "TStyle.h"
 #include "TLatex.h"
-#include "TString.h"
 #include "TSystem.h"
-//#include "conio.h"
 
 //#include "METFunctions.hh"
 
-#include <RooRealVar.h>
-#include <RooDataSet.h>
-#include <RooDataHist.h>
-#include <RooFitResult.h>
-//#include <RooGaussian.h>
-#include <RooAddPdf.h>
-#include <RooPlot.h>
-#include <RooVoigtian.h>
-#include <RooHistPdf.h>
-#include <RooFormulaVar.h>
+#include "RooRealVar.h"
+#include "RooDataSet.h"
+#include "RooDataHist.h"
+#include "RooFitResult.h"
+//#include "RooGaussian.h"
+#include "RooAddPdf.h"
+#include "RooPlot.h"
+#include "RooVoigtian.h"
+
 
 using namespace RooFit;
+                           
 
 double FWHM (double, double);
 double FWHMError (double, double, double, double, double, double, double,
 		  double);
 double FWHMError_fixed (double, double, double, double, double, double, double,
 		  double);
+
 
 
 RooRealVar x ("x", "x", -800, 800);
@@ -72,7 +71,7 @@ void constructModel(RooDataHist Hist,double m,double um,double uM, TString varia
       
   f=0;
   efwhm=0;
- 
+
 
   v_m.setVal(m);
   v_m.setRange(um,uM);
@@ -97,6 +96,12 @@ void constructModel(RooDataHist Hist,double m,double um,double uM, TString varia
       result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose //  
   }
 
+=======
+
+  //      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
+  result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));// -1 verbose
+  //https://root.cern.ch/phpBB3/viewtopic.php?f=15&t=16764
+  //status=0 ok
   if(result->status()!=0) voigt=0;
 
   //Get the FWHM
@@ -118,9 +123,8 @@ void constructModel(RooDataHist Hist,double m,double um,double uM, TString varia
 }
 
 
-
 void
-metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel, bool drawchi2)
+metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2)
 {
   //gROOT->SetStyle("tdrStyle"); // added later
   //gROOT->ForceStyle(true); // added later
@@ -130,6 +134,22 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   //TString DestFolder = "BKG_Subtraction/";//"Not_BKG_Subtracted/";
 
   TH1::SetDefaultSumw2() ;
+
+  //gROOT->ProcessLine(".L tdrstyle.C");
+  //setTDRStyle();
+         gROOT->SetStyle("tdrStyle");
+         gROOT->ForceStyle(true);
+                                                  
+  
+  
+  TString variablenamepng=variablename;
+  variablenamepng.ReplaceAll("/","over");
+
+
+
+  TH1::SetDefaultSumw2() ;
+
+   
 
   TString folder = "DY";
   if (samplephys14.Contains ("TT"))
@@ -145,11 +165,14 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
     titley = "#sigma(MET_{x}) GeV";
   if (variablename == "pfmety")
     titley = "#sigma(MET_{y}) GeV";
-  //  gSystem->Load("libRooFit") ;
+
    gSystem->Load ("libRooFit");
   // gSystem->Load ("RooRealVar");
 
-  /*gStyle->SetOptStat (0);
+  
+
+/*  gStyle->SetOptStat (0);
+>>>>>>> master
   gStyle->SetCanvasColor (0);
   gStyle->SetPadColor (0);
   gStyle->SetPalette (1);
@@ -159,6 +182,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   gStyle->SetMarkerColor (1);
   gStyle->SetOptTitle (0);
   */
+
 
   TCanvas *c1 = new TCanvas ("c1", "c1", 800, 800);
 
@@ -177,6 +201,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
 
   TTree *treephys14 = (TTree *) filephys14.Get ("Events");
+
 
 
 
@@ -245,6 +270,18 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray],
     etgraphx[sizexarray], tgraphxchi2[sizexarray], tgraphychi2[sizexarray];
 
+    
+    
+    TH1F *histonvertex=new TH1F("histonvertex","",50,0,50);
+    TH1F *histoqt=new TH1F("histoqt","",100,0,1200);
+    TH1F *histosumEt=new TH1F("histosumEt","",100,0,4);
+    TH1F *histouparaqt=new TH1F("histouparaqt","",50,-300,300);
+    TH1F *histouperp=new TH1F("histouperp","",50,-300,300);
+    
+    
+
+
+
   for (int index = 0; index < sizexarray; index++)
     {
       if (xvariable == "nvtx")
@@ -266,6 +303,17 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
       //cout << "string name: " << TString(resolution[index]->GetName()) << endl;
 
+
+      //      TString condition="(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">=" + strlimitdown + ")";
+
+      TString condition="(weighttotal)*(channel=="+dileptonch +")*";
+      //      if (tchannel == "Gamma") condition="(weighttotal)*";
+      if (xvariable == "nvtx") condition += "(" + xvariable + "==" + strlimitup +")";
+      else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
+
+      treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
+			condition.Data(), "sames");
+
       treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
 			condition.Data(),"sames");
       
@@ -275,6 +323,9 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
       double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
 
+      double m  = resolution[index]->GetMean ();
+      double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
+      double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
 
 
       ////////
@@ -286,7 +337,6 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       // fit the Hist Dataset also
       // fill f and efwhm that are the parameter of the voightian
       constructModel(Hist,m,um,uM, variablename, condition);
-    
 
       //if (f/2.3 < 5) continue;
       RooPlot *xFrame = x.frame ();
@@ -294,9 +344,9 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
       TString titlexfit = "";
       if (variablename == "pfmetx")
-	titlexfit = "MET_{x} (GeV)";
+	titlexfit = "MET_{x} [GeV]";
       if (variablename == "pfmety")
-	titlexfit = "MET_{y} (GeV)";
+	titlexfit = "MET_{y} [GeV]";
       xFrame->SetXTitle (titlexfit);
 
       int color=kBlack;
@@ -336,8 +386,6 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       Double_t chi2 = xFrame->chiSquare ();	//"voigt", "Hist", 3);
       //cout << "chi2 = " << chi2 << endl;
 
-
-      
    
       tgraphx[index] = index;
 
@@ -392,18 +440,18 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
 
   TGraph *gr =  new TGraphErrors (sizexarray, tgraphx, tgraphy, etgraphx, etgraphy);
-  gr->SetMarkerColor (4);
-  gr->SetMarkerStyle (21);
+  //gr->SetMarkerColor (4);
+  //gr->SetMarkerStyle (21);
 
   TGraph *grchi2 = new TGraph (sizexarray, tgraphxchi2, tgraphychi2);
-  grchi2->SetMarkerColor (2);
-  grchi2->SetMarkerStyle (34);
+  //grchi2->SetMarkerColor (2);
+  //grchi2->SetMarkerStyle (34);
   
   
   if (xvariable == "sumEt")
     {
-      gr->GetXaxis ()->SetTitle ("sumE_{T} (TeV)");
-      grchi2->GetXaxis ()->SetTitle ("sumE_{T} (TeV)");
+      gr->GetXaxis ()->SetTitle ("sumE_{T} [TeV]");
+      grchi2->GetXaxis ()->SetTitle ("sumE_{T} [TeV]");
     }
   if (xvariable == "nvtx")
     {
@@ -412,8 +460,8 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
     }
   if (xvariable == "qt")
     {
-      gr->GetXaxis ()->SetTitle ("qt (GeV)");
-      grchi2->GetXaxis ()->SetTitle ("qt (GeV)");
+      gr->GetXaxis ()->SetTitle ("qt [GeV]");
+      grchi2->GetXaxis ()->SetTitle ("qt [GeV]");
     }
 
 
@@ -578,3 +626,4 @@ FWHMError_fixed (double sigma, double gamma, double esigma, double egamma,
 
   return sqrt ( p1 + p2 + p3 + p4 );
 }
+
