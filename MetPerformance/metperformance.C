@@ -30,18 +30,22 @@
 #include "THStack.h"
 #include "TStyle.h"
 #include "TLatex.h"
+#include "TString.h"
 #include "TSystem.h"
+//#include "conio.h"
 
 //#include "METFunctions.hh"
 
-#include "RooRealVar.h"
-#include "RooDataSet.h"
-#include "RooDataHist.h"
-#include "RooFitResult.h"
-//#include "RooGaussian.h"
-#include "RooAddPdf.h"
-#include "RooPlot.h"
-#include "RooVoigtian.h"
+#include <RooRealVar.h>
+#include <RooDataSet.h>
+#include <RooDataHist.h>
+#include <RooFitResult.h>
+//#include <RooGaussian.h>
+#include <RooAddPdf.h>
+#include <RooPlot.h>
+#include <RooVoigtian.h>
+#include <RooHistPdf.h>
+#include <RooFormulaVar.h>
 
 
 using namespace RooFit;
@@ -79,12 +83,11 @@ void constructModel(RooDataHist Hist,double m,double um,double uM, TString varia
   voigt =new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
   
   RooAddPdf * model;
-  if(true) {
+  if(false) {
     TFile *file_ = TFile::Open("QCD_BKG_AllPt.root");
     TTree *treephys14bkg = (TTree *) file_->Get ("Events");
     TH1F *h_ = new TH1F("h_"," ", 200, -800, 800);
-    treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),
-		condition.Data(),"sames");
+    treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),	condition.Data(),"sames");
     RooDataHist *bkg_hist= new RooDataHist("bkg_hist","bkg_hist",x,h_);
     RooHistPdf *bkg_pdf = new RooHistPdf("bkg_pdf","bkg_pdf",RooArgSet(x),*bkg_hist);
     RooRealVar lAbkgFrac("AbkgFrac","AbkgFrac",0.5,0.,1.);
@@ -96,12 +99,6 @@ void constructModel(RooDataHist Hist,double m,double um,double uM, TString varia
       result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose //  
   }
 
-=======
-
-  //      RooFitResult *result = voigt->fitTo ((Hist), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
-  result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));// -1 verbose
-  //https://root.cern.ch/phpBB3/viewtopic.php?f=15&t=16764
-  //status=0 ok
   if(result->status()!=0) voigt=0;
 
   //Get the FWHM
@@ -126,21 +123,7 @@ void constructModel(RooDataHist Hist,double m,double um,double uM, TString varia
 void
 metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2)
 {
-  //gROOT->SetStyle("tdrStyle"); // added later
-  //gROOT->ForceStyle(true); // added later
-  
-  TString variablenamepng=variablename;
-  variablenamepng.ReplaceAll("/","over");
-  //TString DestFolder = "BKG_Subtraction/";//"Not_BKG_Subtracted/";
-
-  TH1::SetDefaultSumw2() ;
-
-  //gROOT->ProcessLine(".L tdrstyle.C");
-  //setTDRStyle();
-         gROOT->SetStyle("tdrStyle");
-         gROOT->ForceStyle(true);
-                                                  
-  
+                                                   
   
   TString variablenamepng=variablename;
   variablenamepng.ReplaceAll("/","over");
@@ -169,19 +152,6 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
    gSystem->Load ("libRooFit");
   // gSystem->Load ("RooRealVar");
 
-  
-
-/*  gStyle->SetOptStat (0);
->>>>>>> master
-  gStyle->SetCanvasColor (0);
-  gStyle->SetPadColor (0);
-  gStyle->SetPalette (1);
-  //gStyle->SetMarkerStyle (kFullCircle);
-  // gStyle->SetMarkerSize (1);
-  gStyle->SetTextFont (42);
-  gStyle->SetMarkerColor (1);
-  gStyle->SetOptTitle (0);
-  */
 
 
   TCanvas *c1 = new TCanvas ("c1", "c1", 800, 800);
@@ -269,14 +239,6 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
   Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray],
     etgraphx[sizexarray], tgraphxchi2[sizexarray], tgraphychi2[sizexarray];
-
-    
-    
-    TH1F *histonvertex=new TH1F("histonvertex","",50,0,50);
-    TH1F *histoqt=new TH1F("histoqt","",100,0,1200);
-    TH1F *histosumEt=new TH1F("histosumEt","",100,0,4);
-    TH1F *histouparaqt=new TH1F("histouparaqt","",50,-300,300);
-    TH1F *histouperp=new TH1F("histouperp","",50,-300,300);
     
     
 
@@ -306,7 +268,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
       //      TString condition="(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">=" + strlimitdown + ")";
 
-      TString condition="(weighttotal)*(channel=="+dileptonch +")*";
+      condition="(weighttotal)*(channel=="+dileptonch +")*";
       //      if (tchannel == "Gamma") condition="(weighttotal)*";
       if (xvariable == "nvtx") condition += "(" + xvariable + "==" + strlimitup +")";
       else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
@@ -323,9 +285,6 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
       double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
 
-      double m  = resolution[index]->GetMean ();
-      double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
-      double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
 
 
       ////////
@@ -491,7 +450,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   c1->Print ("~/www/METResolution/" + folder + "/" + tchannel + "/" +  variablenamepng  + "_vs_" +	     xvariable + "_chi2.png");
   c1->Clear (); }
 
-  TFile f (folder + "_tgraphs.root", "UPDATE");
+  TFile f2 (folder + "_tgraphs.root", "UPDATE");
   gr->Write (variablename + "_vs_" + xvariable);
 
 
