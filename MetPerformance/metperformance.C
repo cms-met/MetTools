@@ -70,7 +70,7 @@ RooFitResult *result;
 double f;
 double efwhm;
 
-void constructModel(RooDataHist Hist,double m,double um,double uM, TString variablename, TString condition ) {
+void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, double m,double um,double uM, bool BKGSubtract) {
 
       
   f=0;
@@ -83,12 +83,7 @@ void constructModel(RooDataHist Hist,double m,double um,double uM, TString varia
   voigt =new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
   
   RooAddPdf * model;
-  if(false) {
-    TFile *file_ = TFile::Open("QCD_BKG_AllPt.root");
-    TTree *treephys14bkg = (TTree *) file_->Get ("Events");
-    TH1F *h_ = new TH1F("h_"," ", 200, -800, 800);
-    treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),	condition.Data(),"sames");
-    RooDataHist *bkg_hist= new RooDataHist("bkg_hist","bkg_hist",x,h_);
+  if(BKGSubtract) {
     RooHistPdf *bkg_pdf = new RooHistPdf("bkg_pdf","bkg_pdf",RooArgSet(x),*bkg_hist);
     RooRealVar lAbkgFrac("AbkgFrac","AbkgFrac",0.5,0.,1.);
     RooFormulaVar * sigbkgFrac= new RooFormulaVar("bkgfrac","@0",RooArgSet(lAbkgFrac));
@@ -121,7 +116,7 @@ void constructModel(RooDataHist Hist,double m,double um,double uM, TString varia
 
 
 void
-metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2)
+metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2, bool WantBKGSubtract)
 {
                                                    
   
@@ -291,11 +286,17 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       
       RooDataHist Hist ("Hist", "Hist", x,
 			(TH1 *) resolution[index]->Clone ());
+			
+      TFile *file_ = TFile::Open("/eos/uscms/store/user/asantra4/MET_Performance/FinalRootNtuple/QCD_BKG_AllPt.root");
+      TTree *treephys14bkg = (TTree *) file_->Get ("Events");
+      TH1F *h_ = new TH1F("h_"," ", 200, -800, 800);
+      treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),	condition.Data(),"sames");
+      RooDataHist *bkg_histogram= new RooDataHist("bkg_histogram","bkg_histogram",x,h_);
       
       // construct the voightian model
       // fit the Hist Dataset also
       // fill f and efwhm that are the parameter of the voightian
-      constructModel(Hist,m,um,uM, variablename, condition);
+      constructModel(Hist, bkg_histogram, m, um, uM, WantBKGSubtract);
 
       //if (f/2.3 < 5) continue;
       RooPlot *xFrame = x.frame ();
@@ -399,12 +400,12 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
 
   TGraph *gr =  new TGraphErrors (sizexarray, tgraphx, tgraphy, etgraphx, etgraphy);
-  //gr->SetMarkerColor (4);
-  //gr->SetMarkerStyle (21);
+  gr->SetMarkerColor (4);
+  gr->SetMarkerStyle (21);
 
   TGraph *grchi2 = new TGraph (sizexarray, tgraphxchi2, tgraphychi2);
-  //grchi2->SetMarkerColor (2);
-  //grchi2->SetMarkerStyle (34);
+  grchi2->SetMarkerColor (2);
+  grchi2->SetMarkerStyle (34);
   
   
   if (xvariable == "sumEt")
