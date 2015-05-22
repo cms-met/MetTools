@@ -272,13 +272,17 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       
       RooDataHist Hist ("Hist", "Hist", x,
 			(TH1 *) resolution[index]->Clone ());
-			
-      TFile *file_ = TFile::Open("/eos/uscms/store/user/asantra4/MET_Performance/FinalRootNtuple/QCD_BKG_AllPt.root");
-      TTree *treephys14bkg = (TTree *) file_->Get ("Events");
-      TH1F *h_ = new TH1F("h_"," ", 200, -800, 800);
-      treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),	condition.Data(),"sames");
-      RooDataHist *bkg_histogram= new RooDataHist("bkg_histogram","bkg_histogram",x,h_);
-      
+
+      RooDataHist *bkg_histogram=0;
+
+      if(WantBKGSubtract) {
+	TFile *file_ = TFile::Open("/eos/uscms/store/user/asantra4/MET_Performance/FinalRootNtuple/QCD_BKG_AllPt.root");
+	TTree *treephys14bkg = (TTree *) file_->Get ("Events");
+	TH1F *h_ = new TH1F("h_"," ", 200, -800, 800);
+	treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),	condition.Data(),"sames");
+	bkg_histogram= new RooDataHist("bkg_histogram","bkg_histogram",x,h_);
+      }
+
       // construct the voightian model
       // fit the Hist Dataset also
       // fill f and efwhm that are the parameter of the voightian

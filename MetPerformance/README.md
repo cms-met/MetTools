@@ -32,8 +32,8 @@ If variable1 is uparaqt or upararawqt and variable2 is qt, it will generate the 
 
 To run all the plots in one shot:
 ```bash
-.L runmetperformance.C.C
-runmetperformance.C("input.root")
+.L runmetperformance.C+
+runmetperformance("input.root")
 ```
 
 
