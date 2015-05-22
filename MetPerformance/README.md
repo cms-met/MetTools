@@ -1,5 +1,8 @@
-Copy the sample file from:
-/eos/cms/store/cmst3/user/dalfonso/MET/DY_phys14.root
+Copy the sample files from:
+
+/eos/cms/store/cmst3/user/dalfonso/MET/DY_phys14_HT.root
+/eos/cms/store/cmst3/user/dalfonso/MET/GJet_Ntuple_AllHt.root
+
 
 #### How to run scriptcompare 
 
@@ -19,8 +22,8 @@ In principle the histogram with the comparison will be saved in the current work
 
 To run it standalone
 ```bash
-.L metresolution.C+
-metresolution("input.root","variable1","variable2", false)
+.L metperformance.C+
+metperformance("input.root","variable1","variable2", false)
 ```
 This generates the sigma(variable1) vs the variable2 plots in a tgraph. It also generates the png with the result of the fits per bin so that one can inspect them easily.
 If the last option of the funcion is set to true, it will also generate a plot showing the chi2 for all the fits.
@@ -29,8 +32,8 @@ If variable1 is uparaqt or upararawqt and variable2 is qt, it will generate the 
 
 To run all the plots in one shot:
 ```bash
-.L runmetresolution.C
-metresolution("input.root")
+.L runmetperformance.C+
+runmetperformance("input.root")
 ```
 
 
