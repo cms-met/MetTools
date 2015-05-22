@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <stdio.h>
 #include <list>
 #include <iterator>
 #include <algorithm>
@@ -91,7 +92,7 @@ void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, double m,double um,d
     result = model->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
 
   } else {
-      result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose //  
+      result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose //
   }
 
   if(result->status()!=0) voigt=0;
@@ -251,17 +252,6 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
       resolution.push_back (new TH1F (Form ("resx%d", index), " ", 200, -800, 800));
       
-       
-      
-
-      condition="(weighttotal)*(channel=="+dileptonch +")*";
-      if (tchannel == "Gamma") condition="";
-      if (xvariable == "nvtx") condition += "(" + xvariable + "==" + strlimitup +")";
-      else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
-      //cout << "string name: " << TString(resolution[index]->GetName()) << endl;
-
-
-      //      TString condition="(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">=" + strlimitdown + ")";
 
       condition="(weighttotal)*(channel=="+dileptonch +")*";
       //      if (tchannel == "Gamma") condition="(weighttotal)*";
@@ -271,10 +261,6 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
 			condition.Data(), "sames");
 
-      treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
-			condition.Data(),"sames");
-      
-      //treephys14->Draw (variablename + ">>" +			    TString (resolution[index]->GetName ()), "(weighttotal)*(channel=="+ dileptonch +")*(" + xvariable + "<" + strlimitup +			    ")*(" + xvariable + ">=" + strlimitdown + ")",			    "sames"); // added later
      
       double m =  resolution[index]->GetMean ();
       double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
@@ -364,6 +350,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
       tgraphy[index] = f / 2.3548;
       if (variablename == "upara/qt"){
 	    tgraphy[index] = -resolution[index]->GetMean ();
+	    
 	    if(tgraphy[index] > 1.0){
 	       TString condition2="(weighttotal)*(channel=="+dileptonch +")";
                treephys14->Draw ("upara >> upararesponse1", condition.Data());
