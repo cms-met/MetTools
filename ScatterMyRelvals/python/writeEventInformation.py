@@ -2,7 +2,7 @@ from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--inputFiles", dest="inputFiles", default='relValFiles.pkl', type="string", action="store", help="pkl file with eos filenames")
 parser.add_option("--run", dest="run", default=-1, type=int, action="store", help="run?")
-parser.add_option("--outputFile", dest="outputFile", default='relValData.zpkl', type="string", action="store", help="zpkl file with output data")
+parser.add_option("--outputFile", dest="outputFile", default='output.root', type="string", action="store", help="zpkl file with output data")
 parser.add_option("--maxEvents", dest="maxEvents", default=-1, type="int", action="store", help="how many events (max)")
 parser.add_option("--miniAOD", dest="miniAOD", action="store_true", help="Just do a miniAOD subset.")
 
