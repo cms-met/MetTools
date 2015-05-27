@@ -41,3 +41,34 @@ def translatePdgIdToType(pdg):
   if apdg==1:   return 6
   if apdg==2:   return 7
   return 0
+
+import os
+def getContent(dir, eos=False):
+  if eos:
+    eosCMD = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
+    p = os.popen(" ".join([eosCMD, "ls", dir]),"r")
+  else:
+    p = os.popen(" ".join(["ls", dir]),"r")
+  all=[]
+  while True:
+    l = p.readline()
+    if not l: break
+    dn=l[:-1]
+    all.append(dir+'/'+dn)
+  return all 
+
+def save(object, filename, protocol = -1):
+  import cPickle, gzip
+  """Save an object to a compressed disk file.
+     Works well with huge objects.
+  """
+  file = gzip.GzipFile(filename, 'wb')
+  cPickle.dump(object, file, protocol)
+  file.close()
+
+def load(filename):
+  import cPickle, gzip
+  file = gzip.GzipFile(filename, 'rb')
+  object = cPickle.load(file)
+  file.close()
+  return object

@@ -10,22 +10,23 @@ varType = {"multiplicity":0, "nvtx":1, "sumPt":2, 0:"multiplicity",1:"nvtx", 2:"
 #Define categories for MET phi corrections below
 h                 = {'name':'h', 'type':'h',  'etaRange':[0,2.7]}
 h0Barrel          = {'name':'h0Barrel', 'type':'h0',  'etaRange':[0,1.392]}
-h0Endcap      = {'name':'h0EndcapPlus', 'type':'h0',  'etaRange':[1.392,3]}
+h0Endcap      = {'name':'h0Endcap', 'type':'h0',  'etaRange':[1.392,3]}
 gammaBarrel       = {'name':'gammaBarrel', 'type':'gamma',  'etaRange':[0,1.479]}
-gammaEndcap   = {'name':'gammaEndcapPlus', 'type':'gamma',  'etaRange':[1.479,3.]}
-gammaForward  = {'name':'gammaForwardPlus', 'type':'gamma',  'etaRange':[3.,5.]}
+gammaEndcap   = {'name':'gammaEndcap', 'type':'gamma',  'etaRange':[1.479,3.]}
+gammaForward  = {'name':'gammaForward', 'type':'gamma',  'etaRange':[3.,5.]}
 e                 = {'name':'e', 'type':'e',  'etaRange':[0,5]}
 mu                = {'name':'mu','type':'mu', 'etaRange':[0,5]}
 
 etaMaxDepth1 = 5.2
 etaMinDepth1 = 2.901376
-egamma_HF         = {'name':'egamma_HFPlus', 'type':'egamma_HF',   'etaRange':[etaMinDepth1,etaMaxDepth1]}
+egamma_HF         = {'name':'egamma_HF', 'type':'egamma_HF',   'etaRange':[etaMinDepth1,etaMaxDepth1]}
 
 etaMaxDepth1 = 5.2
 etaMinDepth1 = 2.901376
-h_HF         = {'name':'h_HFPlus', 'type':'h_HF',   'etaRange':[etaMinDepth1,etaMaxDepth1]}
+h_HF          = {'name':'h_HF', 'type':'h_HF',   'etaRange':[etaMinDepth1,etaMaxDepth1]}
+h_HF4         = {'name':'h_HF4', 'type':'h_HF',   'etaRange':[4,etaMaxDepth1]}
 
 
 
-allCategories = [h, h0Barrel, h0Endcap, gammaBarrel, gammaEndcap, gammaForward, e, h_HF, mu, egamma_HF   ]
+allCategories = [h, h0Barrel, h0Endcap, gammaBarrel, gammaEndcap, gammaForward, e, h_HF, mu, egamma_HF , h_HF4  ]
 
