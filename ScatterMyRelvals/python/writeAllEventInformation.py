@@ -97,6 +97,7 @@ for k in allRelVals.keys():
     sfile.write("scramv1 project CMSSW "+release+'\n')
     sfile.write('cd '+release+'/src\n')
     sfile.write('eval `scramv1 runtime -sh`\n')
+    assert len(allRelVals[k])>0, "Empty file list! Check access rights."
     opts = ['--inputFiles='+','.join([dressFileName(x) for x in allRelVals[k]]), '--outputFile='+fname, '--run='+str(options.run), '--maxEvents='+str(options.maxEvents)]
     if 'miniaod' in k.lower() or options.miniAOD:
       opts.append('--miniAOD')
