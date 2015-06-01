@@ -6,6 +6,7 @@ parser.add_option("--vetoList", dest="vetoList", default='', type="string", acti
 parser.add_option("--run", dest="run", default=-1, type="int", action="store", help="which run")
 parser.add_option("--percentile", dest="percentile", default=-1, type="float", action="store", help="percentile 0.99 -> plotrange adjusted to keep keep lower 99%")
 parser.add_option("--plotDirectory", dest="plotDirectory", default='.', type="string", action="store", help="Where should the plots go?")
+parser.add_option("--profile", dest="profile", action="store_true", help="Whether to do profile.")
 
 (options, args) = parser.parse_args()
 
@@ -18,7 +19,7 @@ import sys, os, copy, random, subprocess, datetime
 from helpers import load as zpklLoad
 
 def load(f):
-  if f[-4:]=='.zpkl':
+  if f[-5:]=='.zpkl':
     print "Loading zpkl file %s"%f
     return zpklLoad(f)
   else:
@@ -161,7 +162,8 @@ for s in scatterPlots:
 #    fit=False 
   c1.SetLogz()
   histo.Draw('colz')
-  profile.Draw("eh1same")
+  if options.profile:
+    profile.Draw("eh1same")
   l=ROOT.TLine(0,0,histo.GetXaxis().GetXmax(),histo.GetXaxis().GetXmax())
   l.Draw()
 #  if fit:
