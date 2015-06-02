@@ -9,22 +9,5 @@ def translatePdgIdToType(pdg):
   if apdg==2:   return 7
   return 0
 
-def save(object, filename, protocol = -1):
-  import cPickle, gzip
-  """Save an object to a compressed disk file.
-     Works well with huge objects.
-  """
-  file = gzip.GzipFile(filename, 'wb')
-  cPickle.dump(object, file, protocol)
-  file.close()
-
-def load(filename):
-  import cPickle, gzip
-  """Loads a compressed object from disk
-  """
-  file = gzip.GzipFile(filename, 'rb')
-  object = cPickle.load(file)
-  file.close()
-
-  return object
+    
 
