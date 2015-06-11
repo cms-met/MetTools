@@ -33,7 +33,7 @@
 #include "TLatex.h"
 #include "TString.h"
 #include "TSystem.h"
-//#include "conio.h"
+
 
 //#include "METFunctions.hh"
 
@@ -137,6 +137,8 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
     folder = "Gamma";
   if(samplephys14.Contains ("QCD"))
     folder = "QCD";
+  if (samplephys14.Contains("pseudo"))
+   folder ="pseudo";
 
 
   TString titley = "";
@@ -181,15 +183,16 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   TString strlimitup = "0";
   TString strlimitdown = "0";
 
-  int sizexarray = 0;
+  int tempsizexarray = 0;
 
   if (xvariable == "nvtx")
-    sizexarray = 6;
+    tempsizexarray = 6;
   if (xvariable == "sumEt")
-    sizexarray = 6;
+    tempsizexarray = 6;
   if (xvariable == "qt")
-    sizexarray = 10;
+    tempsizexarray = 10;
 
+  const int sizexarray=tempsizexarray;
   TH1F *histonvertex=new TH1F("histonvertex","histonvertex",50,0,50); // added later
   TH1F *histoqt=new TH1F("histoqt","histoqt",100,0,1200); // added later
   TH1F *histosumEt=new TH1F("histosumEt","histosumEt",100,0,4); // added later
@@ -270,13 +273,16 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
       ////////
       
-      RooDataHist Hist ("Hist", "Hist", x,
-			(TH1 *) resolution[index]->Clone ());
+      RooDataHist Hist ("Hist", "Hist", x,			(TH1 *) resolution[index]->Clone ());
 
       RooDataHist *bkg_histogram=0;
 
       if(WantBKGSubtract) {
-	TFile *file_ = TFile::Open("/eos/uscms/store/user/asantra4/MET_Performance/FinalRootNtuple/QCD_BKG_AllPt.root");
+	TFile *file_ ;
+	
+	if (tchannel=="Gamma") file_=TFile::Open("/eos/uscms/store/user/asantra4/MET_Performance/FinalRootNtuple/QCD_BKG_AllPt.root");
+	else file_=TFile::Open("TTbar_phys14.root");
+	cout << "funciona " << endl;
 	TTree *treephys14bkg = (TTree *) file_->Get ("Events");
 	TH1F *h_ = new TH1F("h_"," ", 200, -800, 800);
 	treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),	condition.Data(),"sames");
@@ -443,7 +449,7 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   c1->Clear (); }
 
   TFile f2 (folder + "_tgraphs.root", "UPDATE");
-  gr->Write (variablename + "_vs_" + xvariable);
+  gr->Write (variablenamepng + "_vs_" + xvariable);
 
 
   c1->Update ();
