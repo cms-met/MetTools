@@ -90,7 +90,6 @@ void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, double m,double um,d
     RooFormulaVar * sigbkgFrac= new RooFormulaVar("bkgfrac","@0",RooArgSet(*lAbkgFrac));
     model = new RooAddPdf("modelSB","modelSB",*voigt,*bkg_pdf,*sigbkgFrac);
     result = model->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
-    //c1->Print("~/www/prueba.png");
                          
   } else {
       result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose //
@@ -333,17 +332,8 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
       TString histoname = resolution[index]->GetName ();
       xFrame->Draw();
       c1->Print ("~/www/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
-      
-      
-      voigt->plotOn(xFrame,RooFit::FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band in gray
-      voigt->plotOn(xFrame,RooFit::LineColor(color));
-      
-      
 
-      c1->cd();
-      xFrame->Draw ();
-      cout << "frame made " << endl;
-              
+
       //c1->Print ("~/www/METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
       //Print chi2/dof value
@@ -351,7 +341,6 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
       Double_t chi2 = xFrame->chiSquare ();	//"voigt", "Hist", 3);
       //cout << "chi2 = " << chi2 << endl;
 
-   
       tgraphx[index] = index;
 
       if (xvariable == "nvtx")
