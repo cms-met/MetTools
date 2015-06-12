@@ -1,7 +1,11 @@
 Copy the sample files from:
 
 /eos/cms/store/cmst3/user/dalfonso/MET/DY_phys14_HT.root
+/eos/cms/store/cmst3/user/dalfonso/MET/TTbar_phys14.root
+/eos/cms/store/cmst3/user/dalfonso/MET/pseudo_data_DYttbar.root
+
 /eos/cms/store/cmst3/user/dalfonso/MET/GJet_Ntuple_AllHt.root
+/eos/cms/store/cmst3/user/dalfonso/MET/QCD_BKG_AllPt.root
 
 
 #### How to run scriptcompare 
@@ -33,8 +37,9 @@ If variable1 is uparaqt or upararawqt and variable2 is qt, it will generate the 
 To run all the plots in one shot:
 ```bash
 .L runmetperformance.C+
-runmetperformance("input.root")
+runmetperformance("input.root",false)
 ```
+The second argument switch on/off the bkg subtraction
 
 
 ##### How to run comparetgraphs.C
