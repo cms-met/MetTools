@@ -98,7 +98,7 @@ void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, double m,double um,d
       result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose //
   }
 
-  if(result->status()!=0) voigt=0;
+  //if(result->status()!=0) voigt=0;
 
 
 
@@ -151,8 +151,6 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
   if (variablename == "pfmety")
     titley = "#sigma(MET_{y}) GeV";
 
-   //gSystem->Load ("libRooFit");
-  // gSystem->Load ("RooRealVar");
 
 
 
@@ -322,32 +320,33 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
 
       cout << "plot made " << endl;
       c1->cd();
-      RooPlot *xFrame2 =x.frame();
+      
       //Hist.plotOn(xFrame2);
       //model->plotOn(xFrame2,RooFit::LineColor(kBlack));
       if ( WantBKGSubtract  )      {
-      model->plotOn(xFrame2);
-      model->plotOn(xFrame2,Components("bkg_pdf")     ,LineColor(kRed)  ,LineStyle(kDashed),FillColor(kRed)  ,DrawOption("F")) ;
-      model->plotOn(xFrame2,Components("voigt")     ,LineColor(kGreen)  ,LineStyle(kDashed),FillColor(kGreen+1)  ,DrawOption("L")) ;
+      model->plotOn(xFrame);
+      model->plotOn(xFrame,Components("bkg_pdf")     ,LineColor(kRed)  ,LineStyle(kDashed),FillColor(kRed)  ,DrawOption("F")) ;
+      model->plotOn(xFrame,Components("voigt")     ,LineColor(kGreen)  ,LineStyle(kDashed),FillColor(kGreen+1)  ,DrawOption("L")) ;
       }  
-      else {Hist.plotOn(xFrame2);}                             
+      else {Hist.plotOn(xFrame);
+      voigt->plotOn(xFrame,RooFit::FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band in gray
+      voigt->plotOn(xFrame,RooFit::LineColor(color));
+            }                             
       TString histoname = resolution[index]->GetName ();
-      xFrame2->Draw();
+      xFrame->Draw();
       c1->Print ("~/www/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
       
       
-      //if(voigt) voigt->plotOn(xFrame,RooFit::FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band in gray
-      //if(voigt) voigt->plotOn(xFrame,RooFit::LineColor(color));
+      voigt->plotOn(xFrame,RooFit::FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band in gray
+      voigt->plotOn(xFrame,RooFit::LineColor(color));
       
       
 
       c1->cd();
       xFrame->Draw ();
       cout << "frame made " << endl;
-      //TString histoname = resolution[index]->GetName ();
-      //cout << "histoname=" << histoname.Data() << endl;
               
-      c1->Print ("~/www/METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
+      //c1->Print ("~/www/METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
       //Print chi2/dof value
 
