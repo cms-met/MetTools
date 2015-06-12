@@ -2,6 +2,7 @@ Copy the sample files from:
 
 /eos/cms/store/cmst3/user/dalfonso/MET/DY_phys14_HT.root
 /eos/cms/store/cmst3/user/dalfonso/MET/TTbar_phys14.root
+/eos/cms/store/cmst3/user/dalfonso/MET/pseudo_data_DYttbar.root
 
 /eos/cms/store/cmst3/user/dalfonso/MET/GJet_Ntuple_AllHt.root
 /eos/cms/store/cmst3/user/dalfonso/MET/QCD_BKG_AllPt.root
