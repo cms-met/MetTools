@@ -35,13 +35,11 @@
 #include "TSystem.h"
 
 
-//#include "METFunctions.hh"
 
 #include <RooRealVar.h>
 #include <RooDataSet.h>
 #include <RooDataHist.h>
 #include <RooFitResult.h>
-//#include <RooGaussian.h>
 #include <RooAddPdf.h>
 #include <RooPlot.h>
 #include <RooVoigtian.h>
@@ -67,9 +65,11 @@ RooRealVar v_m ("v_m", "v_m",0,-10.,10.);
 
 RooVoigtian *voigt;
 RooFitResult *result;
+RooAddPdf *model;
 
 double f;
 double efwhm;
+TCanvas *c1 = new TCanvas ("c1", "c1", 800, 800);
 
 void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, double m,double um,double uM, bool BKGSubtract) {
 
@@ -83,19 +83,21 @@ void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, double m,double um,d
 
   voigt =new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
   
-  RooAddPdf * model;
+  
   if(BKGSubtract) {
     RooHistPdf *bkg_pdf = new RooHistPdf("bkg_pdf","bkg_pdf",RooArgSet(x),*bkg_hist);
-    RooRealVar lAbkgFrac("AbkgFrac","AbkgFrac",0.5,0.,1.);
-    RooFormulaVar * sigbkgFrac= new RooFormulaVar("bkgfrac","@0",RooArgSet(lAbkgFrac));
+    RooRealVar *lAbkgFrac =new RooRealVar("AbkgFrac","AbkgFrac",0.5,0.,1.);
+    RooFormulaVar * sigbkgFrac= new RooFormulaVar("bkgfrac","@0",RooArgSet(*lAbkgFrac));
     model = new RooAddPdf("modelSB","modelSB",*voigt,*bkg_pdf,*sigbkgFrac);
     result = model->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose
-
+                         
   } else {
       result = voigt->fitTo (Hist, RooFit::Minimizer("Minuit2","migrad"),RooFit::Strategy(2), RooFit::SumW2Error (kFALSE), RooFit::Save (kTRUE), RooFit::PrintLevel (-1));	// -1 verbose //
   }
 
-  if(result->status()!=0) voigt=0;
+  //if(result->status()!=0) voigt=0;
+
+
 
   //Get the FWHM
   double sigma = g_w.getVal ();
@@ -116,8 +118,7 @@ void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, double m,double um,d
 }
 
 
-void
-metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2, bool WantBKGSubtract)
+void metperformance (TString samplephys14, TString variablename, TString xvariable, TString tchannel,		bool drawchi2, bool WantBKGSubtract)
 {
                                                    
   
@@ -147,8 +148,6 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
   if (variablename == "pfmety")
     titley = "#sigma(MET_{y}) GeV";
 
-   gSystem->Load ("libRooFit");
-  // gSystem->Load ("RooRealVar");
 
 
 
@@ -287,15 +286,17 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 	TH1F *h_ = new TH1F("h_"," ", 200, -800, 800);
 	treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),	condition.Data(),"sames");
 	bkg_histogram= new RooDataHist("bkg_histogram","bkg_histogram",x,h_);
+
       }
 
       // construct the voightian model
       // fit the Hist Dataset also
       // fill f and efwhm that are the parameter of the voightian
       constructModel(Hist, bkg_histogram, m, um, uM, WantBKGSubtract);
-
+                       
       //if (f/2.3 < 5) continue;
-      RooPlot *xFrame = x.frame ();
+      
+      RooPlot *xFrame=x.frame();
       Hist.plotOn (xFrame);
 
       TString titlexfit = "";
@@ -316,33 +317,30 @@ metperformance (TString samplephys14, TString variablename, TString xvariable, T
 
       cout << "plot made " << endl;
       c1->cd();
-      RooPlot *xFrame2 =x.frame();
-      Hist.plotOn(xFrame2);
+      
+      //Hist.plotOn(xFrame2);
       //model->plotOn(xFrame2,RooFit::LineColor(kBlack));
+      if ( WantBKGSubtract  )      {
+      model->plotOn(xFrame);
+      model->plotOn(xFrame,Components("bkg_pdf")     ,LineColor(kRed)  ,LineStyle(kDashed),FillColor(kRed)  ,DrawOption("F")) ;
+      model->plotOn(xFrame,Components("voigt")     ,LineColor(kGreen)  ,LineStyle(kDashed),FillColor(kGreen+1)  ,DrawOption("L")) ;
+      }  
+      else {Hist.plotOn(xFrame);
+      voigt->plotOn(xFrame,RooFit::FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band in gray
+      voigt->plotOn(xFrame,RooFit::LineColor(color));
+            }                             
       TString histoname = resolution[index]->GetName ();
-      xFrame2->Draw();
+      xFrame->Draw();
       c1->Print ("~/www/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
-      
-      
-      if(voigt) voigt->plotOn(xFrame,RooFit::FillColor(kGray),VisualizeError(*result,1),RooFit::Components(*voigt)); // 1 sigma band in gray
-      if(voigt) voigt->plotOn(xFrame,RooFit::LineColor(color));
-      
-      
 
-      c1->cd();
-      xFrame->Draw ();
-      cout << "frame made " << endl;
-      //TString histoname = resolution[index]->GetName ();
-      //cout << "histoname=" << histoname.Data() << endl;
-              
-      c1->Print ("~/www/METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
+
+      //c1->Print ("~/www/METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
       //Print chi2/dof value
 
       Double_t chi2 = xFrame->chiSquare ();	//"voigt", "Hist", 3);
       //cout << "chi2 = " << chi2 << endl;
 
-   
       tgraphx[index] = index;
 
       if (xvariable == "nvtx")
