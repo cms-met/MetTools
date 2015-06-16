@@ -38,7 +38,7 @@
 #include <TStyle.h>
 #include<TSystem.h>
 
-void comparetgraphs(TString filewithgraphs, TString tgraph1 , TString tgraph2){
+void comparetgraphs(TString filewithgraphs1, TString filewithgraphs2, TString tgraph1){
 
 
 TCanvas *c1 = new TCanvas ("c1", "c1", 800, 800);
@@ -47,12 +47,13 @@ TCanvas *c1 = new TCanvas ("c1", "c1", 800, 800);
 bool resp=false;
 if (tgraph1.Contains("upararawqt" || "uparaqt")) resp=true; 
  
-TFile * inputfile = new TFile(filewithgraphs,"READ");
-TGraphErrors* g1 = (TGraphErrors*) inputfile -> Get(tgraph1);
+TFile * inputfile1 = new TFile(filewithgraphs1,"READ");
+TGraphErrors* g1 = (TGraphErrors*) inputfile1 -> Get(tgraph1);
  g1->SetMarkerStyle(21);
     g1->SetMarkerColor(2);
 
-TGraphErrors* g2 =  (TGraphErrors*) inputfile -> Get(tgraph2);
+TFile * inputfile2= new TFile(filewithgraphs2,"READ");
+TGraphErrors* g2 =  (TGraphErrors*) inputfile2 -> Get(tgraph1);
  g2->SetMarkerStyle(22);
     g2->SetMarkerColor(3);
           
@@ -72,7 +73,7 @@ TGraphErrors* g2 =  (TGraphErrors*) inputfile -> Get(tgraph2);
                           if (tgraph1.Contains("uperp")) g->GetYaxis()->SetTitle("#sigma(u_{#perp}  ) [GeV]");
                           
                           
-                          if (tgraph1.Contains("upararawqt")){
+                          if (tgraph1.Contains("uparaqt")){
                           TLine *lineR =  new TLine ( g->GetHistogram ()->GetXaxis ()->GetXmin (), 1, g->GetHistogram ()->GetXaxis ()->GetXmax (), 1);
                                 lineR->SetLineColor (kBlue + 1);
                                       lineR->SetLineWidth (2);
@@ -91,18 +92,18 @@ TGraphErrors* g2 =  (TGraphErrors*) inputfile -> Get(tgraph2);
                           }
                           
                           
-                          if (!tgraph1.Contains("upararawqt")) g->GetYaxis()->SetRangeUser(-100,100);
+                          if (!tgraph1.Contains("uparaqt")) g->GetYaxis()->SetRangeUser(-100,100);
                            c1->Update();
                           
                            TLegend* leg(0);
                            leg = new TLegend(0.50,0.13,0.79,0.25);
                              
                           leg->SetFillColor(0);
-                          leg->AddEntry(g1, "Raw PFMET", "lp");
-                          leg->AddEntry(g2, "PFMET (type1)", "lp");
+                          leg->AddEntry(g1, "PseudoData", "lp");
+                          leg->AddEntry(g2, "DY", "lp");
                          leg->Draw();
                           c1->Modified();
-                          c1->Print(tgraph1+"_vs_"+tgraph2+".png");
+                          c1->Print(tgraph1+".png");
                           
 
 }
