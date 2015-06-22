@@ -347,14 +347,8 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
       TString histoname = resolution[index]->GetName ();
       xFrame->GetYaxis()->SetRangeUser(1,10000000);
       xFrame->Draw();
-<<<<<<< HEAD
       c1->Print ("~/www/"+DestFolder+"/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
-=======
-      c1->SetLogy();
-      c1->Print ("~/www/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
-    
->>>>>>> 85ace4fe361dc236edf00914abfe382b3e35b252
 
       //c1->Print ("~/www/"+DestFolder+"/METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
@@ -468,13 +462,8 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
   c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/" + tchannel + "/" +  variablenamepng  + "_vs_" +	     xvariable + "_chi2.png");
   c1->Clear (); }
 
-<<<<<<< HEAD
   TFile f2 (DestFolder+folder+ "_tgraphs.root", "UPDATE");
-  gr->Write (variablenamepng + "_vs_" + xvariable);
-=======
-  TFile f2 (folder + "_tgraphs.root", "UPDATE");
   gr->Write (tchannel+"_"+variablenamepng + "_vs_" + xvariable);
->>>>>>> 85ace4fe361dc236edf00914abfe382b3e35b252
 
 
   c1->Update ();
