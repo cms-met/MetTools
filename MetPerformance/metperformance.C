@@ -71,15 +71,13 @@ double f;
 double efwhm;
 //TCanvas *c1 = new TCanvas ("c1", "c1", 800, 800);
 
-void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, double m,double um,double uM, bool BKGSubtract) {
+void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, bool BKGSubtract) {
 
-      
   f=0;
   efwhm=0;
 
-
-  v_m.setVal(m);
-  v_m.setRange(um,uM);
+  v_m.setVal(Hist.mean(x) );
+  v_m.setRange(Hist.mean(x) - Hist.sigma(x), Hist.mean(x) + Hist.sigma(x));
 
   voigt =new RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w);
   
@@ -273,13 +271,6 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
 			condition.Data(), "sames");
       //cout << "The PseudoData integral : " << resolution[index]->Integral(strlimitdown, strlimitup) << "for variable: " << variablename << " for bin: res" << index << endl;
 
-     
-      double m =  resolution[index]->GetMean ();
-      double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
-      double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
-
-
-
       ////////
       
       RooDataHist Hist ("Hist", "Hist", x,			(TH1 *) resolution[index]->Clone ());
@@ -306,7 +297,7 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
       // construct the voightian model
       // fit the Hist Dataset also
       // fill f and efwhm that are the parameter of the voightian
-      constructModel(Hist, bkg_histogram, m, um, uM, WantBKGSubtract);
+      constructModel(Hist, bkg_histogram, WantBKGSubtract);
                        
       //if (f/2.3 < 5) continue;
       
