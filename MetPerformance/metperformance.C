@@ -69,7 +69,7 @@ RooAddPdf *model;
 
 double f;
 double efwhm;
-TCanvas *c1 = new TCanvas ("c1", "c1", 800, 800);
+//TCanvas *c1 = new TCanvas ("c1", "c1", 800, 800);
 
 void constructModel(RooDataHist Hist,RooDataHist *bkg_hist, double m,double um,double uM, bool BKGSubtract) {
 
@@ -345,6 +345,7 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
         voigt->plotOn(xFrame, RooFit::LineColor(color));
       }                             
       TString histoname = resolution[index]->GetName ();
+      xFrame->GetYaxis()->SetRangeUser(1,10000000);
       xFrame->Draw();
       c1->Print ("~/www/"+DestFolder+"/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
@@ -462,7 +463,7 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
   c1->Clear (); }
 
   TFile f2 (DestFolder+folder+ "_tgraphs.root", "UPDATE");
-  gr->Write (variablenamepng + "_vs_" + xvariable);
+  gr->Write (tchannel+"_"+variablenamepng + "_vs_" + xvariable);
 
 
   c1->Update ();
