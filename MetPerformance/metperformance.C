@@ -58,7 +58,7 @@ double FWHMError_fixed (double, double, double, double, double, double, double,
 
 
 
-RooRealVar x ("x", "x", -400, 400); // changed the axis range, we only need 800 for qt going to 500 GeV.
+RooRealVar x ("x", "x", -400, 400); // changed the axis range, we only need 800 for zll_pt going to 500 GeV.
 RooRealVar g_w ("g_w", "width Gaus", 10., 0., 100., "GeV");	//40
 RooRealVar gamma_Z0 ("gamma_Z0_U", "Z0 width", 2.3, 0, 100, "GeV");	//20
 RooRealVar v_m ("v_m", "v_m",0,-10.,10.);
@@ -136,7 +136,7 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
   TH1::SetDefaultSumw2() ;
 
    
-
+cout << "sample phys " << samplephys14 << endl;
   TString folder = "DY";
   if (samplephys14.Contains ("TT"))
     folder = "TTbar";
@@ -144,10 +144,13 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
     folder = "Gamma";
   if(samplephys14.Contains ("QCD"))
     folder = "QCD";
-  if (samplephys14.Contains("Pseudo"))
-   folder ="Pseudo";
+  if(samplephys14.Contains("Pseudo"))
+   {folder ="Pseudo"; cout << " ENTRA AQUIIIIIIIIIIIIIIIIII!!!!!!!!!!!!!!" << endl;}
 
 
+cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << endl;
+  
+  
   TString titley = "";
   if (variablename == "pfmetx")
     titley = "#sigma(MET_{x}) GeV";
@@ -173,7 +176,7 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
 
 
 
-  TTree *treephys14 = (TTree *) filephys14.Get ("Events");
+  TTree *treephys14 = (TTree *) filephys14.Get ("METtree");
 
 
 
@@ -190,21 +193,22 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
 
   int tempsizexarray = 0;
 
-  if (xvariable == "nvtx")
+  if (xvariable == "nVert")
     tempsizexarray = 6;
-  if (xvariable == "sumEt")
+  if (xvariable == "met_sumEt")
     tempsizexarray = 6;
-  if (xvariable == "qt")
+  if (xvariable == "zll_pt")
     tempsizexarray = 10;
+
 
   const int sizexarray=tempsizexarray;
   TH1F *histonvertex=new TH1F("histonvertex","histonvertex",50,0,50); // added later
-  TH1F *histoqt=new TH1F("histoqt","histoqt",100,0,1200); // added later
-  TH1F *histosumEt=new TH1F("histosumEt","histosumEt",100,0,4); // added later
-  TH1F *histouparaqt=new TH1F("histouparaqt","histouparaqt",50,-300,300); // added later
-  TH1F *histouperp=new TH1F("histouperp","histouperp",50,-300,300); // added later
-  TH1F *upararesponse1=new TH1F("upararesponse1","upara",50,-300,300); // added later
-  TH1F *qtresponse1=new TH1F("qtresponse1","qt",100,0,100); // added later
+  TH1F *histozll_pt=new TH1F("histozll_pt","histozll_pt",100,0,1200); // added later
+  TH1F *histomet_sumEt=new TH1F("histomet_sumEt","histomet_sumEt",100,0,4); // added later
+  TH1F *histomet_uPara_zllzll_pt=new TH1F("histomet_uPara_zllzll_pt","histomet_uPara_zllzll_pt",50,-300,300); // added later
+  TH1F *histomet_uPerp_zll=new TH1F("histomet_uPerp_zll","histomet_uPerp_zll",50,-300,300); // added later
+  TH1F *met_uPara_zllresponse1=new TH1F("met_uPara_zllresponse1","met_uPara_zll",50,-300,300); // added later
+  TH1F *zll_ptresponse1=new TH1F("zll_ptresponse1","zll_pt",100,0,100); // added later
   
   TString dileptonch="";
   if (tchannel=="MuMu")  dileptonch="1";
@@ -212,31 +216,31 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
   
   
   // Plot inclusive distributions of the main variables
-  TString condition="(weighttotal)*(channel=="+dileptonch +")";
+  TString condition="(xsec)";//"(weighttotal)*(channel=="+dileptonch +")";
   //cout << condition.Data() << endl;
-  treephys14->Draw ("nvtx >> histonvertex", condition.Data());
-  treephys14->Draw ("qt >> histoqt", condition.Data(), "sames");
-  treephys14->Draw ("sumEt/1000 >> histosumEt", condition.Data());
-  treephys14->Draw ("upara+qt >> histouparaqt", condition.Data());
-  treephys14->Draw ("uperp >> histouperp", condition.Data());
+  treephys14->Draw ("nVert >> histonvertex", condition.Data());
+  treephys14->Draw ("zll_pt >> histozll_pt", condition.Data());
+  treephys14->Draw ("met_sumEt/1000 >> histomet_sumEt", condition.Data());
+  treephys14->Draw ("met_uPara_zll+zll_pt >> histomet_uPara_zllzll_pt", condition.Data());
+  treephys14->Draw ("met_uPerp_zll >> histomet_uPerp_zll",condition.Data());//condition.Data());//, condition.Data());
           
           
   histonvertex->Draw();
   histonvertex->GetXaxis ()->SetTitle ("Number of Vertices");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/nvtx_inclusive_.png");
+  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/nVert_inclusive_.png");
   c1->SetLogy();
-  histoqt->Draw();
-  histoqt->GetXaxis ()->SetTitle ("qt [GeV]");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/"+ folder + "/"+tchannel +"/qt_inclusive_.png");
-  histosumEt->Draw();
-  histosumEt->GetXaxis ()->SetTitle("sumE_{T} [TeV]");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/sumEt_inclusive_.png");
-  histouparaqt->Draw();
-  histouparaqt->GetXaxis ()->SetTitle ("u_{||}+qt [GeV]");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/"+ folder + "/"+tchannel +"/uparaqt_inclusive_.png");
-  histouperp->Draw();
-  histouperp->GetXaxis ()->SetTitle ("u_{#perp}   [GeV]");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/uperp_inclusive_.png");
+  histozll_pt->Draw();
+  histozll_pt->GetXaxis ()->SetTitle ("zll_pt [GeV]");
+  c1->Print ("~/www/"+DestFolder+"/METResolution/"+ folder + "/"+tchannel +"/zll_pt_inclusive_.png");
+  histomet_sumEt->Draw();
+  histomet_sumEt->GetXaxis ()->SetTitle("sumE_{T} [TeV]");
+  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_sumEt_inclusive_.png");
+  histomet_uPara_zllzll_pt->Draw();
+  histomet_uPara_zllzll_pt->GetXaxis ()->SetTitle ("u_{||}+zll_pt [GeV]");
+  c1->Print ("~/www/"+DestFolder+"/METResolution/"+ folder + "/"+tchannel +"/met_uPara_zllzll_pt_inclusive_.png");
+  histomet_uPerp_zll->Draw();
+  histomet_uPerp_zll->GetXaxis ()->SetTitle ("u_{#perp}   [GeV]");
+  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_uPerp_zll_inclusive_.png");
   c1->SetLogy(0);
 
 
@@ -250,23 +254,25 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
 
   for (int index = 0; index < sizexarray; index++)
     {
-      if (xvariable == "nvtx")
+      if (xvariable == "nVert")
 	limitup = (index + 1) * 5;
-      if (xvariable == "sumEt")
+      if (xvariable == "met_sumEt")
 	limitup = (index + 1) * 200;
-      if (xvariable == "qt")
+      if (xvariable == "zll_pt")
 	limitup = (index + 1) * 12;
       strlimitup = Form ("%d", limitup);
-
+cout << variablename << endl;
+cout << limitup << endl;
       if(variablenamepng.Contains("over"))
-        resolution.push_back (new TH1F (Form ("resx%d", index), " ", 200, -5, 5)); // changing the x axis for uparaoverqt, so that models are more visible
+        resolution.push_back (new TH1F (Form ("resx%d", index), " ", 200, -200, 200)); // changing the x axis for met_uPara_zlloverzll_pt, so that models are more visible
       else
         resolution.push_back (new TH1F (Form ("resx%d", index), " ", 200, -400, 400));
       
 
-      condition="(weighttotal)*(channel=="+dileptonch +")*";
+      
+            condition="(xsec)*";//"(weighttotal)*(channel=="+dileptonch +")*";
       //      if (tchannel == "Gamma") condition="(weighttotal)*";
-      if (xvariable == "nvtx") condition += "(" + xvariable + "==" + strlimitup +")";
+      if (xvariable == "nVert") condition += "(" + xvariable + "==" + strlimitup +")";
       else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
 
       treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
@@ -292,7 +298,7 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
 	if (tchannel=="Gamma") file_=TFile::Open("QCD_BKG_Train.root");
 	else file_=TFile::Open("TTbar_phys14.root");
 	cout << "funciona " << endl;
-	TTree *treephys14bkg = (TTree *) file_->Get ("Events");
+	TTree *treephys14bkg = (TTree *) file_->Get ("METtree");
 	int bkgbin(0);
 	if(variablenamepng.Contains("over"))bkgbin = 5;
 	else bkgbin = 400;
@@ -321,11 +327,11 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
       xFrame->SetXTitle (titlexfit);
 
       int color=kBlack;
-      if (xvariable == "nvtx")
+      if (xvariable == "nVert")
 	color = kRed;
-      if (xvariable == "sumEt")
+      if (xvariable == "met_sumEt")
 	color = kGreen+3;
-      if (xvariable == "qt")
+      if (xvariable == "zll_pt")
 	color = kBlue;
       
 
@@ -345,7 +351,7 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
         voigt->plotOn(xFrame, RooFit::LineColor(color));
       }                             
       TString histoname = resolution[index]->GetName ();
-      xFrame->GetYaxis()->SetRangeUser(1,10000000);
+      xFrame->GetYaxis()->SetRangeUser(1,20000000);
       xFrame->Draw();
       c1->Print ("~/www/"+DestFolder+"/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
@@ -359,11 +365,11 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
 
       tgraphx[index] = index;
 
-      if (xvariable == "nvtx")
+      if (xvariable == "nVert")
 	tgraphx[index] = limitup;
-      if (xvariable == "sumEt")
+      if (xvariable == "met_sumEt")
 	tgraphx[index] = limitup * 0.001;	//For the x axis to be in TEV
-      if (xvariable == "qt")
+      if (xvariable == "zll_pt")
 	tgraphx[index] = limitup;
 
       tgraphxchi2[index] = tgraphx[index];
@@ -372,32 +378,33 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
       if (chi2 != chi2 || chi2 >= 100)
     	tgraphychi2[index] = -0.2;
       tgraphy[index] = f / 2.3548;
-      if (variablename == "upara/qt"){
+      if (variablename == "met_uPara_zll/zll_pt"){
 	    tgraphy[index] = -resolution[index]->GetMean ();
 	    
 // 	    if(tgraphy[index] > 1.0){
 // 	       TString condition2="(weighttotal)*(channel=="+dileptonch +")";
-//                treephys14->Draw ("upara >> upararesponse1", condition.Data());
-//                treephys14->Draw ("qt >> qtresponse1", condition.Data(), "sames");
+//                treephys14->Draw ("met_uPara_zll >> met_uPara_zllresponse1", condition.Data());
+//                treephys14->Draw ("zll_pt >> zll_ptresponse1", condition.Data(), "sames");
 // 	       TString NumberStr;          // string which will contain the result
 //                ostringstream convert;   // stream used for the conversion
 //                convert << index;      // insert the textual representation of 'Number' in the characters in the stream
 //                NumberStr = convert.str(); 
-// 	       upararesponse1->Draw("hist");
-//                upararesponse1->GetXaxis ()->SetTitle ("u_{|| }   [GeV]");
-//                c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/upara_response1_"+NumberStr+".png");
+// 	       met_uPara_zllresponse1->Draw("hist");
+//                met_uPara_zllresponse1->GetXaxis ()->SetTitle ("u_{|| }   [GeV]");
+//                c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_uPara_zll_response1_"+NumberStr+".png");
 //                c1->SetLogy(0);
-// 	       qtresponse1->Draw("hist");
-//                qtresponse1->GetXaxis ()->SetTitle ("qt   [GeV]");
-//                c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/qt_response1_"+NumberStr+".png");
+// 	       zll_ptresponse1->Draw("hist");
+//                zll_ptresponse1->GetXaxis ()->SetTitle ("zll_pt   [GeV]");
+//                c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/zll_pt_response1_"+NumberStr+".png");
 //                c1->SetLogy(0);
 // 	    }
 	    //cout << index << "  and mean: " << -resolution[index]->GetMean () << endl;
       }
       etgraphy[index] = efwhm / 2.3548;
-      if (variablename == "upara/qt" || variablename == "upararaw/qt")
+      if (variablename == "met_uPara_zll/zll_pt" || variablename == "met_uPara_zllraw/zll_pt")
+	    {
 	    etgraphy[index] = resolution[index]->GetMeanError ();
-      etgraphx[index] = 0;
+      etgraphx[index] = 0;}
 
 
       //Set limit down
@@ -419,40 +426,40 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
   grchi2->SetMarkerStyle (34);
   
   
-  if (xvariable == "sumEt")
+  if (xvariable == "met_sumEt")
     {
       gr->GetXaxis ()->SetTitle ("sumE_{T} [TeV]");
       grchi2->GetXaxis ()->SetTitle ("sumE_{T} [TeV]");
     }
-  if (xvariable == "nvtx")
+  if (xvariable == "nVert")
     {
       gr->GetXaxis ()->SetTitle ("Number of Vertices");
       grchi2->GetXaxis ()->SetTitle ("Number of Vertices");
     }
-  if (xvariable == "qt")
+  if (xvariable == "zll_pt")
     {
-      gr->GetXaxis ()->SetTitle ("qt [GeV]");
-      grchi2->GetXaxis ()->SetTitle ("qt [GeV]");
+      gr->GetXaxis ()->SetTitle ("zll_pt [GeV]");
+      grchi2->GetXaxis ()->SetTitle ("zll_pt [GeV]");
     }
 
 
 
   gr->GetYaxis ()->SetTitle (titley);
-  if (variablename == "upara")
+  if (variablename == "met_uPara_zll")
     gr->GetYaxis ()->SetTitle ("#sigma(u_{||}) [GeV]");
-  if (variablename == "upararaw")
+  if (variablename == "met_uPara_zllraw")
     gr->GetYaxis ()->SetTitle ("#sigma(u_{|| raw}) [GeV]");
-  if (variablename == "upara+qt")
-    gr->GetYaxis ()->SetTitle ("#sigma(u_{||} +qt) [GeV]");
-  if (variablename == "upara/qt")
-    gr->GetYaxis ()->SetTitle ("-<u_{||}> /qt ");
-  if (variablename == "upararaw/qt")
-    gr->GetYaxis ()->SetTitle ("-<u_{|| raw}> /qt ");
-  if (variablename == "upararaw+qt")
-    gr->GetYaxis ()->SetTitle ("#sigma(u_{|| raw} +qt) [GeV]");
-  if (variablename == "uperp")
+  if (variablename == "met_uPara_zll+zll_pt")
+    gr->GetYaxis ()->SetTitle ("#sigma(u_{||} +zll_pt) [GeV]");
+  if (variablename == "met_uPara_zll/zll_pt")
+    gr->GetYaxis ()->SetTitle ("-<u_{||}> /zll_pt ");
+  if (variablename == "met_uPara_zllraw/zll_pt")
+    gr->GetYaxis ()->SetTitle ("-<u_{|| raw}> /zll_pt ");
+  if (variablename == "met_uPara_zllraw+zll_pt")
+    gr->GetYaxis ()->SetTitle ("#sigma(u_{|| raw} +zll_pt) [GeV]");
+  if (variablename == "met_uPerp_zll")
     gr->GetYaxis ()->SetTitle ("#sigma(u_{#perp}  ) [GeV]");
-  if (variablename == "uperpraw")
+  if (variablename == "met_uPerp_zllraw")
     gr->GetYaxis ()->SetTitle ("#sigma(u_{#perp raw}  ) [GeV]");
   
 
@@ -494,12 +501,12 @@ void metperformance (TString samplephys14, TString variablename, TString xvariab
   
 
   gr->Draw ("AP");
-  if (variablename!="upara/qt" && variablename!="upararaw/qt") gr->GetYaxis()->SetRangeUser(0,70);
+  if (variablename!="met_uPara_zll/zll_pt" && variablename!="met_uPara_zllraw/zll_pt") gr->GetYaxis()->SetRangeUser(0,70);
   else gr->GetYaxis()->SetRangeUser(0.8,1.2);
   c1->Update();
   
   
-  if (variablename == "upara/qt" || variablename=="upararaw/qt")
+  if (variablename == "met_uPara_zll/zll_pt" || variablename=="met_uPara_zllraw/zll_pt")
     {
       TLine *lineR =  new TLine ( gr->GetHistogram ()->GetXaxis ()->GetXmin (), 1, gr->GetHistogram ()->GetXaxis ()->GetXmax (), 1);
       lineR->SetLineColor (kBlue + 1);
