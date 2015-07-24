@@ -281,17 +281,16 @@ cout << limitup << endl;
       
       condition="(xsec)*(lumi)*";//"(weighttotal)*(channel=="+dileptonch +")*";
 
-      if (xvariable == "nVert") condition += "(" + xvariable + "==" + strlimitup +")";
-      else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
+      if (xvariable == "nVert") condition = "(" + xvariable + "==" + strlimitup +")";
+      else condition = "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
       
       conditionbkg=condition;
-      condition=condition+"/("+totalnevents+")";
-      if(samplephys14.Contains("Data")) condition="";   
+      if(!samplephys14.Contains("Data")) condition=condition+"*((xsec)*(lumi))/"+totalnevents;   
       
       cout << "condition data"  << condition.Data() << endl;
       treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),			condition.Data(), "sames");
 
-     
+      //c1->Print("~/www/"+TString (resolution[index]->GetName ())+".png");     
       double m =  resolution[index]->GetMean ();
       double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
       double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
@@ -312,8 +311,8 @@ cout << limitup << endl;
 	
 	TString totalnbkg="1";
 	TH1F * h1 = (TH1F*)file_->Get("Count");
-	totalnbkg=NtoString(h1->Integral());
-	conditionbkg=conditionbkg+"/("+totalnbkg+")";
+		totalnbkg=NtoString(h1->Integral());
+conditionbkg=conditionbkg+"*((xsec)*(lumi))/("+totalnbkg+")"; 
 	TTree *treephys14bkg = (TTree *) file_->Get ("METtree");
 	int bkgbin(0);
 	if(variablenamepng.Contains("over"))bkgbin = 5;
