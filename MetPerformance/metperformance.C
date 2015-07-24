@@ -55,6 +55,7 @@ double FWHMError (double, double, double, double, double, double, double,
 		  double);
 double FWHMError_fixed (double, double, double, double, double, double, double,
 		  double);
+TString NtoString(Float_t type) ;
 
 
 
@@ -144,8 +145,8 @@ cout << "sample phys " << samplephys14 << endl;
     folder = "Gamma";
   if(samplephys14.Contains ("QCD"))
     folder = "QCD";
-  if(samplephys14.Contains("Pseudo"))
-   {folder ="Pseudo"; cout << " ENTRA AQUIIIIIIIIIIIIIIIIII!!!!!!!!!!!!!!" << endl;}
+  if(samplephys14.Contains("Data"))
+   folder ="Data"; 
 
 
 cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << endl;
@@ -217,6 +218,7 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
   
   // Plot inclusive distributions of the main variables
   TString condition="(xsec)";//"(weighttotal)*(channel=="+dileptonch +")";
+  if (samplephys14.Contains("Data")) condition="";
   //cout << condition.Data() << endl;
   treephys14->Draw ("nVert >> histonvertex", condition.Data());
   treephys14->Draw ("zll_pt >> histozll_pt", condition.Data());
@@ -269,15 +271,25 @@ cout << limitup << endl;
         resolution.push_back (new TH1F (Form ("resx%d", index), " ", 200, -400, 400));
       
 
+
+     TString totalnevents="1";
+     TString lumim="0.0073";
+     TH1F * h0 = (TH1F*)filephys14.Get("Count");
+     totalnevents=NtoString(h0->Integral());
+         
+      TString conditionbkg="";
       
-            condition="(xsec)*";//"(weighttotal)*(channel=="+dileptonch +")*";
-      //      if (tchannel == "Gamma") condition="(weighttotal)*";
+      condition="(xsec)*(lumi)*";//"(weighttotal)*(channel=="+dileptonch +")*";
+
       if (xvariable == "nVert") condition += "(" + xvariable + "==" + strlimitup +")";
       else condition += "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
-
-      treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),
-			condition.Data(), "sames");
-      //cout << "The PseudoData integral : " << resolution[index]->Integral(strlimitdown, strlimitup) << "for variable: " << variablename << " for bin: res" << index << endl;
+      
+      conditionbkg=condition;
+      condition=condition+"/("+totalnevents+")";
+      if(samplephys14.Contains("Data")) condition="";   
+      
+      cout << "condition data"  << condition.Data() << endl;
+      treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),			condition.Data(), "sames");
 
      
       double m =  resolution[index]->GetMean ();
@@ -296,15 +308,19 @@ cout << limitup << endl;
 	TFile *file_ ;
 	
 	if (tchannel=="Gamma") file_=TFile::Open("QCD_BKG_Train.root");
-	else file_=TFile::Open("TTbar_phys14.root");
-	cout << "funciona " << endl;
+	else file_=TFile::Open("TTJets13TeV.root");
+	
+	TString totalnbkg="1";
+	TH1F * h1 = (TH1F*)file_->Get("Count");
+	totalnbkg=NtoString(h1->Integral());
+	conditionbkg=conditionbkg+"/("+totalnbkg+")";
 	TTree *treephys14bkg = (TTree *) file_->Get ("METtree");
 	int bkgbin(0);
 	if(variablenamepng.Contains("over"))bkgbin = 5;
 	else bkgbin = 400;
 	TH1F *h_ = new TH1F("h_"," ", 200, -bkgbin, bkgbin);
-	treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),	condition.Data(),"sames");
-	//cout << "The BKG integral : " << h_->Integral(strlimitdown, strlimitup) << "for variable: " << variablename << " for bin: res" << index << endl;
+	cout << "condition bkg " << conditionbkg << endl;
+	treephys14bkg->Draw (variablename + ">>" + TString (h_->GetName ()),	conditionbkg.Data(),"sames");
 	bkg_histogram= new RooDataHist("bkg_histogram","bkg_histogram",x,h_);
 
       }
@@ -351,7 +367,8 @@ cout << limitup << endl;
         voigt->plotOn(xFrame, RooFit::LineColor(color));
       }                             
       TString histoname = resolution[index]->GetName ();
-      xFrame->GetYaxis()->SetRangeUser(1,20000000);
+      xFrame->GetYaxis()->SetRangeUser(1,20000);
+      xFrame->GetXaxis() ->SetRangeUser(-50,50);
       xFrame->Draw();
       c1->Print ("~/www/"+DestFolder+"/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
@@ -381,6 +398,7 @@ cout << limitup << endl;
       if (variablename == "met_uPara_zll/zll_pt"){
 	    tgraphy[index] = -resolution[index]->GetMean ();
 	    
+
 // 	    if(tgraphy[index] > 1.0){
 // 	       TString condition2="(weighttotal)*(channel=="+dileptonch +")";
 //                treephys14->Draw ("met_uPara_zll >> met_uPara_zllresponse1", condition.Data());
@@ -605,3 +623,12 @@ FWHMError_fixed (double sigma, double gamma, double esigma, double egamma,
   return sqrt ( p1 + p2 + p3 + p4 );
 }
 
+TString NtoString(Float_t type) 
+{ 
+   TString name; name.Form("%f",type); 
+      cout << name << endl;   
+         return name;
+         
+            } 
+            
+            
