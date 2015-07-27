@@ -199,7 +199,7 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
   if (xvariable == "met_sumEt")
     tempsizexarray = 6;
   if (xvariable == "zll_pt")
-    tempsizexarray = 10;
+    tempsizexarray = 6;
 
 
   const int sizexarray=tempsizexarray;
@@ -210,6 +210,8 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
   TH1F *histomet_uPerp_zll=new TH1F("histomet_uPerp_zll","histomet_uPerp_zll",50,-300,300); // added later
   TH1F *met_uPara_zllresponse1=new TH1F("met_uPara_zllresponse1","met_uPara_zll",50,-300,300); // added later
   TH1F *zll_ptresponse1=new TH1F("zll_ptresponse1","zll_pt",100,0,100); // added later
+  TH1F *histoscale=new TH1F("histoscale","histoscale",50,-50,50); // added later
+  
   
   TString dileptonch="";
   if (tchannel=="MuMu")  dileptonch="1";
@@ -223,6 +225,7 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
   treephys14->Draw ("nVert >> histonvertex", condition.Data());
   treephys14->Draw ("zll_pt >> histozll_pt", condition.Data());
   treephys14->Draw ("met_sumEt/1000 >> histomet_sumEt", condition.Data());
+  treephys14->Draw("met_uPara_zll/zll_pt >> histoscale" ) ;
   treephys14->Draw ("met_uPara_zll+zll_pt >> histomet_uPara_zllzll_pt", condition.Data());
   treephys14->Draw ("met_uPerp_zll >> histomet_uPerp_zll",condition.Data());//condition.Data());//, condition.Data());
           
@@ -244,7 +247,9 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
   histomet_uPerp_zll->GetXaxis ()->SetTitle ("u_{#perp}   [GeV]");
   c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_uPerp_zll_inclusive_.png");
   c1->SetLogy(0);
-
+  histoscale->Draw();
+  histoscale->GetXaxis ()->SetTitle ("u_{#perp}   [GeV]");
+  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_uPara_zlloverzll_pt.png");
 
 
   Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray],
@@ -261,10 +266,13 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
       if (xvariable == "met_sumEt")
 	limitup = (index + 1) * 200;
       if (xvariable == "zll_pt")
-	limitup = (index + 1) * 12;
+	limitup = (index + 1) * 20;
       strlimitup = Form ("%d", limitup);
 cout << variablename << endl;
-cout << limitup << endl;
+
+cout << "index " << index << endl;
+cout << "limit down " << limitdown << endl;
+cout << "limit up " << limitup << endl;
       if(variablenamepng.Contains("over"))
         resolution.push_back (new TH1F (Form ("resx%d", index), " ", 200, -200, 200)); // changing the x axis for met_uPara_zlloverzll_pt, so that models are more visible
       else
@@ -290,7 +298,7 @@ cout << limitup << endl;
       cout << "condition data"  << condition.Data() << endl;
       treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),			condition.Data(), "sames");
 
-      //c1->Print("~/www/"+TString (resolution[index]->GetName ())+".png");     
+      c1->Print("~/www/"+TString (resolution[index]->GetName ())+".png");     
       double m =  resolution[index]->GetMean ();
       double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
       double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
@@ -366,7 +374,7 @@ conditionbkg=conditionbkg+"*((xsec)*(lumi))/("+totalnbkg+")";
         voigt->plotOn(xFrame, RooFit::LineColor(color));
       }                             
       TString histoname = resolution[index]->GetName ();
-      xFrame->GetYaxis()->SetRangeUser(1,20000);
+      xFrame->GetYaxis()->SetRangeUser(1,200);
       xFrame->GetXaxis() ->SetRangeUser(-50,50);
       xFrame->Draw();
       c1->Print ("~/www/"+DestFolder+"/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
