@@ -147,6 +147,8 @@ cout << "sample phys " << samplephys14 << endl;
     folder = "QCD";
   if(samplephys14.Contains("Data"))
    folder ="Data"; 
+   if (samplephys14.Contains("Pseudo"))
+   folder="Pseudo";
 
 
 cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << endl;
@@ -199,7 +201,7 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
   if (xvariable == "met_sumEt")
     tempsizexarray = 6;
   if (xvariable == "zll_pt")
-    tempsizexarray = 6;
+    tempsizexarray = 10; //6
 
 
   const int sizexarray=tempsizexarray;
@@ -222,13 +224,13 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
   TString condition="(xsec)";//"(weighttotal)*(channel=="+dileptonch +")";
   if (samplephys14.Contains("Data")) condition="";
   //cout << condition.Data() << endl;
-  treephys14->Draw ("nVert >> histonvertex", condition.Data());
+  if (!samplephys14.Contains("raw")){ treephys14->Draw ("nVert >> histonvertex", condition.Data());
   treephys14->Draw ("zll_pt >> histozll_pt", condition.Data());
   treephys14->Draw ("met_sumEt/1000 >> histomet_sumEt", condition.Data());
   treephys14->Draw("met_uPara_zll/zll_pt >> histoscale" ) ;
   treephys14->Draw ("met_uPara_zll+zll_pt >> histomet_uPara_zllzll_pt", condition.Data());
   treephys14->Draw ("met_uPerp_zll >> histomet_uPerp_zll",condition.Data());//condition.Data());//, condition.Data());
-          
+   }
           
   histonvertex->Draw();
   histonvertex->GetXaxis ()->SetTitle ("Number of Vertices");
@@ -266,7 +268,7 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
       if (xvariable == "met_sumEt")
 	limitup = (index + 1) * 200;
       if (xvariable == "zll_pt")
-	limitup = (index + 1) * 20;
+	limitup = (index + 1) * 12;
       strlimitup = Form ("%d", limitup);
 cout << variablename << endl;
 
@@ -281,19 +283,19 @@ cout << "limit up " << limitup << endl;
 
 
      TString totalnevents="1";
-     TString lumim="0.0073";
+     TString lumi="1000";//0.040
      TH1F * h0 = (TH1F*)filephys14.Get("Count");
      totalnevents=NtoString(h0->Integral());
          
       TString conditionbkg="";
       
-      condition="(xsec)*(lumi)*";//"(weighttotal)*(channel=="+dileptonch +")*";
+      condition="(xsec)*("+lumi+")*";//"(weighttotal)*(channel=="+dileptonch +")*";
 
       if (xvariable == "nVert") condition = "(" + xvariable + "==" + strlimitup +")";
       else condition = "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
       
       conditionbkg=condition;
-      if(!samplephys14.Contains("Data")) condition=condition+"*((xsec)*(lumi))/"+totalnevents;   
+      if(!samplephys14.Contains("Data")) condition=condition+"*((xsec)*("+lumi+"))/"+totalnevents;   
       
       cout << "condition data"  << condition.Data() << endl;
       treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),			condition.Data(), "sames");
@@ -320,7 +322,7 @@ cout << "limit up " << limitup << endl;
 	TString totalnbkg="1";
 	TH1F * h1 = (TH1F*)file_->Get("Count");
 		totalnbkg=NtoString(h1->Integral());
-conditionbkg=conditionbkg+"*((xsec)*(lumi))/("+totalnbkg+")"; 
+conditionbkg=conditionbkg+"*((xsec)*("+lumi+"))/("+totalnbkg+")"; 
 	TTree *treephys14bkg = (TTree *) file_->Get ("METtree");
 	int bkgbin(0);
 	if(variablenamepng.Contains("over"))bkgbin = 5;
@@ -375,10 +377,11 @@ conditionbkg=conditionbkg+"*((xsec)*(lumi))/("+totalnbkg+")";
       }                             
       TString histoname = resolution[index]->GetName ();
       xFrame->GetYaxis()->SetRangeUser(1,200);
-      xFrame->GetXaxis() ->SetRangeUser(-50,50);
+      xFrame->GetXaxis() ->SetRangeUser(-200,200);
       xFrame->Draw();
+      c1->SetLogy();
       c1->Print ("~/www/"+DestFolder+"/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
-
+      c1->SetLogy(0);
 
       //c1->Print ("~/www/"+DestFolder+"/METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
 
@@ -402,7 +405,7 @@ conditionbkg=conditionbkg+"*((xsec)*(lumi))/("+totalnbkg+")";
       if (chi2 != chi2 || chi2 >= 100)
     	tgraphychi2[index] = -0.2;
       tgraphy[index] = f / 2.3548;
-      if (variablename == "met_uPara_zll/zll_pt"){
+      if ((variablename == "met_uPara_zll_raw/zll_pt") || (variablename =="met_uPara_zll")){
 	    tgraphy[index] = -resolution[index]->GetMean ();
 	    
 
@@ -426,7 +429,7 @@ conditionbkg=conditionbkg+"*((xsec)*(lumi))/("+totalnbkg+")";
 	    //cout << index << "  and mean: " << -resolution[index]->GetMean () << endl;
       }
       etgraphy[index] = efwhm / 2.3548;
-      if (variablename == "met_uPara_zll/zll_pt" || variablename == "met_uPara_zllraw/zll_pt")
+      if (variablename == "met_uPara_zll/zll_pt" || variablename == "met_uPara_zll_raw/zll_pt")
 	    {
 	    etgraphy[index] = resolution[index]->GetMeanError ();
       etgraphx[index] = 0;}
@@ -470,21 +473,21 @@ conditionbkg=conditionbkg+"*((xsec)*(lumi))/("+totalnbkg+")";
 
 
   gr->GetYaxis ()->SetTitle (titley);
-  if (variablename == "met_uPara_zll")
+  if (variablename == "met_uPara_zll" )
     gr->GetYaxis ()->SetTitle ("#sigma(u_{||}) [GeV]");
-  if (variablename == "met_uPara_zllraw")
+  if (variablename == "met_uPara_zll_raw")
     gr->GetYaxis ()->SetTitle ("#sigma(u_{|| raw}) [GeV]");
   if (variablename == "met_uPara_zll+zll_pt")
     gr->GetYaxis ()->SetTitle ("#sigma(u_{||} +zll_pt) [GeV]");
   if (variablename == "met_uPara_zll/zll_pt")
     gr->GetYaxis ()->SetTitle ("-<u_{||}> /zll_pt ");
-  if (variablename == "met_uPara_zllraw/zll_pt")
+  if (variablename == "met_uPara_zll_raw/zll_pt")
     gr->GetYaxis ()->SetTitle ("-<u_{|| raw}> /zll_pt ");
-  if (variablename == "met_uPara_zllraw+zll_pt")
+  if (variablename == "met_uPara_zll_raw+zll_pt")
     gr->GetYaxis ()->SetTitle ("#sigma(u_{|| raw} +zll_pt) [GeV]");
   if (variablename == "met_uPerp_zll")
     gr->GetYaxis ()->SetTitle ("#sigma(u_{#perp}  ) [GeV]");
-  if (variablename == "met_uPerp_zllraw")
+  if (variablename == "met_uPerp_zll_raw")
     gr->GetYaxis ()->SetTitle ("#sigma(u_{#perp raw}  ) [GeV]");
   
 
@@ -526,12 +529,12 @@ conditionbkg=conditionbkg+"*((xsec)*(lumi))/("+totalnbkg+")";
   
 
   gr->Draw ("AP");
-  if (variablename!="met_uPara_zll/zll_pt" && variablename!="met_uPara_zllraw/zll_pt") gr->GetYaxis()->SetRangeUser(0,70);
+  if (variablename!="met_uPara_zll/zll_pt" && variablename!="met_uPara_zll_raw/zll_pt") gr->GetYaxis()->SetRangeUser(0,70);
   else gr->GetYaxis()->SetRangeUser(0.8,1.2);
   c1->Update();
   
   
-  if (variablename == "met_uPara_zll/zll_pt" || variablename=="met_uPara_zllraw/zll_pt")
+  if (variablename == "met_uPara_zll/zll_pt" || variablename=="met_uPara_zll_raw/zll_pt")
     {
       TLine *lineR =  new TLine ( gr->GetHistogram ()->GetXaxis ()->GetXmin (), 1, gr->GetHistogram ()->GetXaxis ()->GetXmax (), 1);
       lineR->SetLineColor (kBlue + 1);
