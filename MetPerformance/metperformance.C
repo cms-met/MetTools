@@ -283,7 +283,7 @@ cout << "limit up " << limitup << endl;
 
 
      TString totalnevents="1";
-     TString lumi="1000";//0.040
+     TString lumi="40.3";
      TH1F * h0 = (TH1F*)filephys14.Get("Count");
      totalnevents=NtoString(h0->Integral());
          
@@ -405,7 +405,7 @@ conditionbkg=conditionbkg+"*((xsec)*("+lumi+"))/("+totalnbkg+")";
       if (chi2 != chi2 || chi2 >= 100)
     	tgraphychi2[index] = -0.2;
       tgraphy[index] = f / 2.3548;
-      if ((variablename == "met_uPara_zll_raw/zll_pt") || (variablename =="met_uPara_zll")){
+      if ((variablename == "met_uPara_zll_raw/zll_pt") || (variablename =="met_uPara_zll/zll_pt")){
 	    tgraphy[index] = -resolution[index]->GetMean ();
 	    
 
