@@ -10,62 +10,46 @@ void runmetperformance(TString sample, bool background){
 
  if (sample.Contains ("GJet") || sample.Contains ("QCD")) {
 
-   metperformance(sample,"upararaw+qt","qt", "Gamma" , false, background);
-   metperformance(sample,"upara+qt","qt", "Gamma" , false, background);
-   metperformance(sample,"uperp","qt", "Gamma" , false, background);
-   metperformance(sample,"uperpraw","qt", "Gamma" , false, background);
-   metperformance(sample,"upararaw+qt","sumEt", "Gamma" , false, background);
-   metperformance(sample,"upara+qt","sumEt", "Gamma" , false, background);
-   metperformance(sample,"uperp","sumEt", "Gamma" , false, background);
-   metperformance(sample,"uperpraw","sumEt", "Gamma" , false, background);
-   metperformance(sample,"upararaw+qt","nvtx", "Gamma" , false, background);
-   metperformance(sample,"upara+qt","nvtx", "Gamma" , false, background);
-   metperformance(sample,"uperp","nvtx", "Gamma" , false, background);
-   metperformance(sample,"uperpraw","nvtx", "Gamma" , false, background);
+   metperformance(sample,"met_uPara_zll+zll_pt","zll_pt", "Gamma" , false, background);
+   metperformance(sample,"met_uPerp_zll","zll_pt", "Gamma" , false, background);
+   metperformance(sample,"met_uPara_zll+zll_pt","met_sumEt", "Gamma" , false, background);
+   metperformance(sample,"met_uPerp_zll","met_sumEt", "Gamma" , false, background);
+   metperformance(sample,"met_uPara_zll+zll_pt","nVert", "Gamma" , false, background);
+   metperformance(sample,"met_uPerp_zll","nVert", "Gamma" , false, background);
    // Plot the scale plots
-   metperformance(sample,"upara/qt","qt", "Gamma" , false, background);
-   metperformance(sample,"upararaw/qt","qt", "Gamma" , false, background);
-   metperformance(sample,"upara/qt","nvtx", "Gamma" , false, background);
-   metperformance(sample,"upararaw/qt","nvtx", "Gamma" , false, background);
-   metperformance(sample,"upara/qt","sumEt", "Gamma" , false, background);
-   metperformance(sample,"upararaw/qt","sumEt", "Gamma" , false, background);
+   metperformance(sample,"met_uPara_zll/zll_pt","zll_pt", "Gamma" , false, background);
+   metperformance(sample,"met_uPara_zll/zll_pt","nVert", "Gamma" , false, background);
+   metperformance(sample,"met_uPara_zll/zll_pt","met_sumEt", "Gamma" , false, background);
 
  } 
  else {
 
 
-   metperformance(sample,"upararaw+qt","qt", "EE" , false, background);
-   metperformance(sample,"upara+qt","qt", "EE" , false, background);
-   metperformance(sample,"uperp","qt", "EE" , false, background);
-   metperformance(sample,"uperpraw","qt", "EE" , false, background);
-   metperformance(sample,"upararaw+qt","sumEt", "EE" , false, background);
-   metperformance(sample,"upara+qt","sumEt", "EE" , false, background);
-   metperformance(sample,"uperp","sumEt", "EE" , false, background);
-   metperformance(sample,"uperpraw","sumEt", "EE" , false, background);
-   metperformance(sample,"upararaw+qt","nvtx", "EE" , false, background);
-   metperformance(sample,"upara+qt","nvtx", "EE" , false, background);
-   metperformance(sample,"uperp","nvtx", "EE" , false, background);
-   metperformance(sample,"uperpraw","nvtx", "EE" , false, background);
+/*   metperformance(sample,"met_uPara_zllraw+zll_pt","zll_pt", "EE" , false, background);
+   metperformance(sample,"met_uPara_zll+zll_pt","zll_pt", "EE" , false, background);
+   metperformance(sample,"met_uPerp_zll","zll_pt", "EE" , false, background);
+   metperformance(sample,"met_uPerp_zllraw","zll_pt", "EE" , false, background);
+   metperformance(sample,"met_uPara_zllraw+zll_pt","met_sumEt", "EE" , false, background);
+   metperformance(sample,"met_uPara_zll+zll_pt","met_sumEt", "EE" , false, background);
+   metperformance(sample,"met_uPerp_zll","met_sumEt", "EE" , false, background);
+   metperformance(sample,"met_uPerp_zllraw","met_sumEt", "EE" , false, background);
+   metperformance(sample,"met_uPara_zllraw+zll_pt","nVert", "EE" , false, background);
+   metperformance(sample,"met_uPara_zll+zll_pt","nVert", "EE" , false, background);
+   metperformance(sample,"met_uPerp_zll","nVert", "EE" , false, background);
+   metperformance(sample,"met_uPerp_zllraw","nVert", "EE" , false, background);
    // Plot the scale plots
-   metperformance(sample,"upara/qt","qt", "EE" , false, background);
-   metperformance(sample,"upararaw/qt","qt", "EE" , false, background);
-
-
-   metperformance(sample,"upararaw+qt","qt", "MuMu" , false, background);
-   metperformance(sample,"upara+qt","qt", "MuMu" , false, background);
-   metperformance(sample,"uperp","qt", "MuMu" , false, background);
-   metperformance(sample,"uperpraw","qt", "MuMu" , false, background);
-   metperformance(sample,"upararaw+qt","sumEt", "MuMu" , false, background);
-   metperformance(sample,"upara+qt","sumEt", "MuMu" , false, background);
-   metperformance(sample,"uperp","sumEt", "MuMu" , false, background);
-   metperformance(sample,"uperpraw","sumEt", "MuMu" , false, background);
-   metperformance(sample,"upararaw+qt","nvtx", "MuMu" , false, background);
-   metperformance(sample,"upara+qt","nvtx", "MuMu" , false, background);
-   metperformance(sample,"uperp","nvtx", "MuMu" , false, background);
-   metperformance(sample,"uperpraw","nvtx", "MuMu" , false, background);
+   metperformance(sample,"met_uPara_zll/zll_pt","zll_pt", "EE" , false, background);
+   metperformance(sample,"met_uPara_zllraw/zll_pt","zll_pt", "EE" , false, background);
+*/
+   metperformance(sample,"met_uPara_zll/zll_pt","zll_pt", "MuMu" , false, background);
+   metperformance(sample,"met_uPara_zll+zll_pt","zll_pt", "MuMu" , false, background);
+   metperformance(sample,"met_uPara_zll/zll_pt","zll_pt", "MuMu" , false, background);
+   metperformance(sample,"met_uPerp_zll","zll_pt", "MuMu" , false, background);
+   metperformance(sample,"met_uPara_zll+zll_pt","met_sumEt", "MuMu" , false, background);
+   metperformance(sample,"met_uPerp_zll","met_sumEt", "MuMu" , false, background);
+   metperformance(sample,"met_uPara_zll+zll_pt","nVert", "MuMu" , false, background);
+   metperformance(sample,"met_uPerp_zll","nVert", "MuMu" , false, background);
    // Plot the scale plots
-   metperformance(sample,"upara/qt","qt", "MuMu" , false, background);
-   metperformance(sample,"upararaw/qt","qt", "MuMu" , false, background);
 
  }
 
