@@ -2,7 +2,7 @@
 #include "TSystem.h"
 #include "PlotWithRatio.C"
 
-void runPlotWithRatio(){
+void runPlotWithRatioJES(){
 //gSystem->CompileMacro("PlotWithRatio.C", "MuMu");
 
 
