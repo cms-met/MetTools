@@ -219,10 +219,10 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
   
   
   // Plot inclusive distributions of the main variables
-  TString condition="(xsec)";//"(weighttotal)*(channel=="+dileptonch +")";
+  TString condition="(xsec)*(puWeight)";//"(weighttotal)*(channel=="+dileptonch +")";
   if (samplephys14.Contains("Data")) condition="";
   //cout << condition.Data() << endl;
-  if (!samplephys14.Contains("raw")){ treephys14->Draw ("nVert >> histonvertex", condition.Data());
+  if (!samplephys14.Contains("raw") && !samplephys14.Contains("jes_")){ treephys14->Draw ("nVert >> histonvertex", condition.Data());
   treephys14->Draw ("zll_pt >> histozll_pt", condition.Data());
   treephys14->Draw ("met_sumEt/1000 >> histomet_sumEt", condition.Data());
   treephys14->Draw("met_uPara_zll/zll_pt >> histoscale" ) ;
@@ -232,24 +232,24 @@ cout << " folder   " << folder << "  -   " << "Destfolder " << DestFolder << end
           
   histonvertex->Draw();
   histonvertex->GetXaxis ()->SetTitle ("Number of Vertices");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/nVert_inclusive_.png");
+  if (!samplephys14.Contains("jes_"))  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/nVert_inclusive_.png");
   c1->SetLogy();
   histozll_pt->Draw();
   histozll_pt->GetXaxis ()->SetTitle ("zll_pt [GeV]");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/"+ folder + "/"+tchannel +"/zll_pt_inclusive_.png");
+  if (!samplephys14.Contains("jes_")) c1->Print ("~/www/"+DestFolder+"/METResolution/"+ folder + "/"+tchannel +"/zll_pt_inclusive_.png");
   histomet_sumEt->Draw();
   histomet_sumEt->GetXaxis ()->SetTitle("sumE_{T} [TeV]");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_sumEt_inclusive_.png");
+  if (!samplephys14.Contains("jes_")) c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_sumEt_inclusive_.png");
   histomet_uPara_zllzll_pt->Draw();
   histomet_uPara_zllzll_pt->GetXaxis ()->SetTitle ("u_{||}+zll_pt [GeV]");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/"+ folder + "/"+tchannel +"/met_uPara_zllzll_pt_inclusive_.png");
+  if (!samplephys14.Contains("jes_")) c1->Print ("~/www/"+DestFolder+"/METResolution/"+ folder + "/"+tchannel +"/met_uPara_zllzll_pt_inclusive_.png");
   histomet_uPerp_zll->Draw();
   histomet_uPerp_zll->GetXaxis ()->SetTitle ("u_{#perp}   [GeV]");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_uPerp_zll_inclusive_.png");
+  if (!samplephys14.Contains("jes_")) c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_uPerp_zll_inclusive_.png");
   c1->SetLogy(0);
   histoscale->Draw();
   histoscale->GetXaxis ()->SetTitle ("u_{#perp}   [GeV]");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_uPara_zlloverzll_pt.png");
+  if (!samplephys14.Contains("jes_")) c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/"+tchannel +"/met_uPara_zlloverzll_pt.png");
 
 
   Double_t tgraphx[sizexarray], tgraphy[sizexarray], etgraphy[sizexarray],
@@ -287,18 +287,17 @@ cout << "limit up " << limitup << endl;
          
       TString conditionbkg="";
       
-      condition="(xsec)*("+lumi+")*";//"(weighttotal)*(channel=="+dileptonch +")*";
 
       if (xvariable == "nVert") condition = "(" + xvariable + "==" + strlimitup +")";
       else condition = "(" + xvariable + "<" + strlimitup + ")*(" + xvariable + ">" + strlimitdown + ")";
       
       conditionbkg=condition;
-      if(!samplephys14.Contains("Data")) condition=condition+"*((xsec)*("+lumi+"))/"+totalnevents;   
+      if(!samplephys14.Contains("Data")) condition=condition+"*((xsec)*(puWeight)*("+lumi+"))/"+totalnevents;   
       
       cout << "condition data"  << condition.Data() << endl;
       treephys14->Draw (variablename + ">>" + TString (resolution[index]->GetName ()),			condition.Data(), "sames");
 
-      c1->Print("~/www/"+TString (resolution[index]->GetName ())+".png");     
+    //  c1->Print("~/www/"+TString (resolution[index]->GetName ())+".png");     
       double m =  resolution[index]->GetMean ();
       double um = resolution[index]->GetMean () - resolution[index]->GetRMS ();
       double uM = resolution[index]->GetMean () + resolution[index]->GetRMS ();
@@ -320,7 +319,7 @@ cout << "limit up " << limitup << endl;
 	TString totalnbkg="1";
 	TH1F * h1 = (TH1F*)file_->Get("Count");
 		totalnbkg=NtoString(h1->Integral());
-conditionbkg=conditionbkg+"*((xsec)*("+lumi+"))/("+totalnbkg+")"; 
+  conditionbkg=conditionbkg+"*((xsec)*(puWeight)*("+lumi+"))/("+totalnbkg+")"; 
 	TTree *treephys14bkg = (TTree *) file_->Get ("METtree");
 	int bkgbin(0);
 	if(variablenamepng.Contains("over"))bkgbin = 5;
@@ -378,7 +377,7 @@ conditionbkg=conditionbkg+"*((xsec)*("+lumi+"))/("+totalnbkg+")";
       xFrame->GetXaxis() ->SetRangeUser(-200,200);
       xFrame->Draw();
       c1->SetLogy();
-      c1->Print ("~/www/"+DestFolder+"/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
+if (!samplephys14.Contains("jes_"))      c1->Print ("~/www/"+DestFolder+"/METModel/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
       c1->SetLogy(0);
 
       //c1->Print ("~/www/"+DestFolder+"/METFits/" + folder + "/" + tchannel +"/" + histoname + "_" +	variablenamepng + "_vs_" + xvariable + ".png");
@@ -403,7 +402,7 @@ conditionbkg=conditionbkg+"*((xsec)*("+lumi+"))/("+totalnbkg+")";
       if (chi2 != chi2 || chi2 >= 100)
     	tgraphychi2[index] = -0.2;
       tgraphy[index] = f / 2.3548;
-      if ((variablename == "met_uPara_zll_raw/zll_pt") || (variablename =="met_uPara_zll/zll_pt")){
+      if ((variablename == "met_uPara_zll_raw/zll_pt") || (variablename =="met_uPara_zll/zll_pt")|| (variablename =="met_uPara_zll_down/zll_pt")|| (variablename =="met_uPara_zll_up/zll_pt")){
 	    tgraphy[index] = -resolution[index]->GetMean ();
 	    
 
@@ -427,7 +426,7 @@ conditionbkg=conditionbkg+"*((xsec)*("+lumi+"))/("+totalnbkg+")";
 	    //cout << index << "  and mean: " << -resolution[index]->GetMean () << endl;
       }
       etgraphy[index] = efwhm / 2.3548;
-      if (variablename == "met_uPara_zll/zll_pt" || variablename == "met_uPara_zll_raw/zll_pt")
+      if (variablename == "met_uPara_zll/zll_pt" || variablename == "met_uPara_zll_raw/zll_pt"|| variablename == "met_uPara_zll_up/zll_pt"|| variablename == "met_uPara_zll_down/zll_pt")
 	    {
 	    etgraphy[index] = resolution[index]->GetMeanError ();
       etgraphx[index] = 0;}
@@ -492,10 +491,13 @@ conditionbkg=conditionbkg+"*((xsec)*("+lumi+"))/("+totalnbkg+")";
   if (drawchi2) {
   grchi2->GetYaxis ()->SetTitle ("#Chi^{2}");
   grchi2->Draw ("AP");
-  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/" + tchannel + "/" +  variablenamepng  + "_vs_" +	     xvariable + "_chi2.png");
+  if (!samplephys14.Contains("jes_")) c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/" + tchannel + "/" +  variablenamepng  + "_vs_" +	     xvariable + "_chi2.png");
   c1->Clear (); }
-
-  TFile f2 (DestFolder+folder+ "_tgraphs.root", "UPDATE");
+  
+  TString direction="";
+  if (variablename.Contains("_up")) direction="_up_";
+  if (variablename.Contains("_down")) direction="_down_";
+  TFile f2 (DestFolder+folder+ direction+"tgraphs_"+samplephys14, "UPDATE");
   gr->Write (tchannel+"_"+variablenamepng + "_vs_" + xvariable);
 
 
@@ -527,12 +529,12 @@ conditionbkg=conditionbkg+"*((xsec)*("+lumi+"))/("+totalnbkg+")";
   
 
   gr->Draw ("AP");
-  if (variablename!="met_uPara_zll/zll_pt" && variablename!="met_uPara_zll_raw/zll_pt") gr->GetYaxis()->SetRangeUser(0,70);
+  if (variablename!="met_uPara_zll/zll_pt" && variablename!="met_uPara_zll_raw/zll_pt"&& variablename!="met_uPara_zll_down/zll_pt"&& variablename!="met_uPara_zll_up/zll_pt") gr->GetYaxis()->SetRangeUser(0,70);
   else gr->GetYaxis()->SetRangeUser(0.8,1.2);
   c1->Update();
   
   
-  if (variablename == "met_uPara_zll/zll_pt" || variablename=="met_uPara_zll_raw/zll_pt")
+  if (variablename == "met_uPara_zll/zll_pt" || variablename=="met_uPara_zll_raw/zll_pt" || variablename=="met_uPara_zll_up/zll_pt" || variablename=="met_uPara_zll_down/zll_pt")
     {
       TLine *lineR =  new TLine ( gr->GetHistogram ()->GetXaxis ()->GetXmin (), 1, gr->GetHistogram ()->GetXaxis ()->GetXmax (), 1);
       lineR->SetLineColor (kBlue + 1);
@@ -555,7 +557,7 @@ conditionbkg=conditionbkg+"*((xsec)*("+lumi+"))/("+totalnbkg+")";
 
   
 
-  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/" + tchannel + "/" + variablenamepng  + "_vs_" +	     xvariable + ".png");
+   if (!samplephys14.Contains("jes_"))  c1->Print ("~/www/"+DestFolder+"/METResolution/" + folder + "/" + tchannel + "/" + variablenamepng  + "_vs_" +	     xvariable + ".png");
 
 
 
