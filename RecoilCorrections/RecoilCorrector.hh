@@ -121,8 +121,6 @@ protected:
   double diGausPVal    (double iVal, double iFrac,double iSimga1,double iSigma2);
   double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
-  double getError(double iVal,TF1 *iZDatFit,Recoil iType);
-  double getError2(double iVal,TF1 *iFit);
   double getCorError2(double iVal,TF1 *iFit);
   double mag(double iV0,double iV1,double iV2,double iV3);
   double correlatedSeed(double iVal, double iCorr1,double iCorr2,double iCorr3,double iSeed0,double iSeed1,double iSeed2,double iSeed3);
@@ -236,28 +234,6 @@ void RecoilCorrector::CorrectType2FromGraph(double &met, double &metphi, double 
 		       iU1,iU2,iFluc,iScale);
 }
 
-double RecoilCorrector::CorrVal(double iPt, double iVal, Recoil iType) { 
-  if(fId == 0 || fId == 1) return iVal;
-  switch(iType) {
-  case PFU1   : return iVal*(fD1U1Fit     [fJet]->Eval(iPt)/fM1U1Fit     [fJet]->Eval(iPt));
-  case PFMSU1 : return iVal*(fD1U1RMSSMFit[fJet]->Eval(iPt)/fM1U1RMSSMFit[fJet]->Eval(iPt));
-  case PFS1U1 : return iVal*(fD1U1RMS1Fit [fJet]->Eval(iPt)/fM1U1RMS1Fit [fJet]->Eval(iPt));
-  case PFS2U1 : return iVal*(fD1U1RMS2Fit [fJet]->Eval(iPt)/fM1U1RMS2Fit [fJet]->Eval(iPt));
-  case PFU2   : return 0;
-  case PFMSU2 : return iVal*(fD1U2RMSSMFit[fJet]->Eval(iPt)/fM1U2RMSSMFit[fJet]->Eval(iPt));
-  case PFS1U2 : return iVal*(fD1U2RMS1Fit [fJet]->Eval(iPt) /fM1U2RMS1Fit[fJet]->Eval(iPt));
-  case PFS2U2 : return iVal*(fD1U2RMS2Fit [fJet]->Eval(iPt) /fM1U2RMS2Fit[fJet]->Eval(iPt));
-  case TKU1   : return iVal*(fD2U1Fit     [fJet]->Eval(iPt)/fM2U1Fit     [fJet]->Eval(iPt));
-  case TKMSU1 : return iVal*(fD2U1RMSSMFit[fJet]->Eval(iPt)/fM2U1RMSSMFit[fJet]->Eval(iPt));
-  case TKS1U1 : return iVal*(fD2U1RMS1Fit [fJet]->Eval(iPt) /fM2U1RMS1Fit[fJet]->Eval(iPt));
-  case TKS2U1 : return iVal*(fD2U1RMS2Fit [fJet]->Eval(iPt) /fM2U1RMS2Fit[fJet]->Eval(iPt));
-  case TKU2   : return 0;
-  case TKMSU2 : return iVal*(fD2U2RMSSMFit[fJet]->Eval(iPt)/fM2U2RMSSMFit[fJet]->Eval(iPt));
-  case TKS1U2 : return iVal*(fD2U2RMS1Fit [fJet]->Eval(iPt) /fM2U2RMS1Fit[fJet]->Eval(iPt));
-  case TKS2U2 : return iVal*(fD2U2RMS2Fit [fJet]->Eval(iPt) /fM2U2RMS2Fit[fJet]->Eval(iPt));
-  }
-  return iVal;
-}
 TF1* RecoilCorrector::getFunc(bool iMC, Recoil iType) { 
   if(fId == 0 || fId == 1) return 0;
   switch(iType) {
@@ -626,35 +602,6 @@ double RecoilCorrector::getCorError2(double iVal,TF1 *iFit) {
   double lE = sqrt(iFit->GetParError(0))  + iVal*sqrt(iFit->GetParError(2));
   if(fabs(iFit->GetParError(4)) > 0) lE += iVal*iVal*sqrt(iFit->GetParError(4));
   return lE*lE;
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::getError2(double iVal,TF1 *iFit) { 
-  //return iFit->GetParError(0);
-  double lE2 = iFit->GetParError(0) + iVal*iFit->GetParError(1) + iVal*iVal*iFit->GetParError(2);
-  if(fabs(iFit->GetParError(3)) > 0) lE2 += iVal*iVal*iVal*     iFit->GetParError(3);
-  if(fabs(iFit->GetParError(4)) > 0) lE2 += iVal*iVal*iVal*iVal*iFit->GetParError(4);
-  if(fabs(iFit->GetParError(5)) > 0 && iFit->GetParameter(3) == 0) lE2 += iVal*iVal*               iFit->GetParError(5);
-  if(fabs(iFit->GetParError(5)) > 0 && iFit->GetParameter(3) != 0) lE2 += iVal*iVal*iVal*iVal*iVal*iFit->GetParError(5);
-  if(fabs(iFit->GetParError(6)) > 0) lE2 += iVal*iVal*iVal*iVal*iVal*iVal*iFit->GetParError(6);
-  return lE2;
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::getError(double iVal,TF1 *iFit,Recoil iType) {
-  if(fId == 0) return sqrt(getError2(iVal,iFit));
-  if(fId != 2) return sqrt(getError2(iVal,iFit)); 
-  double lEW2  = getError2(iVal,iFit);
-  double lEZD2 = getError2(iVal,getFunc(true ,iType));
-  double lEZM2 = getError2(iVal,getFunc(false,iType));
-  double lZDat = getFunc(true ,iType)->Eval(iVal);
-  double lZMC  = getFunc(false,iType)->Eval(iVal);
-  double lWMC  = iFit                ->Eval(iVal);
-  double lR    = lZDat/lZMC;
-  double lER   = lR*lR/lZDat/lZDat*lEZD2 + lR*lR/lZMC/lZMC*lEZM2;
-  double lVal  = lR*lR*lEW2 + lWMC*lWMC*lER;
-  
-  return sqrt(lVal);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
