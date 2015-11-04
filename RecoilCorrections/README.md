@@ -30,9 +30,11 @@ The last two arguments are to shift the corrections up and down by a specified n
 
 Type 2 corrections require corrections derived from both data and MC (data and MC recoil for Z, and MC recoil for whatever other process you are looking at).
 You need to add the correction files:
+```
 RecoilCorrector *recoilCorr = new  RecoilCorrector("my_corrections_from_MC.root","fcnPF");
 recoilCorr->addMCFile("my_corrections_from_MC.root");
 recoilCorr->addDataFile("my_corrections_from_data.root");
+```
 
 The corrections are applied in the same way as the Type 0 corrections. 
 ```
