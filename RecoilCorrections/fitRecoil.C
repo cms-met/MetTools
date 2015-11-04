@@ -18,6 +18,7 @@
 #include <TH1D.h>                     // plots
 #include <TH2D.h>                     // plots
 #include <TCanvas.h>                  // canvas
+#include <TSystem.h>
 
 // #include "../Utils/CPlot.hh"          // helper class for plots
 // #include "../Utils/MitStyleRemix.hh"  // style settings for drawing
@@ -135,6 +136,7 @@ void fitRecoil(TString infilename="/data/blue/Bacon/Run2/wz_flat/Zmumu/ntuples/d
 ) {
 
 //   CPlot::sOutDir = outputDir + TString("/plots");
+       gSystem->mkdir(TString(outputDir+"/plots"),true);
 
 //   Double_t ptbins[] = {0,2.5,5,7.5,10,12.5,15,17.5,20,25,30,35,40,45,50,60,70,80,90,100,125,150,175,200};
 //   
