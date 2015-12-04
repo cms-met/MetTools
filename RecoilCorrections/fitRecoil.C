@@ -18,9 +18,8 @@
 #include <TH1D.h>                     // plots
 #include <TH2D.h>                     // plots
 #include <TCanvas.h>                  // canvas
-
-// #include "../Utils/CPlot.hh"          // helper class for plots
-// #include "../Utils/MitStyleRemix.hh"  // style settings for drawing
+#include <TSystem.h>
+#include <TPaveText.h>
 
 #include "RooGlobalFunc.h"
 #include "RooRealVar.h"
@@ -119,7 +118,7 @@ void performFit(const vector<TH1D*> hv, const vector<TH1D*> hbkgv, const Double_
                 Double_t *sigma2Arr, Double_t *sigma2ErrArr,
                 Double_t *sigma3Arr, Double_t *sigma3ErrArr,
                 Double_t *frac2Arr,  Double_t *frac2ErrArr,
-                Double_t *frac3Arr,  Double_t *frac3ErrArr);
+                Double_t *frac3Arr,  Double_t *frac3ErrArr, TString outputDir);
 
 
 //=== MAIN MACRO ================================================================================================= 
@@ -134,7 +133,7 @@ void fitRecoil(TString infilename="/data/blue/Bacon/Run2/wz_flat/Zmumu/ntuples/d
               TString outputDir="./" // output directory
 ) {
 
-//   CPlot::sOutDir = outputDir + TString("/plots");
+  gSystem->mkdir(TString(outputDir+"/plots"),true);
 
 //   Double_t ptbins[] = {0,2.5,5,7.5,10,12.5,15,17.5,20,25,30,35,40,45,50,60,70,80,90,100,125,150,175,200};
 //   
@@ -351,7 +350,7 @@ void fitRecoil(TString infilename="/data/blue/Bacon/Run2/wz_flat/Zmumu/ntuples/d
 	     pfu1Sigma2, pfu1Sigma2Err,
 	     pfu1Sigma3, pfu1Sigma3Err,
 	     pfu1Frac2,  pfu1Frac2Err,
-	     pfu1Frac3,  pfu1Frac3Err);
+	     pfu1Frac3,  pfu1Frac3Err, outputDir);
 
   // Do fits on u2
   performFit(hPFu2v, hPFu2Bkgv, ptbins, nbins, pfu2model, sigOnly,
@@ -362,7 +361,7 @@ void fitRecoil(TString infilename="/data/blue/Bacon/Run2/wz_flat/Zmumu/ntuples/d
 	     pfu2Sigma2, pfu2Sigma2Err,
 	     pfu2Sigma3, pfu2Sigma3Err,
 	     pfu2Frac2,  pfu2Frac2Err,
-	     pfu2Frac3,  pfu2Frac3Err);  
+	     pfu2Frac3,  pfu2Frac3Err, outputDir);  
 
  
   //--------------------------------------------------------------------------------------------------------------
@@ -374,72 +373,103 @@ void fitRecoil(TString infilename="/data/blue/Bacon/Run2/wz_flat/Zmumu/ntuples/d
    
   char fitparam[100];
   char chi2ndf[50]; 
+  
+    
+  TPaveText *tb = new TPaveText(0.65,0.87,0.95,0.65,"NDC");
+  tb->SetTextColor(kBlack);
+  tb->SetFillStyle(0);
+  tb->SetBorderSize(0);
     
   // Plotting u1 vs. dilepton pT
-  
   grPFu1mean = new TGraphErrors(nbins,xval,pfu1Mean,xerr,pfu1MeanErr);
   grPFu1mean->SetName("grPFu1mean");
   fitresPFu1mean = grPFu1mean->Fit("fcnPFu1mean","QMRN0FBSE");
   sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu1mean->GetChisquare())/(fcnPFu1mean->GetNDF()));
-//   CPlot plotPFu1mean("pfu1mean","","p_{T}(ll) [GeV/c]","#mu(u_{1}) [GeV]");
-//   plotPFu1mean.AddGraph(grPFu1mean,"");
-//   plotPFu1mean.AddGraph(grPFu1mean,"",kBlack,kOpenCircle);
-//   plotPFu1mean.AddFcn(fcnPFu1mean,kRed);
-//   plotPFu1mean.AddTextBox(chi2ndf,0.65,0.87,0.95,0.82,0,kBlack,-1);
-  sprintf(fitparam,"p_{0} = %.3f #pm %.3f",fcnPFu1mean->GetParameter(0),fcnPFu1mean->GetParError(0)); //plotPFu1mean.AddTextBox(fitparam,0.65,0.80,0.95,0.75,0,kBlack,-1);
-  sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu1mean->GetParameter(1),fcnPFu1mean->GetParError(1));// plotPFu1mean.AddTextBox(fitparam,0.65,0.75,0.95,0.70,0,kBlack,-1);
-  sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu1mean->GetParameter(2),fcnPFu1mean->GetParError(2));// plotPFu1mean.AddTextBox(fitparam,0.65,0.70,0.95,0.65,0,kBlack,-1);
-//   plotPFu1mean.Draw(c,kTRUE,"png");
+  tb->AddText(chi2ndf);
   
+  grPFu1mean->SetTitle("");
+  grPFu1mean->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+  grPFu1mean->GetYaxis()->SetTitle("#mu(u_{2}) [GeV]");
+  grPFu1mean->SetMarkerColor(kBlack);
+  grPFu1mean->SetMarkerStyle(kOpenCircle);
+  grPFu1mean->Draw();
+  fcnPFu1mean->SetLineColor(kRed);
+  fcnPFu1mean->Draw("same");
+  
+  sprintf(fitparam,"p_{0} = %.3f #pm %.3f",fcnPFu1mean->GetParameter(0),fcnPFu1mean->GetParError(0)); tb->AddText(fitparam);
+  sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu1mean->GetParameter(1),fcnPFu1mean->GetParError(1)); tb->AddText(fitparam);
+  sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu1mean->GetParameter(2),fcnPFu1mean->GetParError(2)); tb->AddText(fitparam);
+  tb->Draw("same");
+  
+  c->SaveAs(TString(outputDir+"/plots/"+"pfu1mean.png"));
+  c->Clear();
+  tb->Clear();
+  
+  
+  // u1, sigmas
   grPFu1sigma1 = new TGraphErrors(nbins,xval,pfu1Sigma1,xerr,pfu1Sigma1Err);  
   grPFu1sigma1->SetName("grPFu1sigma1");
   fitresPFu1sigma1 = grPFu1sigma1->Fit("fcnPFu1sigma1","QMRN0SE");
-  sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu1sigma1->GetChisquare())/(fcnPFu1sigma1->GetNDF()));
-
-//   CPlot plotPFu1sigma1("pfu1sigma1","","p_{T}(ll) [GeV/c]","#sigma_{1}(u_{1}) [GeV]");
-//   plotPFu1sigma1.AddGraph(grPFu1sigma1,"");
-//   plotPFu1sigma1.AddGraph(grPFu1sigma1,"",kBlack,kOpenCircle);
-//   plotPFu1sigma1.AddFcn(fcnPFu1sigma1,kRed);
-//   plotPFu1sigma1.AddTextBox(chi2ndf,0.21,0.87,0.41,0.82,0,kBlack,-1);
-  sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu1sigma1->GetParameter(0)),1e5*(fcnPFu1sigma1->GetParError(0))); 
-//   plotPFu1sigma1.AddTextBox(fitparam,0.21,0.80,0.51,0.75,0,kBlack,-1);
-  sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu1sigma1->GetParameter(1),fcnPFu1sigma1->GetParError(1)); //plotPFu1sigma1.AddTextBox(fitparam,0.21,0.75,0.51,0.70,0,kBlack,-1);
-  sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu1sigma1->GetParameter(2),fcnPFu1sigma1->GetParError(2)); //plotPFu1sigma1.AddTextBox(fitparam,0.21,0.70,0.51,0.65,0,kBlack,-1);
-//   plotPFu1sigma1.Draw(c,kTRUE,"png");
+  sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu1sigma1->GetChisquare())/(fcnPFu1sigma1->GetNDF())); tb->AddText(chi2ndf);
+  tb->SetX1NDC(0.21);
+  tb->SetX2NDC(0.51);
+  grPFu1sigma1->SetTitle("");
+  grPFu1sigma1->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+  grPFu1sigma1->GetYaxis()->SetTitle("#sigma_{1}(u_{1}) [GeV]");
+  grPFu1sigma1->SetMarkerColor(kBlack);
+  grPFu1sigma1->SetMarkerStyle(kOpenCircle);
+  grPFu1sigma1->Draw();
+  fcnPFu1sigma1->SetLineColor(kRed);
+  fcnPFu1sigma1->Draw("same");
+  sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu1sigma1->GetParameter(0)),1e5*(fcnPFu1sigma1->GetParError(0))); tb->AddText(fitparam);
+  sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu1sigma1->GetParameter(1),fcnPFu1sigma1->GetParError(1)); tb->AddText(fitparam);
+  sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu1sigma1->GetParameter(2),fcnPFu1sigma1->GetParError(2)); tb->AddText(fitparam);
+  tb->Draw("same");
+  c->SaveAs(TString(outputDir+"/plots/"+"pfu1sigma1.png"));
+  c->Clear();
+  tb->Clear();
   
   if(pfu1model>=2) {
     grPFu1sigma2 = new TGraphErrors(nbins,xval,pfu1Sigma2,xerr,pfu1Sigma2Err);    
     grPFu1sigma2->SetName("grPFu1sigma2");
     fitresPFu1sigma2 = grPFu1sigma2->Fit("fcnPFu1sigma2","QMRN0SE");
-    sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu1sigma2->GetChisquare())/(fcnPFu1sigma2->GetNDF()));    
-
-//     CPlot plotPFu1sigma2("pfu1sigma2","","p_{T}(ll) [GeV/c]","#sigma_{2}(u_{1}) [GeV]");
-//     plotPFu1sigma2.AddGraph(grPFu1sigma2,"");
-//     plotPFu1sigma2.AddGraph(grPFu1sigma2,"",kBlack,kOpenCircle);
-//     plotPFu1sigma2.AddFcn(fcnPFu1sigma2,kRed);
-//     plotPFu1sigma2.AddTextBox(chi2ndf,0.21,0.87,0.41,0.82,0,kBlack,-1);
-    sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu1sigma2->GetParameter(0)),1e5*(fcnPFu1sigma2->GetParError(0))); 
-//     plotPFu1sigma2.AddTextBox(fitparam,0.21,0.80,0.51,0.75,0,kBlack,-1);
-    sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu1sigma2->GetParameter(1),fcnPFu1sigma2->GetParError(1)); //plotPFu1sigma2.AddTextBox(fitparam,0.21,0.75,0.51,0.70,0,kBlack,-1);
-    sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu1sigma2->GetParameter(2),fcnPFu1sigma2->GetParError(2)); //plotPFu1sigma2.AddTextBox(fitparam,0.21,0.70,0.51,0.65,0,kBlack,-1);
-//     plotPFu1sigma2.Draw(c,kTRUE,"png");
+    sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu1sigma2->GetChisquare())/(fcnPFu1sigma2->GetNDF())); tb->AddText(chi2ndf);
+    grPFu1sigma2->SetTitle("");
+    grPFu1sigma2->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu1sigma2->GetYaxis()->SetTitle("#sigma_{2}(u_{1}) [GeV]");
+    grPFu1sigma2->SetMarkerColor(kBlack);
+    grPFu1sigma2->SetMarkerStyle(kOpenCircle);
+    grPFu1sigma2->Draw();
+    fcnPFu1sigma2->SetLineColor(kRed);
+    fcnPFu1sigma2->Draw("same");
+    sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu1sigma2->GetParameter(0)),1e5*(fcnPFu1sigma2->GetParError(0))); tb->AddText(fitparam);
+    sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu1sigma2->GetParameter(1),fcnPFu1sigma2->GetParError(1)); tb->AddText(fitparam);
+    sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu1sigma2->GetParameter(2),fcnPFu1sigma2->GetParError(2)); tb->AddText(fitparam);
+    tb->Draw("same");
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu1sigma2.png"));
+    c->Clear();
+    tb->Clear();
 
 
     grPFu1sigma0 = new TGraphErrors(nbins,xval,pfu1Sigma0,xerr,pfu1Sigma0Err);    
     grPFu1sigma0->SetName("grPFu1sigma0");
     fitresPFu1sigma0 = grPFu1sigma0->Fit("fcnPFu1sigma0","QMRN0SE");
-    sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu1sigma0->GetChisquare())/(fcnPFu1sigma0->GetNDF()));    
-//     CPlot plotPFu1sigma0("pfu1sigma0","","p_{T}(ll) [GeV/c]","#sigma(u_{1}) [GeV]");
-//     plotPFu1sigma0.AddGraph(grPFu1sigma0,"");
-//     plotPFu1sigma0.AddGraph(grPFu1sigma0,"",kBlack,kOpenCircle);
-//     plotPFu1sigma0.AddFcn(fcnPFu1sigma0,kRed);
-//     plotPFu1sigma0.AddTextBox(chi2ndf,0.21,0.87,0.41,0.82,0,kBlack,-1);
-    sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu1sigma0->GetParameter(0)),1e5*(fcnPFu1sigma0->GetParError(0)));
-//     plotPFu1sigma0.AddTextBox(fitparam,0.21,0.80,0.51,0.75,0,kBlack,-1);
-    sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu1sigma0->GetParameter(1),fcnPFu1sigma0->GetParError(1)); //plotPFu1sigma0.AddTextBox(fitparam,0.21,0.75,0.51,0.70,0,kBlack,-1);
-    sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu1sigma0->GetParameter(2),fcnPFu1sigma0->GetParError(2)); //plotPFu1sigma0.AddTextBox(fitparam,0.21,0.70,0.51,0.65,0,kBlack,-1);
-
-//     plotPFu1sigma0.Draw(c,kTRUE,"png");
+    sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu1sigma0->GetChisquare())/(fcnPFu1sigma0->GetNDF())); tb->AddText(chi2ndf);
+    grPFu1sigma0->SetTitle("");
+    grPFu1sigma0->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu1sigma0->GetYaxis()->SetTitle("#sigma_{0}(u_{1}) [GeV]");
+    grPFu1sigma0->SetMarkerColor(kBlack);
+    grPFu1sigma0->SetMarkerStyle(kOpenCircle);
+    grPFu1sigma0->Draw();
+    fcnPFu1sigma0->SetLineColor(kRed);
+    fcnPFu1sigma0->Draw("same");
+    sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu1sigma0->GetParameter(0)),1e5*(fcnPFu1sigma0->GetParError(0)));tb->AddText(fitparam);
+    sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu1sigma0->GetParameter(1),fcnPFu1sigma0->GetParError(1));tb->AddText(fitparam);
+    sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu1sigma0->GetParameter(2),fcnPFu1sigma0->GetParError(2));tb->AddText(fitparam);
+    tb->Draw("same");
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu1sigma0.png"));
+    c->Clear();
+    tb->Clear();
     
     grPFu1frac2 = new TGraphErrors(nbins,xval,pfu1Frac2, xerr,pfu1Frac2Err);
     grPFu1frac2->SetName("grPFu1frac2");
@@ -456,96 +486,129 @@ void fitRecoil(TString infilename="/data/blue/Bacon/Run2/wz_flat/Zmumu/ntuples/d
     fcnPFu1frac2->SetParameter(10,fcnPFu1sigma2->GetParameter(2));
     fcnPFu1frac2->SetParameter(11,fcnPFu1sigma2->GetParameter(3));
     
-//     CPlot plotPFu1frac2("pfu1frac2","","p_{T}(ll) [GeV/c]","f_{2}");
-//     plotPFu1frac2.AddGraph(grPFu1frac2,"",kBlack,kOpenCircle);
-//     plotPFu1frac2.AddFcn(fcnPFu1frac2,kRed);
-//     plotPFu1frac2.Draw(c,kTRUE,"png");
+    grPFu1frac2->SetTitle("");
+    grPFu1frac2->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu1frac2->GetYaxis()->SetTitle("f_{2}");
+    grPFu1frac2->SetMarkerColor(kBlack);
+    grPFu1frac2->SetMarkerStyle(kOpenCircle);
+    grPFu1frac2->Draw();
+    fcnPFu1frac2->SetLineColor(kRed);
+    fcnPFu1frac2->Draw("same");
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu1frac2.png"));
+    c->Clear();
+
   }
   
   if(pfu1model>=3) {  
     grPFu1sigma3 = new TGraphErrors(nbins,xval,pfu1Sigma3,xerr,pfu1Sigma3Err);
     grPFu1sigma3->SetName("grPFu1sigma3");
-//     CPlot plotPFu1sigma3("pfu1sigma3","","p_{T}(ll) [GeV/c]","#sigma_{3} [GeV]");
-//     plotPFu1sigma3.AddGraph(grPFu1sigma3,"",kBlack,kOpenCircle);
-//     plotPFu1sigma3.Draw(c,kTRUE,"png");
-  
+    grPFu1sigma3->SetTitle("");
+    grPFu1sigma3->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu1sigma3->GetYaxis()->SetTitle("#sigma_{3}(u_{1}) [GeV]");
+    grPFu1sigma3->SetMarkerColor(kBlack);
+    grPFu1sigma3->SetMarkerStyle(kOpenCircle);
+    grPFu1sigma3->Draw();
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu1sigma3.png"));
+//   
     grPFu1frac3 = new TGraphErrors(nbins,xval,pfu1Frac3, xerr,pfu1Frac3Err);
     grPFu1frac3->SetName("grPFu1frac3");
-//     CPlot plotPFu1frac3("pfu1frac3","","p_{T}(ll) [GeV/c]","f_{3}");
-//     plotPFu1frac3.AddGraph(grPFu1frac3,"",kBlack,kOpenCircle);
-//     plotPFu1frac3.Draw(c,kTRUE,"png");
+    grPFu1frac3->SetTitle("");
+    grPFu1frac3->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu1frac3->GetYaxis()->SetTitle("#sigma_{3}(u_{1}) [GeV]");
+    grPFu1frac3->SetMarkerColor(kBlack);
+    grPFu1frac3->SetMarkerStyle(kOpenCircle);
+    grPFu1frac3->Draw();
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu1frac3.png"));
   }
 // 
 //   // Plotting u2 vs. dilepton pT
   grPFu2mean = new TGraphErrors(nbins,xval,pfu2Mean,xerr,pfu2MeanErr);
   grPFu2mean->SetName("grPFu2mean");
   fitresPFu2mean = grPFu2mean->Fit("fcnPFu2mean","QMRN0FBSE");
-  sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu2mean->GetChisquare())/(fcnPFu2mean->GetNDF()));  
+  sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu2mean->GetChisquare())/(fcnPFu2mean->GetNDF()));  tb->AddText(chi2ndf);
+  tb->SetX1NDC(0.65);
+  tb->SetX2NDC(0.95);
+  grPFu2mean->SetTitle("");
+  grPFu2mean->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+  grPFu2mean->GetYaxis()->SetTitle("#sigma_{0}(u_{1}) [GeV]");
+  grPFu2mean->SetMarkerColor(kBlack);
+  grPFu2mean->SetMarkerStyle(kOpenCircle);
+  grPFu2mean->Draw();
+  fcnPFu2mean->SetLineColor(kRed);
+  fcnPFu2mean->Draw("same");
   
-  
-//   CPlot plotPFu2mean("pfu2mean","","p_{T}(ll) [GeV/c]","#mu(u_{2}) [GeV]");
-//   plotPFu2mean.AddGraph(grPFu2mean,"");
-//   plotPFu2mean.AddGraph(grPFu2mean,"",kBlack,kOpenCircle);
-//   plotPFu2mean.AddFcn(fcnPFu2mean,kRed);
-//   plotPFu2mean.AddTextBox(chi2ndf,0.21,0.87,0.41,0.82,0,kBlack,-1);
-  sprintf(fitparam,"p_{0} = %.3f #pm %.3f",fcnPFu2mean->GetParameter(0),fcnPFu2mean->GetParError(0)); //plotPFu2mean.AddTextBox(fitparam,0.21,0.80,0.51,0.75,0,kBlack,-1);
-  sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu2mean->GetParameter(1),fcnPFu2mean->GetParError(1)); //plotPFu2mean.AddTextBox(fitparam,0.21,0.75,0.51,0.70,0,kBlack,-1);
-  sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu2mean->GetParameter(2),fcnPFu2mean->GetParError(2)); //plotPFu2mean.AddTextBox(fitparam,0.21,0.70,0.51,0.65,0,kBlack,-1);
-//   plotPFu2mean.Draw(c,kTRUE,"png");
+  sprintf(fitparam,"p_{0} = %.3f #pm %.3f",fcnPFu2mean->GetParameter(0),fcnPFu2mean->GetParError(0)); tb->AddText(fitparam);
+  sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu2mean->GetParameter(1),fcnPFu2mean->GetParError(1)); tb->AddText(fitparam);
+  sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu2mean->GetParameter(2),fcnPFu2mean->GetParError(2)); tb->AddText(fitparam);
+  tb->Draw("same");
+  c->SaveAs(TString(outputDir+"/plots/"+"pfu2mean.png"));
+  c->Clear();
+  tb->Clear();
 
   
   grPFu2sigma1 = new TGraphErrors(nbins,xval,pfu2Sigma1,xerr,pfu2Sigma1Err);
   grPFu2sigma1->SetName("grPFu2sigma1");
   fitresPFu2sigma1 = grPFu2sigma1->Fit("fcnPFu2sigma1","QMRN0SE");
-  sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu2sigma1->GetChisquare())/(fcnPFu2sigma1->GetNDF()));  
+  sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu2sigma1->GetChisquare())/(fcnPFu2sigma1->GetNDF()));  tb->AddText(chi2ndf);
+  tb->SetX1NDC(0.21);
+  tb->SetX2NDC(0.51);
+  grPFu2sigma1->SetTitle("");
+  grPFu2sigma1->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+  grPFu2sigma1->GetYaxis()->SetTitle("#sigma_{0}(u_{1}) [GeV]");
+  grPFu2sigma1->SetMarkerColor(kBlack);
+  grPFu2sigma1->SetMarkerStyle(kOpenCircle);
+  grPFu2sigma1->Draw();
+  fcnPFu2sigma1->SetLineColor(kRed);
+  fcnPFu2sigma1->Draw("same");
   
-//   CPlot plotPFu2sigma1("pfu2sigma1","","p_{T}(ll) [GeV/c]","#sigma_{1}(u_{2}) [GeV]");
-//   plotPFu2sigma1.AddGraph(grPFu2sigma1,"");
-//   plotPFu2sigma1.AddGraph(grPFu2sigma1,"",kBlack,kOpenCircle);
-//   plotPFu2sigma1.AddFcn(fcnPFu2sigma1,kRed);
-//   plotPFu2sigma1.AddTextBox(chi2ndf,0.21,0.87,0.41,0.82,0,kBlack,-1);
-  sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu2sigma1->GetParameter(0)),1e5*(fcnPFu2sigma1->GetParError(0)));
-//   plotPFu2sigma1.AddTextBox(fitparam,0.21,0.80,0.51,0.75,0,kBlack,-1);
-  sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu2sigma1->GetParameter(1),fcnPFu2sigma1->GetParError(1)); //plotPFu2sigma1.AddTextBox(fitparam,0.21,0.75,0.51,0.70,0,kBlack,-1);
-  sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu2sigma1->GetParameter(2),fcnPFu2sigma1->GetParError(2)); //plotPFu2sigma1.AddTextBox(fitparam,0.21,0.70,0.51,0.65,0,kBlack,-1);
-
-//   plotPFu2sigma1.Draw(c,kTRUE,"png");
+  sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu2sigma1->GetParameter(0)),1e5*(fcnPFu2sigma1->GetParError(0)));tb->AddText(fitparam);
+  sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu2sigma1->GetParameter(1),fcnPFu2sigma1->GetParError(1)); tb->AddText(fitparam);
+  sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu2sigma1->GetParameter(2),fcnPFu2sigma1->GetParError(2)); tb->AddText(fitparam);
+  tb->Draw("same");
+  c->SaveAs(TString(outputDir+"/plots/"+"pfu2sigma1.png"));
+  c->Clear();
+  tb->Clear();
 
   if(pfu2model>=2) {
     grPFu2sigma2 = new TGraphErrors(nbins,xval,pfu2Sigma2,xerr,pfu2Sigma2Err);
     grPFu2sigma2->SetName("grPFu2sigma2");
     fitresPFu2sigma2 = grPFu2sigma2->Fit("fcnPFu2sigma2","QMRN0SE");
-    sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu2sigma2->GetChisquare())/(fcnPFu2sigma2->GetNDF()));        
-  
-    
-    // Here we plot the graphs with the fitted function on top
-    
-//     CPlot plotPFu2sigma2("pfu2sigma2","","p_{T}(ll) [GeV/c]","#sigma_{2}(u_{2}) [GeV]");    
-//     plotPFu2sigma2.AddGraph(grPFu2sigma2,"");
-//     plotPFu2sigma2.AddGraph(grPFu2sigma2,"",kBlack,kOpenCircle);
-//     plotPFu2sigma2.AddFcn(fcnPFu2sigma2,kRed);
-//     plotPFu2sigma2.AddTextBox(chi2ndf,0.21,0.87,0.41,0.82,0,kBlack,-1);
-    sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu2sigma2->GetParameter(0)),1e5*(fcnPFu2sigma2->GetParError(0)));
-//     plotPFu2sigma2.AddTextBox(fitparam,0.21,0.80,0.51,0.75,0,kBlack,-1);
-    sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu2sigma2->GetParameter(1),fcnPFu2sigma2->GetParError(1)); //plotPFu2sigma2.AddTextBox(fitparam,0.21,0.75,0.51,0.70,0,kBlack,-1);
-    sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu2sigma2->GetParameter(2),fcnPFu2sigma2->GetParError(2)); //plotPFu2sigma2.AddTextBox(fitparam,0.21,0.70,0.51,0.65,0,kBlack,-1);
-//     plotPFu2sigma2.Draw(c,kTRUE,"png");
-
+    sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu2sigma2->GetChisquare())/(fcnPFu2sigma2->GetNDF())); tb->AddText(chi2ndf);  
+    grPFu2sigma2->SetTitle("");
+    grPFu2sigma2->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu2sigma2->GetYaxis()->SetTitle("#sigma_{0}(u_{1}) [GeV]");
+    grPFu2sigma2->SetMarkerColor(kBlack);
+    grPFu2sigma2->SetMarkerStyle(kOpenCircle);
+    grPFu2sigma2->Draw();
+    fcnPFu2sigma2->SetLineColor(kRed);
+    fcnPFu2sigma2->Draw("same");
+    sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu2sigma2->GetParameter(0)),1e5*(fcnPFu2sigma2->GetParError(0))); tb->AddText(fitparam);
+    sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu2sigma2->GetParameter(1),fcnPFu2sigma2->GetParError(1));tb->AddText(fitparam);
+    sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu2sigma2->GetParameter(2),fcnPFu2sigma2->GetParError(2));tb->AddText(fitparam);
+    tb->Draw("same");
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu2sigma2.png"));
+    c->Clear();
+    tb->Clear();
 
     grPFu2sigma0 = new TGraphErrors(nbins,xval,pfu2Sigma0,xerr,pfu2Sigma0Err);
     grPFu2sigma0->SetName("grPFu2sigma0");
     fitresPFu2sigma0 = grPFu2sigma0->Fit("fcnPFu2sigma0","QMRN0SE");
-    sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu2sigma0->GetChisquare())/(fcnPFu2sigma0->GetNDF()));    
-//     CPlot plotPFu2sigma0("pfu2sigma0","","p_{T}(ll) [GeV/c]","#sigma(u_{2}) [GeV]");
-//     plotPFu2sigma0.AddGraph(grPFu2sigma0,"");
-//     plotPFu2sigma0.AddGraph(grPFu2sigma0,"",kBlack,kOpenCircle);
-//     plotPFu2sigma0.AddFcn(fcnPFu2sigma0,kRed);
-//     plotPFu2sigma0.AddTextBox(chi2ndf,0.21,0.87,0.41,0.82,0,kBlack,-1);
-    sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu2sigma0->GetParameter(0)),1e5*(fcnPFu2sigma0->GetParError(0)));
-//     plotPFu2sigma0.AddTextBox(fitparam,0.21,0.80,0.51,0.75,0,kBlack,-1);
-    sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu2sigma0->GetParameter(1),fcnPFu2sigma0->GetParError(1)); //plotPFu2sigma0.AddTextBox(fitparam,0.21,0.75,0.51,0.70,0,kBlack,-1);
-    sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu2sigma0->GetParameter(2),fcnPFu2sigma0->GetParError(2));// plotPFu2sigma0.AddTextBox(fitparam,0.21,0.70,0.51,0.65,0,kBlack,-1);
-//     plotPFu2sigma0.Draw(c,kTRUE,"png");
+    sprintf(chi2ndf,"#chi^{2}/ndf = %.2f",(fcnPFu2sigma0->GetChisquare())/(fcnPFu2sigma0->GetNDF())); tb->AddText(chi2ndf);
+    grPFu2sigma0->SetTitle("");
+    grPFu2sigma0->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu2sigma0->GetYaxis()->SetTitle("#sigma_{0}(u_{1}) [GeV]");
+    grPFu2sigma0->SetMarkerColor(kBlack);
+    grPFu2sigma0->SetMarkerStyle(kOpenCircle);
+    grPFu2sigma0->Draw();
+    fcnPFu2sigma0->SetLineColor(kRed);
+    fcnPFu2sigma0->Draw("same");
+    sprintf(fitparam,"p_{0} = (%.1f #pm %.1f) #times 10^{-5}",1e5*(fcnPFu2sigma0->GetParameter(0)),1e5*(fcnPFu2sigma0->GetParError(0))); tb->AddText(fitparam);
+    sprintf(fitparam,"p_{1} = %.3f #pm %.3f",fcnPFu2sigma0->GetParameter(1),fcnPFu2sigma0->GetParError(1)); tb->AddText(fitparam);
+    sprintf(fitparam,"p_{2} = %.3f #pm %.3f",fcnPFu2sigma0->GetParameter(2),fcnPFu2sigma0->GetParError(2)); tb->AddText(fitparam);
+    tb->Draw("same");
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu2sigma0.png"));
+    c->Clear();
+    tb->Clear();
 
     
     grPFu2frac2 = new TGraphErrors(nbins,xval,pfu2Frac2, xerr,pfu2Frac2Err);
@@ -562,24 +625,39 @@ void fitRecoil(TString infilename="/data/blue/Bacon/Run2/wz_flat/Zmumu/ntuples/d
     fcnPFu2frac2->SetParameter(9,fcnPFu2sigma2->GetParameter(1));
     fcnPFu2frac2->SetParameter(10,fcnPFu2sigma2->GetParameter(2));
     fcnPFu2frac2->SetParameter(11,fcnPFu2sigma2->GetParameter(3));
-//     CPlot plotPFu2frac2("pfu2frac2","","p_{T}(ll) [GeV/c]","f_{2}");
-//     plotPFu2frac2.AddFcn(fcnPFu2frac2,kRed);
-//     plotPFu2frac2.AddGraph(grPFu2frac2,"",kBlack,kOpenCircle);
-//     plotPFu2frac2.Draw(c,kTRUE,"png");
+
+    grPFu2frac2->SetTitle("");
+    grPFu2frac2->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu2frac2->GetYaxis()->SetTitle("f_{2}");
+    grPFu2frac2->SetMarkerColor(kBlack);
+    grPFu2frac2->SetMarkerStyle(kOpenCircle);
+    grPFu2frac2->Draw();
+    fcnPFu2frac2->SetLineColor(kRed);
+    fcnPFu2frac2->Draw("same");
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu2frac2.png"));
+    c->Clear();
+
   }
-//   
   if(pfu2model>=3) {  
     grPFu2sigma3 = new TGraphErrors(nbins,xval,pfu2Sigma3,xerr,pfu2Sigma3Err);
     grPFu2sigma3->SetName("grPFu2sigma3");
-//     CPlot plotPFu2sigma3("pfu2sigma3","","p_{T}(ll) [GeV/c]","#sigma_{3} [GeV]");
-//     plotPFu2sigma3.AddGraph(grPFu2sigma3,"",kBlack,kOpenCircle);
-//     plotPFu2sigma3.Draw(c,kTRUE,"png");
+    grPFu2sigma3->SetTitle("");
+    grPFu2sigma3->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu2sigma3->GetYaxis()->SetTitle("#sigma_{3}(u_{2}) [GeV]");
+    grPFu2sigma3->SetMarkerColor(kBlack);
+    grPFu2sigma3->SetMarkerStyle(kOpenCircle);
+    grPFu2sigma3->Draw();
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu2sigma3.png"));
 //   
     grPFu2frac3 = new TGraphErrors(nbins,xval,pfu2Frac3, xerr,pfu2Frac3Err);
     grPFu2frac3->SetName("grPFu2frac3");
-//     CPlot plotPFu2frac3("pfu2frac3","","p_{T}(ll) [GeV/c]","f_{3}");
-//     plotPFu2frac3.AddGraph(grPFu2frac3,"",kBlack,kOpenCircle);
-//     plotPFu2frac3.Draw(c,kTRUE,"png");
+    grPFu2frac3->SetTitle("");
+    grPFu2frac3->GetXaxis()->SetTitle("p_{T}(ll) [GeV/c]");
+    grPFu2frac3->GetYaxis()->SetTitle("#sigma_{3}(u_{2}) [GeV]");
+    grPFu2frac3->SetMarkerColor(kBlack);
+    grPFu2frac3->SetMarkerStyle(kOpenCircle);
+    grPFu2frac3->Draw();
+    c->SaveAs(TString(outputDir+"/plots/"+"pfu2frac3.png"));
   }
 
   //--------------------------------------------------------------------------------------------------------------
@@ -861,7 +939,8 @@ void performFit(const vector<TH1D*> hv, const vector<TH1D*> hbkgv, const Double_
 		Double_t *sigma2Arr, Double_t *sigma2ErrArr,
 		Double_t *sigma3Arr, Double_t *sigma3ErrArr,
 		Double_t *frac2Arr,  Double_t *frac2ErrArr,
-		Double_t *frac3Arr,  Double_t *frac3ErrArr
+		Double_t *frac3Arr,  Double_t *frac3ErrArr, 
+        TString outputDir
 ) {
   char pname[50];
   char ylabel[50];
@@ -1044,8 +1123,7 @@ void performFit(const vector<TH1D*> hv, const vector<TH1D*> hbkgv, const Double_
     if(model>3)
       sprintf(sig3text,"#sigma_{3} = %.1f #pm %.1f",sigma3Arr[ibin],sigma3ErrArr[ibin]);
     
-/*    CPlot plot(pname,frame,"",xlabel,ylabel);
-    plot.AddTextBox(binlabel,0.21,0.80,0.51,0.85,0,kBlack,-1);
+/*    CPlot plot(pname,frame,"",xlabel,);
     if(sigOnly) plot.AddTextBox(nsigtext,0.21,0.78,0.51,0.73,0,kBlack,-1);
     else        plot.AddTextBox(0.21,0.78,0.51,0.68,0,kBlack,-1,2,nsigtext,nbkgtext);
     if(model==1)      plot.AddTextBox(0.70,0.90,0.95,0.80,0,kBlack,-1,2,meantext,sig1text);
@@ -1053,9 +1131,36 @@ void performFit(const vector<TH1D*> hv, const vector<TH1D*> hbkgv, const Double_
     else if(model==3) plot.AddTextBox(0.70,0.90,0.95,0.65,0,kBlack,-1,5,meantext,sig0text,sig1text,sig2text,sig3text);
     plot.Draw(c,kTRUE,"png");
     
-    sprintf(pname,"%sfitlog_%i",plabel,ibin);
+    
     plot.SetName(pname);
     plot.SetLogy();
     plot.Draw(c,kTRUE,"png");      */  
+
+
+    TPaveText *tb = new TPaveText(0.21,0.60,0.51,0.85,"NDC");
+    tb->SetTextColor(kBlack);
+    tb->SetFillStyle(0);
+    tb->SetBorderSize(0);
+    tb->AddText(binlabel);
+    if(sigOnly) tb->AddText(nsigtext);
+    if(model==1) {tb->AddText(meantext); tb->AddText(sig1text);}
+    if(model==2) {tb->AddText(meantext); tb->AddText(sig0text); tb->AddText(sig1text); tb->AddText(sig2text);}
+    if(model==3) {tb->AddText(meantext); tb->AddText(sig0text); tb->AddText(sig1text); tb->AddText(sig2text); tb->AddText(sig3text);}
+
+    frame->SetTitle("");
+    frame->GetXaxis()->SetTitle(xlabel);
+    frame->GetYaxis()->SetTitle(ylabel);
+    frame->Draw();
+    tb->Draw("same");
+    c->SaveAs(TString(outputDir+"/plots/"+pname+".png"));
+    
+    sprintf(pname,"%sfitlog_%i",plabel,ibin);
+    c->SetLogy();
+    c->SaveAs(TString(outputDir+"/plots/"+pname+".png"));
+    
+    c->Clear();
+    c->SetLogy(0);
+    delete tb;
+
   }
 }

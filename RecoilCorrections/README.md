@@ -1,7 +1,7 @@
 #Instructions how to produce and apply recoil correction functions:
 
 ##Producing recoil corrections
-fitRecoil.C produces the recoil correction functions and graphs. This is set up to read from a flat ntuple, where the recoil components (u1 and u2) have already been calculated and stored as a branch in the ntuple. You also need the boson information, e.g. dilepton pT for Z (data or MC) or gen-level boson pT for W MC. 
+fitRecoil.C produces the recoil correction functions and graphs. This is set up to read from a flat ntuple (see line ~250), where the recoil components (u1 and u2) have already been calculated and stored as a branch in the ntuple. You also need the boson information, e.g. dilepton pT for Z (data or MC) or gen-level boson pT for W MC. You will need to update this part of the code yourself to match your ntuple. You can also change the pT bins by editing the ptbins array.
 
 It can be run using runFits.sh, and produces a ROOT file containing the corrections.
 
