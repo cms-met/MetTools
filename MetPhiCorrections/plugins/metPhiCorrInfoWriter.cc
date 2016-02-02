@@ -2,7 +2,6 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Association.h"
@@ -31,8 +30,10 @@ int metPhiCorrInfoWriter::translateTypeToAbsPdgId( reco::PFCandidate::ParticleTy
 }
 
 metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ): 
-  pflow_ ( cfg.getUntrackedParameter< edm::InputTag >("srcPFlow") ),
   vertices_ ( cfg.getUntrackedParameter< edm::InputTag >("vertexCollection") ),
+  verticesToken_ ( consumes< reco::VertexCollection >(vertices_) ),
+  pflow_ ( cfg.getUntrackedParameter< edm::InputTag >("srcPFlow") ),
+  pflowToken_ ( consumes< edm::View<reco::Candidate> >(pflow_) ),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
   edm::Service<TFileService> fs;
@@ -84,9 +85,10 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
 void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup& setup) {
 
   //get primary vertices
-  edm::Handle<edm::View<reco::Vertex> > hpv;
+  edm::Handle< reco::VertexCollection > hpv;
   try {
-    evt.getByLabel( vertices_, hpv );
+//    evt.getByLabel( vertices_, hpv );
+    evt.getByToken( verticesToken_, hpv );
   } catch ( cms::Exception & e ) {
     std::cout <<"[metPhiCorrInfoWriter] error: " << e.what() << std::endl;
   }
@@ -106,8 +108,8 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
     MEy_[i]=0.;
   } 
 
-  edm::Handle<edm::View<reco::Candidate> > particleFlow;
-  evt.getByLabel(pflow_, particleFlow);
+  edm::Handle< edm::View<reco::Candidate> > particleFlow;
+  evt.getByToken( pflowToken_, particleFlow );
   for (unsigned i = 0; i < particleFlow->size(); ++i) {
     const reco::Candidate& c = particleFlow->at(i);
     for (unsigned j=0; j<type_.size(); j++) {

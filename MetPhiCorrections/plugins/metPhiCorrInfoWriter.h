@@ -2,13 +2,16 @@
 #define HEPHECommonTools_metPhiCorrInfoWriter_H
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Utilities/interface/EDGetToken.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-// #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"                                                                               
-#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+// #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"                                                                               
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include <string>
 #include <vector>
@@ -20,10 +23,12 @@ public:
   metPhiCorrInfoWriter( const edm::ParameterSet & );
 
 private:
+  edm::InputTag vertices_;
+  edm::EDGetTokenT< std::vector<reco::Vertex> >     verticesToken_;
   edm::InputTag pflow_;
+  edm::EDGetTokenT< edm::View<reco::Candidate> >    pflowToken_;
 
   void analyze( const edm::Event& , const edm::EventSetup& );
-  edm::InputTag vertices_;
   std::string moduleLabel_;
   std::vector<edm::ParameterSet> cfgCorrParameters_;
   std::vector<TProfile* > profile_x_ , profile_y_;
