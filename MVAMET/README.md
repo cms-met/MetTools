@@ -27,3 +27,9 @@ The four trainings are performed one after the other, while directly being evalu
 The training result is stored in the file specified in the "weightfile" section in the json config.
 
 A typical training takes O(1h) with multicore being used and several hours in single-core mode.
+
+Run the training with
+
+```bash
+regress3 configs/config.json
+```
