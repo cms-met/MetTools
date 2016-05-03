@@ -23,7 +23,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
 
-process.load('MetTools.MetPhiCorrections.phiCorr_PHYS14_cff')
+process.load('MetTools.MetPhiCorrections.phiCorrBins_76X_cff')
 #Replacements for mAOD
 process.metPhiCorrInfoWriter.vertexCollection = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
 process.metPhiCorrInfoWriter.srcPFlow = cms.untracked.InputTag("packedPFCandidates")
