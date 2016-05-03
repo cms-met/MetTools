@@ -13,10 +13,15 @@ Edit `MetTools/MetPhiCorrections/test/run_metPhiCorr.py` to make sure your `_cff
 `cmsRun run_metPhiCorr.py`  
 The output file(s) contain the histograms and MEx,y profiles. When the test job ran satisfactorily, check the output root file and if it looks good, run the cfg on crab on the data you want the produce the corrections for. Note: Output files are small and do not depend on the size of the dataset. Do a `hadd` of all output files.
 3. Once you have the MEx,y go to `MetTools/MetPhiCorrections/python/tools/`. Look at the input parameters of `multiplicityFit.py` and change them in the calling script `fits.sh` according to your needs. The command `python multiplicityFit.py -h` should give you an idea.  The script `fits.sh` performs the fits and writes the final cfi file. You can give it a prefix parameter, e.g. `./fits.sh my76X` which then creates `multPhiCorr_my76X_cfi.py` from the DY shifts that are stored in a root file in that directory. Check the parametrization in the plot and modify funtional form, fitrange etc., if needed. When you're done check the output `.py` file (e.g. the one from the repository, `multPhiCorr_76X_cfi.py`, or the one you produced). Check that there is no overlap in eta for the same candidate species and that all categories are included. 
-4. JetMETCorrections\\
-   `cd $CMSSW_BASE/src`\\
-   echo "/JetMETCorrections/Type1MET/" >> .git/info/sparse-checkout\\
-   git read-tree -mu HEAD\\
-   scram b -j9\\
+4. JetMETCorrections:
+
+   `cd $CMSSW_BASE/src`
+
+   echo "/JetMETCorrections/Type1MET/" >> .git/info/sparse-checkout
+
+   git read-tree -mu HEAD
+
+   scram b -j9
+
 5. Finally, move the file (`multPhiCorr_76X_cfi.py`) to the `JetMETCorrections/Type1MET` module and apply the corrections using the `MultShiftMETcorrInputProducer`
  
