@@ -8,7 +8,9 @@ varTypes = ["multiplicity","nvtx","sumPt"]
 varType = {"multiplicity":0, "nvtx":1, "sumPt":2, 0:"multiplicity",1:"nvtx", 2:"sumPt"}
 
 #Define categories for MET phi corrections below
-h                 = {'name':'h', 'type':'h',  'etaPhiBinning':[108,-2.7,2.7,160,-pi,pi]}
+#h                 = {'name':'h', 'type':'h',  'etaPhiBinning':[108,-2.7,2.7,160,-pi,pi]}
+hEtaPlus          = {'name':'hEtaPlus', 'type':'h',  'etaPhiBinning':[54,0,2.7,160,-pi,pi]}
+hEtaMinus         = {'name':'hEtaMinus', 'type':'h', 'etaPhiBinning':[54,-2.7,0,160,-pi,pi]}
 h0Barrel          = {'name':'h0Barrel', 'type':'h0',  'etaPhiBinning':[32,-1.392,1.392,72,-pi,pi]}
 h0EndcapPlus      = {'name':'h0EndcapPlus', 'type':'h0',  'etaPhiBinning':[12,1.392,3,36/2,-pi,pi]}
 h0EndcapMinus     = {'name':'h0EndcapMinus', 'type':'h0',  'etaPhiBinning':[12,-3.000, -1.392,36/2,-pi,pi]}
@@ -34,7 +36,9 @@ h_HF_Plus         = {'name':'h_HFPlus', 'type':'h_HF',   'etaPhiBinning':[nEtaBi
 
 
 #variable 0 (candidate multiplicity): specify binning
-h['binning']                              = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'nvtx':[50, 0, 50]}
+#h['binning']                              = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'nvtx':[50, 0, 50]}
+hEtaPlus['binning']                       = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'nvtx':[50, 0, 50]}
+hEtaMinus['binning']                      = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'nvtx':[50, 0, 50]}
 h0Barrel['binning']                       = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'nvtx':[50, 0, 50]}
 h0EndcapPlus['binning']                   = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'nvtx':[50, 0, 50]}
 h0EndcapMinus['binning']                  = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'nvtx':[50, 0, 50]}
@@ -51,7 +55,7 @@ egamma_HF_Minus['binning']                = {'multiplicity':[5*25,0,5*250]  ,'su
 egamma_HF_Plus['binning']                 = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'nvtx':[50, 0, 50]}
 
 
-allMaps = [h, h0Barrel, h0EndcapPlus, h0EndcapMinus, gammaBarrel, gammaEndcapPlus, gammaEndcapMinus, gammaForwardPlus, gammaForwardMinus, e, 
+allMaps = [hEtaPlus, hEtaMinus, h0Barrel, h0EndcapPlus, h0EndcapMinus, gammaBarrel, gammaEndcapPlus, gammaEndcapMinus, gammaForwardPlus, gammaForwardMinus, e, 
            h_HF_Minus, h_HF_Plus, \
            egamma_HF_Minus, egamma_HF_Plus, 
           ]
