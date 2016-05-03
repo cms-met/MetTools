@@ -7,7 +7,7 @@ from MetTools.MetPhiCorrections.tools.categories import *
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--in", dest="infile",  default="", type="string", action="store", help="Inputfile. If none is given, will write output file for multMETCorrInfoWriter")
-parser.add_option("--postfix", dest="postfix", default="PHYS14", type="string", action="store", help="identifier (e.g. PHYS14)")
+parser.add_option("--postfix", dest="postfix", default="76X", type="string", action="store", help="identifier (e.g. 76X)")
 (options, args) = parser.parse_args()
 
 if options.infile=="":
