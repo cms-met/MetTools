@@ -11,7 +11,7 @@ ofile.write('from MetTools.MetPhiCorrections.phiCorrBins_'+options.postfix+'_cfi
 ofile.write('\n')
 ofile.write('metPhiCorrInfoWriter = cms.EDAnalyzer("metPhiCorrInfoWriter",\n')
 ofile.write('\tvertexCollection = cms.untracked.InputTag("offlinePrimaryVertices"),\n')
-ofile.write('\tsrcPFlow = cms.untracked.InputTag("particleFlow", ''),\n')
+ofile.write('\tsrcPFlow = cms.untracked.InputTag("particleFlow", ""),\n')
 ofile.write('\tparameters = phiCorrBins\n')
 ofile.write(')\n')
 ofile.write('\n')
