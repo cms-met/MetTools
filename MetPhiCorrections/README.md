@@ -24,4 +24,4 @@ The output file(s) contain the histograms and MEx,y profiles. When the test job 
    scram b -j9
 
 5. Finally, move the file (`multPhiCorr_76X_cfi.py`) to the `JetMETCorrections/Type1MET` module and apply the corrections using the `MultShiftMETcorrInputProducer`
- 
+6. Test the corrections: cmsRun JetMETCorrections/Type1MET/test/testMultShiftMETcorrInputProducer.py 
