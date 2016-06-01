@@ -10,6 +10,7 @@ parser.add_option("--mode", dest="mode", default='sumPt', type="string", action=
 parser.add_option("--input", dest="input", default='DYJetsToLL_M-50_HT-100toInf_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1_AODSIM.root', type="string", action="store", help="input file.Default:DYJetsToLL_M-50_HT-100toInf_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1_AODSIM.root")
 parser.add_option("--rootGDir", dest="rootGDir", default='metPhiCorrInfoWriter', type="string", action="store", help="Which gDir was used in the production of the MEx,y profile [metPhiCorrInfoWriter/pfMEtMultCorrInfoWriter].")
 parser.add_option("--plotFileName", dest="plotFileName", default="plot.pdf", type="string", action="store", help="Filename the plot. Default:test.pdf")
+parser.add_option("--plotoutPutDir", dest="plotoutPutDir", default="/", type="string", action="store", help="dir name Default:/")
 parser.add_option("--textFileName", dest="textFileName", default="metPhiCorrections_cfi.py", type="string", action="store", help="Text file name that the corrections are appended to. Default:metPhiCorrections_cfi.py.")
 (options, args) = parser.parse_args()
 
@@ -23,7 +24,7 @@ from MetTools.MetPhiCorrections.tools.categories import *
 from MetTools.MetPhiCorrections.tools.helpers import getObjFromFile
 
 
-assert options.map in [m['name'].replace('HF','HF_') for m in allMaps],("map %s not in "+",".join([m['name'].replace('HF','HF_') for m in allMaps])) % options.map
+#assert options.map in [m['name'].replace('HF','HF_') for m in allMaps],("map %s not in "+",".join([m['name'].replace('HF','HF_') for m in allMaps])) % options.map
 exec("map = " +options.map)
 exec("yZoomRange = (" +options.yZoomRange+ ")")
 exec("fitRange = (" +options.fitRange+ ")")
@@ -85,9 +86,9 @@ l.SetFillColor(0)
 l.SetShadowColor(ROOT.kWhite)
 l.SetBorderSize(1)
 l.Draw()
-c1.Print(options.plotFileName)
-c1.Print(options.plotFileName.replace('.pdf', '.root'))
-c1.Print(options.plotFileName.replace('.pdf', '.png'))
+c1.Print(options.plotoutPutDir+options.plotFileName)
+c1.Print(options.plotoutPutDir+options.plotFileName.replace('.pdf', '.root'))
+c1.Print(options.plotoutPutDir+options.plotFileName.replace('.pdf', '.png'))
 
 with open(options.textFileName, "a") as ofile:
   ofile.write('    cms.PSet(\n')
