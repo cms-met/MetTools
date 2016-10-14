@@ -6,11 +6,12 @@ parser.add_option("--rebin", dest="rebin", default=0, type="int", action="store"
 parser.add_option("--fitRange", dest="fitRange", default='0,2000', type="string", action="store", help="Which fitRange. Default:0,2000")
 parser.add_option("--xZoomRange", dest="xZoomRange", default='', type="string", action="store", help="Which xZoomRange. Default:Max")
 parser.add_option("--yZoomRange", dest="yZoomRange", default='-40,40', type="string", action="store", help="Which zoom range in y Axis. Default:-40,40")
-parser.add_option("--mode", dest="mode", default='sumPt', type="string", action="store", help="Which mode [ngoodVertices/sumPt/multiplicity]")
+parser.add_option("--mode", dest="mode", default='sumPt', type="string", action="store", help="Which mode [multiplicity/ngoodVertices/sumPt]")
 parser.add_option("--input", dest="input", default='DYJetsToLL_M-50_HT-100toInf_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1_AODSIM.root', type="string", action="store", help="input file.Default:DYJetsToLL_M-50_HT-100toInf_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1_AODSIM.root")
 parser.add_option("--rootGDir", dest="rootGDir", default='metPhiCorrInfoWriter', type="string", action="store", help="Which gDir was used in the production of the MEx,y profile [metPhiCorrInfoWriter/pfMEtMultCorrInfoWriter].")
 parser.add_option("--plotFileName", dest="plotFileName", default="plot.pdf", type="string", action="store", help="Filename the plot. Default:test.pdf")
-parser.add_option("--textFileName", dest="textFileName", default="metPhiCorrections_cfi.py", type="string", action="store", help="Text file name that the corrections are appended to. Default:metPhiCorrections_cfi.py.")
+parser.add_option("--plotoutPutDir", dest="plotoutPutDir", default="/", type="string", action="store", help="dir name Default:/")
+parser.add_option("--scriptFileName", dest="scriptFileName", default="metPhiCorrections_cfi.py", type="string", action="store", help="Text file name that the corrections are appended to. Default:metPhiCorrections_cfi.py.")
 (options, args) = parser.parse_args()
 
 import ROOT
@@ -23,7 +24,7 @@ from MetTools.MetPhiCorrections.tools.categories import *
 from MetTools.MetPhiCorrections.tools.helpers import getObjFromFile
 
 
-assert options.map in [m['name'].replace('HF','HF_') for m in allMaps],("map %s not in "+",".join([m['name'].replace('HF','HF_') for m in allMaps])) % options.map
+#assert options.map in [m['name'].replace('HF','HF_') for m in allMaps],("map %s not in "+",".join([m['name'].replace('HF','HF_') for m in allMaps])) % options.map
 exec("map = " +options.map)
 exec("yZoomRange = (" +options.yZoomRange+ ")")
 exec("fitRange = (" +options.fitRange+ ")")
@@ -32,7 +33,7 @@ if options.xZoomRange!='':
 else:
   xZoomRange = None
 
-assert options.mode in ["ngoodVertices","sumPt","multiplicity"],"Mode %s not known. Must be one of [ngoodVertices/sumPt/multiplicity]"%options.mode
+assert options.mode in ["multiplicity","ngoodVertices","sumPt"],"Mode %s not known. Must be one of [ngoodVertices/sumPt/multiplicity]"%options.mode
 
 print 'map', options.map, 'input', options.input, 'mode', options.mode, 'yZoomrange', yZoomRange, 'fitRange', fitRange, 'xZoomRange', xZoomRange
 
@@ -85,11 +86,12 @@ l.SetFillColor(0)
 l.SetShadowColor(ROOT.kWhite)
 l.SetBorderSize(1)
 l.Draw()
-c1.Print(options.plotFileName)
-c1.Print(options.plotFileName.replace('.pdf', '.root'))
-c1.Print(options.plotFileName.replace('.pdf', '.png'))
+options.plotFileName= options.plotFileName.replace('mult', options.mode)
+c1.Print(options.plotoutPutDir+"/"+options.plotFileName)
+#c1.Print(options.plotoutPutDir+"/"+options.plotFileName.replace('.pdf', '.root'))
+c1.Print(options.plotoutPutDir+"/"+options.plotFileName.replace('.pdf', '.png'))
 
-with open(options.textFileName, "a") as ofile:
+with open(options.scriptFileName, "a") as ofile:
   ofile.write('    cms.PSet(\n')
   ofile.write('      name=cms.string("'+map['name'].replace('_','')+'"),\n')
   ofile.write('      type=cms.int32('+str(label[map['type']])+'),\n')
@@ -101,3 +103,26 @@ with open(options.textFileName, "a") as ofile:
   ofile.write('      fy=cms.string("'+fy.GetExpFormula().Data()+'"),\n')
   ofile.write('      py=cms.vdouble('+','.join(str(fy.GetParameter(i)) for i in range(fy.GetNpar()))+'),\n')
   ofile.write('    ),\n')
+
+txtFileName = options.scriptFileName.replace('_cfi.py', '.txt')
+with open(txtFileName, "a") as ofile:
+  ofile.write('['+map['name'].replace('_','')+']\n')
+  ofile.write('{'+str(label[map['type']])+'\t') # ptclType
+  ofile.write('1'+'\t') # number of bin variables
+  ofile.write('eta'+'\t') # name of bin variables
+  ofile.write('1'+'\t') # number of parameterizing variables
+  ofile.write(str(varType[options.mode])+'\t') # type of parameterising variable
+  ofile.write(fy.GetExpFormula().Data()+'}'+'\n') # formula
+  ofile.write('X'+'\t') # formula
+  ofile.write(str(map['etaPhiBinning'][1])+'\t') # 1st bin
+  ofile.write(str(map['etaPhiBinning'][2])+'\t') # 2nd bin
+  ofile.write(str(fx.GetNpar())+'\t') # number of parameters
+  ofile.write(' '.join(str(fx.GetParameter(i)) for i in range(fx.GetNpar()))+'\n')
+  ofile.write('Y'+'\t') # formula
+  ofile.write(str(map['etaPhiBinning'][1])+'\t') # 1st bin
+  ofile.write(str(map['etaPhiBinning'][2])+'\t') # 2nd bin
+  ofile.write(str(fy.GetNpar())+'\t') # number of parameters
+  ofile.write(' '.join(str(fy.GetParameter(i)) for i in range(fy.GetNpar()))+'\n')
+
+
+
