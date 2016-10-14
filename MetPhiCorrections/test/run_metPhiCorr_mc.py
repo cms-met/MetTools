@@ -14,21 +14,22 @@ process.source = cms.Source(
 #    fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/mc/Phys14DR/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU30bx50_PHYS14_25_V1-v1/00000/003B6371-8D81-E411-8467-003048F0E826.root')
 # PHYS14 mAOD local
 #    fileNames = cms.untracked.vstring('file:/data/schoef/local/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_MINIAODSIM_PU20bx25_PHYS14_25_V1-v1.root')
-    fileNames = cms.untracked.vstring('file:/u/user/salee/Data/ReValZMM_13/CMSSW_8_1_0_pre6-PU25ns_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM/A0DE71C7-D82C-E611-88FF-0025905B85AA.root')
+#    fileNames = cms.untracked.vstring('file:/u/user/salee/Data/ReValZMM_13/CMSSW_8_1_0_pre6-PU25ns_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM/A0DE71C7-D82C-E611-88FF-0025905B85AA.root')
+    fileNames = cms.untracked.vstring('file:/u/user/sangilpark/RunIISample/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2/06532BBC-05C8-E511-A60A-F46D043B3CE5.root')
 # 76X mAODv2
 #    fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/mc/RunIIFall15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU25nsData2015v1_HCALDebug_76X_mcRun2_asymptotic_v12-v1/00000/006C9F73-3FB9-E511-9AFE-001E67E95C52.root')
 
     )
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("histo.root") ,
+process.TFileService = cms.Service("TFileService", fileName = cms.string("histo_mc.root") ,
       closeFileFast = cms.untracked.bool(True))
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2_v1'
+process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2'
 
-process.load('MetTools.MetPhiCorrections.phiCorrBins_Test_cff')
-#process.load('MetTools.MetPhiCorrections.phiCorr_PHYS14_cff')
+#process.load('MetTools.MetPhiCorrections.phiCorrBins_Test_cff')
+process.load('MetTools.MetPhiCorrections.phiCorr_PHYS14_cff')
 #Replacements for mAOD
 process.metPhiCorrInfoWriter.vertexCollection = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
 process.metPhiCorrInfoWriter.srcPFlow = cms.untracked.InputTag("packedPFCandidates")
