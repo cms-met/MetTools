@@ -9,7 +9,7 @@ config.General.transferLogs = True
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = '../run_metPhiCorr_data.py'
 config.JobType.maxJobRuntimeMin = 2750
-config.JobType.outputFiles      = ['histo_data_Run2016D.root']
+config.JobType.outputFiles      = ['histo_data.root']
 
 
 config.Data.inputDataset = '/DoubleMuon/Run2016D-PromptReco-v2/MINIAOD'
