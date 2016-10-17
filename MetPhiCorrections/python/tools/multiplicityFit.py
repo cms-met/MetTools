@@ -88,7 +88,7 @@ l.SetBorderSize(1)
 l.Draw()
 options.plotFileName= options.plotFileName.replace('mult', options.mode)
 c1.Print(options.plotoutPutDir+"/"+options.plotFileName)
-#c1.Print(options.plotoutPutDir+"/"+options.plotFileName.replace('.pdf', '.root'))
+c1.Print(options.plotoutPutDir+"/"+options.plotFileName.replace('.pdf', '.root'))
 c1.Print(options.plotoutPutDir+"/"+options.plotFileName.replace('.pdf', '.png'))
 
 with open(options.scriptFileName, "a") as ofile:

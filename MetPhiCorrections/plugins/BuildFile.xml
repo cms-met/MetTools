@@ -14,7 +14,8 @@
 <use name="DataFormats/VertexReco"/>
 <use name="DataFormats/Common"/>
 <use name="DataFormats/ParticleFlowCandidate"/>
+<use name="DataFormats/PatCandidates"/>
 
-<library file="metPhiCorrInfoWriter.cc" name="MetToolsMetPhiCorrInfoWriter">
+<library   name="MetToolsMetPhiCorrInfoWriter_plugins" file="*.cc">
   <flags EDM_PLUGIN="1"/>
 </library>

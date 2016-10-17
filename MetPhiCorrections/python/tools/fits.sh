@@ -9,7 +9,7 @@ outputScriptFile="multPhiCorr_${argum}_${mode}_cfi.py"
 outputTxtFile="multPhiCorr_${argum}_${mode}.txt"
 inputRoot=$2
 plotoutPutDirString=$3_$1
-rm ${plotoutPutDirString}_Old
+rm -rf ${plotoutPutDirString}_Old
 mv $plotoutPutDirString ${plotoutPutDirString}_Old
 mkdir $plotoutPutDirString
 
