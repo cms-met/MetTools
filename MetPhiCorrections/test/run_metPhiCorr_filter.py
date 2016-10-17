@@ -29,6 +29,8 @@ process.GlobalTag.globaltag = '80X_dataRun2_v17'
 #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2_v1'
 #process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
 
+process.load('MetTools.MetPhiCorrections.zMuMuFilter_cff')
+
 process.load('MetTools.MetPhiCorrections.phiCorrBins_Test_cff')
 #Replacements for mAOD
 process.metPhiCorrInfoWriter.vertexCollection = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
@@ -36,5 +38,6 @@ process.metPhiCorrInfoWriter.srcPFlow = cms.untracked.InputTag("packedPFCandidat
 
 # RUN!
 process.run = cms.Path(
-  process.metPhiCorrInfoWriterSequence
+    process.zMuMuFilter*
+    process.metPhiCorrInfoWriterSequence
 )
