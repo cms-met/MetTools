@@ -62,7 +62,7 @@ ZMuMuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   auto& pMET = MET->at(j);
 
   if( pMET.pt() >10  )
-  if( Muons->size()>1 )
+  if( n > 1 )
   for (int i=0; i<n-1; ++i)
   {
     auto& p1 = Muons->at(i);

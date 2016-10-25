@@ -12,6 +12,7 @@ parser.add_option("--rootGDir", dest="rootGDir", default='metPhiCorrInfoWriter',
 parser.add_option("--plotFileName", dest="plotFileName", default="plot.pdf", type="string", action="store", help="Filename the plot. Default:test.pdf")
 parser.add_option("--plotoutPutDir", dest="plotoutPutDir", default="/", type="string", action="store", help="dir name Default:/")
 parser.add_option("--scriptFileName", dest="scriptFileName", default="metPhiCorrections_cfi.py", type="string", action="store", help="Text file name that the corrections are appended to. Default:metPhiCorrections_cfi.py.")
+parser.add_option("--batch", dest="batch", default="False", type="string", action="store", help="Choose batch mode. If True, no canvas pop-up. Default:False.")
 (options, args) = parser.parse_args()
 
 import ROOT
@@ -20,6 +21,10 @@ import pickle, os
 from math import pi, cos, sin, sqrt, atan2
 ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/MetTools/Commons/scripts/tdrstyle.C")
 ROOT.setTDRStyle()
+
+if options.batch=="True":
+  ROOT.gROOT.SetBatch(True)
+
 from MetTools.MetPhiCorrections.tools.categories import *
 from MetTools.MetPhiCorrections.tools.helpers import getObjFromFile
 
@@ -37,6 +42,8 @@ assert options.mode in ["multiplicity","ngoodVertices","sumPt"],"Mode %s not kno
 
 print 'map', options.map, 'input', options.input, 'mode', options.mode, 'yZoomrange', yZoomRange, 'fitRange', fitRange, 'xZoomRange', xZoomRange
 
+
+
 fx = ROOT.TF1('fx', options.func, *(fitRange))
 fy = ROOT.TF1('fy', options.func, *(fitRange))
 iname = options.rootGDir+'/'+options.rootGDir+'_'+options.mode+'_'+map['name'].replace('h_HF','hHF').replace('egamma_HF','egammaHF')
@@ -47,13 +54,10 @@ assert px and py, "Could not read %s{_Px,_Py} from input from file %s, maybe --r
 if options.rebin:
   px.Rebin(options.rebin)
   py.Rebin(options.rebin)
-px.Fit(fx,'R')
-py.Fit(fy,'R')
 
 c1 = ROOT.TCanvas()  
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetOptFit(0)
-px.Draw('h')
 if options.mode=="multiplicity":
   px.GetXaxis().SetTitle("multiplicity in "+map['name'])
 if options.mode=="sumPt":
@@ -64,13 +68,24 @@ px.GetYaxis().SetTitle("<#slash{E}_{x,y}> (GeV)")
 px.GetXaxis().SetTitleSize(0.05)
 px.GetXaxis().SetTitleOffset(1.1)
 px.GetYaxis().SetRangeUser(*yZoomRange)
+py.GetYaxis().SetRangeUser(*yZoomRange)
 if xZoomRange:
   px.GetXaxis().SetRangeUser(*xZoomRange)
+  py.GetXaxis().SetRangeUser(*xZoomRange)
+
+
+px_clone = px.Clone(map['name'].replace('h_HF','hHF').replace('egamma_HF','egammaHF')+'_'+options.mode+'_Px')
+py_clone = py.Clone(map['name'].replace('h_HF','hHF').replace('egamma_HF','egammaHF')+'_'+options.mode+'_Py')
+
+px.Fit(fx,'R')
+py.Fit(fy,'R')
+
 px.SetLineColor(ROOT.kBlue)
 px.SetLineStyle(0)
 px.SetLineWidth(2)
 px.SetMarkerStyle(0)
 px.SetMarkerSize(0)
+px.Draw('h')
 #    py.GetYaxis().SetRangeUser(-20,20)
 py.SetLineColor(ROOT.kRed)
 py.SetLineStyle(0)
@@ -88,10 +103,10 @@ l.SetBorderSize(1)
 l.Draw()
 options.plotFileName= options.plotFileName.replace('mult', options.mode)
 c1.Print(options.plotoutPutDir+"/"+options.plotFileName)
-c1.Print(options.plotoutPutDir+"/"+options.plotFileName.replace('.pdf', '.root'))
+#c1.Print(options.plotoutPutDir+"/"+options.plotFileName.replace('.pdf', '.root'))
 c1.Print(options.plotoutPutDir+"/"+options.plotFileName.replace('.pdf', '.png'))
 
-with open(options.scriptFileName, "a") as ofile:
+with open(options.plotoutPutDir+"/"+options.scriptFileName, "a") as ofile:
   ofile.write('    cms.PSet(\n')
   ofile.write('      name=cms.string("'+map['name'].replace('_','')+'"),\n')
   ofile.write('      type=cms.int32('+str(label[map['type']])+'),\n')
@@ -105,7 +120,7 @@ with open(options.scriptFileName, "a") as ofile:
   ofile.write('    ),\n')
 
 txtFileName = options.scriptFileName.replace('_cfi.py', '.txt')
-with open(txtFileName, "a") as ofile:
+with open(options.plotoutPutDir+"/"+txtFileName, "a") as ofile:
   ofile.write('['+map['name'].replace('_','')+']\n')
   ofile.write('{'+str(label[map['type']])+'\t') # ptclType
   ofile.write('1'+'\t') # number of bin variables
@@ -125,4 +140,11 @@ with open(txtFileName, "a") as ofile:
   ofile.write(' '.join(str(fy.GetParameter(i)) for i in range(fy.GetNpar()))+'\n')
 
 
+outRootF = ROOT.TFile(options.plotoutPutDir+"/"+options.map+"_"+options.mode+".root","recreate")
+fx.Write()
+fy.Write()
+px_clone.Write()
+py_clone.Write()
+#outRootF.Write()
+outRootF.Close()
 
