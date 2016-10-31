@@ -60,14 +60,21 @@ ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetOptFit(0)
 if options.mode=="multiplicity":
   px.GetXaxis().SetTitle("multiplicity in "+map['name'])
+  py.GetXaxis().SetTitle("multiplicity in "+map['name'])
 if options.mode=="sumPt":
   px.GetXaxis().SetTitle("#Sigma p_{T} of "+map['name'])
+  py.GetXaxis().SetTitle("#Sigma p_{T} of "+map['name'])
 if options.mode=="ngoodVertices":
   px.GetXaxis().SetTitle("ngoodVertices")
-px.GetYaxis().SetTitle("<#slash{E}_{x,y}> (GeV)")
+  py.GetXaxis().SetTitle("ngoodVertices")
+
+px.GetYaxis().SetTitle("<#slash{E}_{x}> (GeV)")
 px.GetXaxis().SetTitleSize(0.05)
 px.GetXaxis().SetTitleOffset(1.1)
 px.GetYaxis().SetRangeUser(*yZoomRange)
+py.GetYaxis().SetTitle("<#slash{E}_{y}> (GeV)")
+py.GetXaxis().SetTitleSize(0.05)
+py.GetXaxis().SetTitleOffset(1.1)
 py.GetYaxis().SetRangeUser(*yZoomRange)
 if xZoomRange:
   px.GetXaxis().SetRangeUser(*xZoomRange)
@@ -122,21 +129,21 @@ with open(options.plotoutPutDir+"/"+options.scriptFileName, "a") as ofile:
 txtFileName = options.scriptFileName.replace('_cfi.py', '.txt')
 with open(options.plotoutPutDir+"/"+txtFileName, "a") as ofile:
   ofile.write('['+map['name'].replace('_','')+']\n')
-  ofile.write('{'+str(label[map['type']])+'\t') # ptclType
-  ofile.write('1'+'\t') # number of bin variables
-  ofile.write('eta'+'\t') # name of bin variables
-  ofile.write('1'+'\t') # number of parameterizing variables
-  ofile.write(str(varType[options.mode])+'\t') # type of parameterising variable
+  ofile.write('{'+str(label[map['type']])+' ') # ptclType
+  ofile.write(str('1')+' ') # number of bin variables
+  ofile.write('eta'+' ') # name of bin variables
+  ofile.write(str('1')+' ') # number of parameterizing variables
+  ofile.write(str(varType[options.mode])+' ') # type of parameterising variable
   ofile.write(fy.GetExpFormula().Data()+'}'+'\n') # formula
-  ofile.write('X'+'\t') # formula
-  ofile.write(str(map['etaPhiBinning'][1])+'\t') # 1st bin
-  ofile.write(str(map['etaPhiBinning'][2])+'\t') # 2nd bin
-  ofile.write(str(fx.GetNpar())+'\t') # number of parameters
+  ofile.write('X'+' ') # formula
+  ofile.write(str(map['etaPhiBinning'][1])+' ') # 1st bin
+  ofile.write(str(map['etaPhiBinning'][2])+' ') # 2nd bin
+  ofile.write(str(fx.GetNpar())+' ') # number of parameters
   ofile.write(' '.join(str(fx.GetParameter(i)) for i in range(fx.GetNpar()))+'\n')
-  ofile.write('Y'+'\t') # formula
-  ofile.write(str(map['etaPhiBinning'][1])+'\t') # 1st bin
-  ofile.write(str(map['etaPhiBinning'][2])+'\t') # 2nd bin
-  ofile.write(str(fy.GetNpar())+'\t') # number of parameters
+  ofile.write('Y'+' ') # formula
+  ofile.write(str(map['etaPhiBinning'][1])+' ') # 1st bin
+  ofile.write(str(map['etaPhiBinning'][2])+' ') # 2nd bin
+  ofile.write(str(fy.GetNpar())+' ') # number of parameters
   ofile.write(' '.join(str(fy.GetParameter(i)) for i in range(fy.GetNpar()))+'\n')
 
 
