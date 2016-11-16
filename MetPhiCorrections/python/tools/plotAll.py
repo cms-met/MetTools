@@ -7,10 +7,11 @@ parser.add_option("--plotDir", dest="plotDir", default="/", type="string", actio
 (options, args) = parser.parse_args()
 assert options.mode in ["multiplicity","ngoodVertices","sumPt"],"Mode %s not known. Must be one of [ngoodVertices/sumPt/multiplicity]"%options.mode
 
-allMaps = ['hEtaPlus', 'hEtaMinus', 'h0Barrel', 'h0EndcapPlus', 'h0EndcapMinus', 'gammaBarrel', 'gammaEndcapPlus', 'gammaEndcapMinus', 'gammaForwardPlus', 'gammaForwardMinus', 'e', 'mu',
-           'hHFMinus', 'hHFPlus', \
-           'egammaHFMinus', 'egammaHFPlus', 
-          ]
+from MetTools.MetPhiCorrections.tools.categories import *
+#allMaps = ['hEtaPlus', 'hEtaMinus', 'h0Barrel', 'h0EndcapPlus', 'h0EndcapMinus', 'gammaBarrel', 'gammaEndcapPlus', 'gammaEndcapMinus', 'gammaForwardPlus', 'gammaForwardMinus', 'e', 'mu',
+#           'hHFMinus', 'hHFPlus', \
+#           'egammaHFMinus', 'egammaHFPlus', 
+#          ]
 #allMaps = ['hEtaPlus', 'hEtaMinus', 'h0Barrel', 'h0EndcapPlus', 'h0EndcapMinus', 'gammaBarrel', 'gammaEndcapPlus', 'gammaEndcapMinus', 'gammaForwardPlus', 'gammaForwardMinus', 'e', 'mu',
 #           'hHFMinus', 'hHFPlus', \
 #           'egammaHFMinus', 'egammaHFPlus', 
@@ -31,17 +32,19 @@ px=[]
 py=[]
 fx=[]
 fy=[]
-for map in allMaps:
+for map in usedMaps:
   #c1.Clear()
   cx = ROOT.TCanvas()
   cy = ROOT.TCanvas()  
   lx = ROOT.TLegend(0.55,0.83,.95,.95)
   ly = ROOT.TLegend(0.55,0.83,.95,.95)
-  for Sample in ['DY', 'WJetsToLNu', 'TTJets', 'Run2016CDEFG']:
-    fileName = options.plotDir+'_'+Sample+'/'+map+"_"+options.mode+".root"
+  mapName=map['name'].replace('_','')
+  print "used maps is:"+mapName
+  for Sample in ['DY', 'WJets', 'TTJets', 'Run2016CDEFG']:
+    fileName = options.plotDir+'_'+Sample+'/'+mapName+"_"+options.mode+".root"
     print "open: "+fileName
-    px.append(getObjFromFile(fileName, map+"_"+options.mode+'_Px'))
-    py.append(getObjFromFile(fileName, map+"_"+options.mode+'_Py'))
+    px.append(getObjFromFile(fileName, mapName+"_"+options.mode+'_Px'))
+    py.append(getObjFromFile(fileName, mapName+"_"+options.mode+'_Py'))
     fx.append(getObjFromFile(fileName, 'fx'))
     fy.append(getObjFromFile(fileName, 'fy'))
     if Sample == "DY":
@@ -112,15 +115,15 @@ for map in allMaps:
   lx.SetShadowColor(ROOT.kWhite)
   lx.SetBorderSize(1)
   lx.Draw()
-  cx.Print("plotAll/"+map+"_"+options.mode+"_Px"+".pdf")
-  cx.Print("plotAll/"+map+"_"+options.mode+"_Px"+".png")
+  cx.Print("plotAll/"+mapName+"_"+options.mode+"_Px"+".pdf")
+  cx.Print("plotAll/"+mapName+"_"+options.mode+"_Px"+".png")
   cy.cd()
   ly.SetFillColor(0)
   ly.SetShadowColor(ROOT.kWhite)
   ly.SetBorderSize(1)
   ly.Draw()
-  cy.Print("plotAll/"+map+"_"+options.mode+"_Py"+".pdf")
-  cy.Print("plotAll/"+map+"_"+options.mode+"_Py"+".png")
+  cy.Print("plotAll/"+mapName+"_"+options.mode+"_Py"+".pdf")
+  cy.Print("plotAll/"+mapName+"_"+options.mode+"_Py"+".png")
 
 
 

@@ -57,10 +57,10 @@ egammaHFPlus['binning']                 = {'multiplicity':[5*25,0,5*250]  ,'sumP
 
 
 # For Standard fitting
-#allMaps = [hEtaPlus, hEtaMinus, h0Barrel, h0EndcapPlus, h0EndcapMinus, gammaBarrel, gammaEndcapPlus, gammaEndcapMinus,
-#           hHFMinus, hHFPlus, \
-#           egammaHFMinus, egammaHFPlus, 
-#          ]
+usedMaps = [hEtaPlus, hEtaMinus, h0Barrel, h0EndcapPlus, h0EndcapMinus, gammaBarrel, gammaEndcapPlus, gammaEndcapMinus,
+           hHFMinus, hHFPlus, \
+           egammaHFMinus, egammaHFPlus, 
+          ]
 
 # all of elements
 allMaps = [hEtaPlus, hEtaMinus, h0Barrel, h0EndcapPlus, h0EndcapMinus, gammaBarrel, gammaEndcapPlus, gammaEndcapMinus, gammaForwardPlus, gammaForwardMinus, e, mu,
