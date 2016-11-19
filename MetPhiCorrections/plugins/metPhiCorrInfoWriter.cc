@@ -2,7 +2,6 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Association.h"
 #include <string>
@@ -34,9 +33,9 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
   verticesToken_ ( consumes< reco::VertexCollection >(vertices_) ),
   pflow_ ( cfg.getUntrackedParameter< edm::InputTag >("srcPFlow") ),
   pflowToken_ ( consumes< edm::View<reco::Candidate> >(pflow_) ),
+  metToken_ ( consumes<patMETCollection>(cfg.getParameter<edm::InputTag>("srcMet"))),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
-  edm::Service<TFileService> fs;
 
   cfgCorrParameters_ = cfg.getParameter<std::vector<edm::ParameterSet> >("parameters");
 //  etaNBins_.clear();
@@ -81,9 +80,40 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
     variable_.push_back(fs->make<TH1F>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_variable").c_str(),"variable", nbins, nMin, nMax));
   }
 }
+void
+metPhiCorrInfoWriter::beginJob(){
+  OutTree = fs->make<TTree>("Events", "Events");
+  OutTree->Branch("Count_catagory",       &Count_catagory);
+  OutTree->Branch("Count_counts",       &Count_counts);
+  OutTree->Branch("Count_MetX",       &Count_MetX);
+  OutTree->Branch("Count_MetY",       &Count_MetY);
+  OutTree->Branch("Count_pfMetT",       &Count_pfMetT);
+  OutTree->Branch("Count_pfMetX",       &Count_pfMetX);
+  OutTree->Branch("Count_pfMetY",       &Count_pfMetY);
+  OutTree->Branch("nVtx_catagory",     &nVtx_catagory);
+  OutTree->Branch("nVtx_nVtx",         &nVtx_nVtx);
+  OutTree->Branch("nVtx_MetX",         &nVtx_MetX);
+  OutTree->Branch("nVtx_MetY",         &nVtx_MetY);
+  OutTree->Branch("nVtx_pfMetT",       &nVtx_pfMetT);
+  OutTree->Branch("nVtx_pfMetX",       &nVtx_pfMetX);
+  OutTree->Branch("nVtx_pfMetY",       &nVtx_pfMetY);
+  OutTree->Branch("sumPt_catagory",     &sumPt_catagory);
+  OutTree->Branch("sumPt_sumPt",        &sumPt_sumPt);
+  OutTree->Branch("sumPt_MetX",         &sumPt_MetX);
+  OutTree->Branch("sumPt_MetY",         &sumPt_MetY);
+  OutTree->Branch("sumPt_pfMetT",       &sumPt_pfMetT);
+  OutTree->Branch("sumPt_pfMetX",       &sumPt_pfMetX);
+  OutTree->Branch("sumPt_pfMetY",       &sumPt_pfMetY);
 
+}
 void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup& setup) {
 
+  edm::Handle<patMETCollection> srcPatMETCollection;
+  evt.getByToken(metToken_, srcPatMETCollection);
+  const pat::MET& srcMET = (*srcPatMETCollection)[0];
+  pfMet_px = srcMET.px();
+  pfMet_py = srcMET.py();
+  pfMet_pt = srcMET.pt();
   //get primary vertices
   edm::Handle< reco::VertexCollection > hpv;
   try {
@@ -130,25 +160,74 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
       }
     }
   }
+
+  Count_catagory.clear();
+  Count_counts.clear();
+  Count_MetX.clear();
+  Count_MetY.clear();
+  Count_pfMetT.clear();
+  Count_pfMetX.clear();
+  Count_pfMetY.clear();
+
+  nVtx_catagory.clear();
+  nVtx_nVtx.clear();
+  nVtx_MetX.clear();
+  nVtx_MetY.clear();
+  nVtx_pfMetT.clear();
+  nVtx_pfMetX.clear();
+  nVtx_pfMetY.clear();
+
+  sumPt_catagory.clear();
+  sumPt_sumPt.clear();
+  sumPt_MetX.clear();
+  sumPt_MetY.clear();
+  sumPt_pfMetT.clear();
+  sumPt_pfMetX.clear();
+  sumPt_pfMetY.clear();
+
   for (std::vector<edm::ParameterSet>::const_iterator v = cfgCorrParameters_.begin(); v!=cfgCorrParameters_.end(); v++) {
     unsigned j=v-cfgCorrParameters_.begin();
-//    std::cout<<"j "<<j<<" "<<v->getParameter<std::string>("name")<<" varType "<<varType_[j]<<" counts "<<counts_[j]<<" sumPt "<<sumPt_[j]<<" nvtx "<<ngoodVertices<<" "<<MEx_[j]<<" "<<MEy_[j]<<std::endl;
+    //std::cout<<"j "<<j<<" "<<v->getParameter<std::string>("name")<<" varType "<<varType_[j]<<" counts "<<counts_[j]<<" sumPt "<<sumPt_[j]<<" nvtx "<<ngoodVertices<<" "<<MEx_[j]<<" "<<MEy_[j]<<std::endl;
+
     if (varType_[j]==0) {
       profile_x_[j]->Fill(counts_[j], MEx_[j]);
       profile_y_[j]->Fill(counts_[j], MEy_[j]);
       variable_[j]->Fill(counts_[j]);
+      Count_catagory.push_back(j);
+      Count_counts.push_back(counts_[j]);
+      Count_MetX.push_back(MEx_[j]);
+      Count_MetY.push_back(MEy_[j]);
+      Count_pfMetT.push_back(pfMet_pt);
+      Count_pfMetX.push_back(pfMet_px);
+      Count_pfMetY.push_back(pfMet_py);
     } 
     if (varType_[j]==1) {
       profile_x_[j]->Fill(ngoodVertices, MEx_[j]);
       profile_y_[j]->Fill(ngoodVertices, MEy_[j]);
       variable_[j]->Fill(ngoodVertices);
+      nVtx_catagory.push_back(j);
+      nVtx_nVtx.push_back(ngoodVertices);
+      nVtx_MetX.push_back(MEx_[j]);
+      nVtx_MetY.push_back(MEy_[j]);
+      nVtx_pfMetT.push_back(pfMet_pt);
+      nVtx_pfMetX.push_back(pfMet_px);
+      nVtx_pfMetY.push_back(pfMet_py);
     } 
     if (varType_[j]==2) {
       profile_x_[j]->Fill(sumPt_[j], MEx_[j]);
       profile_y_[j]->Fill(sumPt_[j], MEy_[j]);
       variable_[j]->Fill(sumPt_[j]);
+
+      sumPt_catagory.push_back(j);
+      sumPt_sumPt.push_back(sumPt_[j]);
+      sumPt_MetX.push_back(MEx_[j]);
+      sumPt_MetY.push_back(MEy_[j]);
+      sumPt_pfMetT.push_back(pfMet_pt);
+      sumPt_pfMetX.push_back(pfMet_px);
+      sumPt_pfMetY.push_back(pfMet_py);
     }
   }
+  OutTree->Fill();
 }
 
 //define this as a plug-in

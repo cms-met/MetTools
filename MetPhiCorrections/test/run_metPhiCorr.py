@@ -33,6 +33,7 @@ process.load('MetTools.MetPhiCorrections.phiCorrBins_Test_cff')
 #Replacements for mAOD
 process.metPhiCorrInfoWriter.vertexCollection = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
 process.metPhiCorrInfoWriter.srcPFlow = cms.untracked.InputTag("packedPFCandidates")
+process.metPhiCorrInfoWriter.srcMet = cms.InputTag('slimmedMETs')
 
 # RUN!
 process.run = cms.Path(
