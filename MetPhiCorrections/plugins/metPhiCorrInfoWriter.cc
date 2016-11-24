@@ -6,6 +6,9 @@
 #include "DataFormats/Common/interface/Association.h"
 #include <string>
 
+#define MetBin 6
+#define MkTree (0)
+
 std::string namePostFix (int varType) {
 
   if (varType==0) return std::string("multiplicity");
@@ -70,8 +73,13 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
     MEx_.push_back(0.);
     MEy_.push_back(0.);
 //    std::cout<<" n/min/max "<<nbins<<" "<<etaMin<<" "<<etaMax<<std::endl;
-    profile_x_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_Px").c_str(),"Px", nbins, nMin, nMax, -300,300));
-    profile_y_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_Py").c_str(),"Py", nbins, nMin, nMax, -300,300));
+    char buffer[20];
+    for( int iMet(0);iMet<MetBin; iMet++)
+    {
+      sprintf(buffer, "_metBin%d",iMet);
+      profile_x_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append(buffer).append("_Px").c_str(),"Px", nbins, nMin, nMax, -300,300));
+      profile_y_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append(buffer).append("_Py").c_str(),"Py", nbins, nMin, nMax, -300,300));
+    }
 
     occupancy_.push_back(fs->make<TH2F>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_occupancy").c_str(),"occupancy",  etaNBins, etaMin, etaMax, phiNBins, phiMin, phiMax));
     energy_.push_back(fs->make<TH2F>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_energy").c_str(),"energy",           etaNBins, etaMin, etaMax, phiNBins, phiMin, phiMax));
@@ -82,6 +90,7 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
 }
 void
 metPhiCorrInfoWriter::beginJob(){
+#if(MkTree)
   OutTree = fs->make<TTree>("Events", "Events");
   OutTree->Branch("Count_catagory",       &Count_catagory);
   OutTree->Branch("Count_counts",       &Count_counts);
@@ -104,6 +113,7 @@ metPhiCorrInfoWriter::beginJob(){
   OutTree->Branch("sumPt_pfMetT",       &sumPt_pfMetT);
   OutTree->Branch("sumPt_pfMetX",       &sumPt_pfMetX);
   OutTree->Branch("sumPt_pfMetY",       &sumPt_pfMetY);
+#endif
 
 }
 void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup& setup) {
@@ -190,9 +200,28 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
     //std::cout<<"j "<<j<<" "<<v->getParameter<std::string>("name")<<" varType "<<varType_[j]<<" counts "<<counts_[j]<<" sumPt "<<sumPt_[j]<<" nvtx "<<ngoodVertices<<" "<<MEx_[j]<<" "<<MEy_[j]<<std::endl;
 
     if (varType_[j]==0) {
-      profile_x_[j]->Fill(counts_[j], MEx_[j]);
-      profile_y_[j]->Fill(counts_[j], MEy_[j]);
+
+      for( int k(0); k<MetBin;k++)
+      {
+	if(k==MetBin-1){
+	  if( pfMet_pt > k*10 )
+	  {
+	    profile_x_[j*MetBin + k ]->Fill(counts_[j], MEx_[j]);
+	    profile_y_[j*MetBin + k ]->Fill(counts_[j], MEy_[j]);
+	  }
+	}else{
+	  if( pfMet_pt > k*10 && pfMet_pt < (k+1)*10 )
+	  {
+	    profile_x_[j*MetBin + k ]->Fill(counts_[j], MEx_[j]);
+	    profile_y_[j*MetBin + k ]->Fill(counts_[j], MEy_[j]);
+	  }
+	}
+      }
+      //profile_x_[j]->Fill(counts_[j], MEx_[j]);
+      //profile_y_[j]->Fill(counts_[j], MEy_[j]);
+
       variable_[j]->Fill(counts_[j]);
+#if(MkTree)
       Count_catagory.push_back(j);
       Count_counts.push_back(counts_[j]);
       Count_MetX.push_back(MEx_[j]);
@@ -200,11 +229,32 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
       Count_pfMetT.push_back(pfMet_pt);
       Count_pfMetX.push_back(pfMet_px);
       Count_pfMetY.push_back(pfMet_py);
+#endif
     } 
     if (varType_[j]==1) {
-      profile_x_[j]->Fill(ngoodVertices, MEx_[j]);
-      profile_y_[j]->Fill(ngoodVertices, MEy_[j]);
+
+      for( int k(0); k<MetBin;k++)
+      {
+	if(k==MetBin-1){
+	  if( pfMet_pt > k*10 )
+	  {
+	    profile_x_[j*MetBin + k ]->Fill(ngoodVertices, MEx_[j]);
+	    profile_y_[j*MetBin + k ]->Fill(ngoodVertices, MEy_[j]);
+	  }
+	}else{
+	  if( pfMet_pt > k*10 && pfMet_pt < (k+1)*10 )
+	  {
+	    profile_x_[j*MetBin + k ]->Fill(ngoodVertices, MEx_[j]);
+	    profile_y_[j*MetBin + k ]->Fill(ngoodVertices, MEy_[j]);
+	  }
+	}
+      }
+      //profile_x_[j*MetBin]->Fill(ngoodVertices, MEx_[j]);
+      //profile_y_[j*MetBin]->Fill(ngoodVertices, MEy_[j]);
+
       variable_[j]->Fill(ngoodVertices);
+
+#if(MkTree)
       nVtx_catagory.push_back(j);
       nVtx_nVtx.push_back(ngoodVertices);
       nVtx_MetX.push_back(MEx_[j]);
@@ -212,12 +262,34 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
       nVtx_pfMetT.push_back(pfMet_pt);
       nVtx_pfMetX.push_back(pfMet_px);
       nVtx_pfMetY.push_back(pfMet_py);
+#endif
     } 
     if (varType_[j]==2) {
-      profile_x_[j]->Fill(sumPt_[j], MEx_[j]);
-      profile_y_[j]->Fill(sumPt_[j], MEy_[j]);
+
+      for( int k(0); k<MetBin;k++)
+      {
+	if(k==MetBin-1){
+	  if( pfMet_pt > k*10 )
+	  {
+	    profile_x_[j*MetBin + k ]->Fill(sumPt_[j], MEx_[j]);
+	    profile_y_[j*MetBin + k ]->Fill(sumPt_[j], MEy_[j]);
+	  }
+	}else{
+	  if( pfMet_pt > k*10 && pfMet_pt < (k+1)*10 )
+	  {
+	    profile_x_[j*MetBin + k ]->Fill(sumPt_[j], MEx_[j]);
+	    profile_y_[j*MetBin + k ]->Fill(sumPt_[j], MEy_[j]);
+	  }
+	}
+      }
+
+      //profile_x_[j]->Fill(sumPt_[j], MEx_[j]);
+      //profile_y_[j]->Fill(sumPt_[j], MEy_[j]);
+
+
       variable_[j]->Fill(sumPt_[j]);
 
+#if(MkTree)
       sumPt_catagory.push_back(j);
       sumPt_sumPt.push_back(sumPt_[j]);
       sumPt_MetX.push_back(MEx_[j]);
@@ -225,9 +297,12 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
       sumPt_pfMetT.push_back(pfMet_pt);
       sumPt_pfMetX.push_back(pfMet_px);
       sumPt_pfMetY.push_back(pfMet_py);
+#endif
     }
   }
+#if(MkTree)
   OutTree->Fill();
+#endif
 }
 
 //define this as a plug-in

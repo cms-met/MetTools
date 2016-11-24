@@ -9,14 +9,25 @@
   These Categories are defined in `MetTools/MetPhiCorrections/python/tools/categories.py`  
 Once the species are defined (no/only small changes should be necessary in categories.py),
   the following command creates a cfg that will be used for obtaining the MEx,y profiles which later are parametrized.
+
 `python MetTools/MetPhiCorrections/python/tools/writePythonCFG.py --postfix PHYS14`  
+
  This will create a file `phiCorrBins_PHYS14_cfi.py`. Change the postfix to something that identifies your usecase.  
+
  Move this file to `MetTools/MetPhiCorrections/python`
- and use the following command with the same postfix as before `python MetTools/MetPhiCorrections/python/write_cff.py --postfix 76X` to create a `_cff.py` that imports the cfi file of the template `MetTools/MetPhiCorrections/python/phiCorrBins_PHYS14_cfi.py`
+
+ and use the following command with the same postfix as before
+ 
+ `python MetTools/MetPhiCorrections/python/write_cff.py --postfix 76X`
+ 
+ to create a `_cff.py` that imports the cfi file of the template `MetTools/MetPhiCorrections/python/phiCorrBins_PHYS14_cfi.py`
 2. Use the `_cff.py` file from the previous step to create the MEx,y profiles.
 If the previous steps were skipped, use `MetTools/MetPhiCorrections/python/phiCorr_PHYS14_cff.py` 
+
 Edit `MetTools/MetPhiCorrections/test/run_metPhiCorr.py` to make sure your `_cff.py` from the previous step is used.
-As a test, issue `cmsRun run_metPhiCorr.py`  
+
+As a test, issue `cmsRun run_metPhiCorr.py`
+
 The output file(s) contain the histograms and MEx,y profiles.
 When the test job ran satisfactorily, check the output root file and if it looks good, run the cfg on crab on the data you want the produce the corrections for.
 Note: Output files are small and do not depend on the size of the dataset.

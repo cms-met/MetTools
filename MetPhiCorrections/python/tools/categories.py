@@ -37,8 +37,8 @@ hHFPlus         = {'name':'h_HFPlus', 'type':'h_HF',   'etaPhiBinning':[nEtaBins
 
 #variable 0 (candidate multiplicity): specify binning
 #h['binning']                              = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'ngoodVertices':[50, 0, 50]}
-hEtaPlus['binning']                       = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'ngoodVertices':[50, 0, 50]}
-hEtaMinus['binning']                      = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'ngoodVertices':[50, 0, 50]}
+hEtaPlus['binning']                       = {'multiplicity':[1*50,0,1*1500] ,'sumPt':  [1*50,0,1*1500],'ngoodVertices':[50, 0, 50]}
+hEtaMinus['binning']                      = {'multiplicity':[1*50,0,1*1500] ,'sumPt':  [1*50,0,1*1500],'ngoodVertices':[50, 0, 50]}
 h0Barrel['binning']                       = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'ngoodVertices':[50, 0, 50]}
 h0EndcapPlus['binning']                   = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'ngoodVertices':[50, 0, 50]}
 h0EndcapMinus['binning']                  = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'ngoodVertices':[50, 0, 50]}
