@@ -3,6 +3,7 @@
   Tools for the derivation of MET phi corrections. The actual corrections are in cms-met/cmssw
   
 ###### How to derive MET phi corrections
+
 1. (Skip this step if the binning in PF Candidate species and eta stays unchanged)
   Met-phi corrections are constructed separately in bins of PF Candidate species and eta,
   roughly corresponding to the subdetectors.
@@ -53,4 +54,4 @@ Once the species are defined (no/only small changes should be necessary in categ
 
 5. Finally, move the file (multPhiCorr_76X_cfi.py) to the `JetMETCorrections/Type1MET` module, change the module name in pfMETmultShiftCorrections_cfi.py.
 
-6.Apply the corrections:cmsRun JetMETCorrections/Type1MET/test/testMultShiftMETcorrInputProducer.py
+6. Apply the corrections:cmsRun JetMETCorrections/Type1MET/test/testMultShiftMETcorrInputProducer.py
