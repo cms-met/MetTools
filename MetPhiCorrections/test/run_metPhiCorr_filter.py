@@ -16,7 +16,8 @@ process.source = cms.Source(
 #    fileNames = cms.untracked.vstring('file:/data/schoef/local/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_MINIAODSIM_PU20bx25_PHYS14_25_V1-v1.root')
 # 76X mAODv2
 #    fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/mc/RunIIFall15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU25nsData2015v1_HCALDebug_76X_mcRun2_asymptotic_v12-v1/00000/006C9F73-3FB9-E511-9AFE-001E67E95C52.root')
-fileNames = cms.untracked.vstring('file:file:/u/user/sangilpark/RunIISample/Run2016B/SingleMuon/MINIAOD/PromptReco-v2/34A57FB8-D819-E611-B0A4-02163E0144EE.root')
+fileNames = cms.untracked.vstring('file:/d1/scratch/Garden1/Data/data2016/Run2016B/SingleMuon/MINIAOD/03Feb2017_ver2-v2/000C6E52-8BEC-E611-B3FF-0025905C42FE.root')
+#fileNames = cms.untracked.vstring('file:file:/u/user/sangilpark/RunIISample/Run2016B/SingleMuon/MINIAOD/PromptReco-v2/34A57FB8-D819-E611-B0A4-02163E0144EE.root')
     #fileNames = cms.untracked.vstring('file:/u/user/salee/Data/ReValZMM_13/CMSSW_8_1_0_pre6-PU25ns_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM/A0DE71C7-D82C-E611-88FF-0025905B85AA.root')
     )
 
@@ -25,7 +26,8 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string("histo.
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = '80X_dataRun2_v17'
+process.GlobalTag.globaltag = ' 80X_dataRun2_2016SeptRepro_v7'
+#process.GlobalTag.globaltag = '80X_dataRun2_v17'
 #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2_v1'
 #process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
 
