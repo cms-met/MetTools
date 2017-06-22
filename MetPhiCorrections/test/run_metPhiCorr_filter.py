@@ -24,14 +24,24 @@ fileNames = cms.untracked.vstring('file:/d1/scratch/Garden1/Data/data2016/Run201
 process.TFileService = cms.Service("TFileService", fileName = cms.string("histo.root") ,
       closeFileFast = cms.untracked.bool(True))
 
+json = 'Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt'
+#json = None
+if json != None:
+  import os
+  from FWCore.PythonUtilities.LumiList import LumiList
+  import FWCore.ParameterSet.Types as CfgTypes
+  myLumis = LumiList(filename = os.getenv('CMSSW_BASE')+'/src/MetTools/MetPhiCorrections/test/%s'%json).getCMSSWString().split(',')
+  process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
+  process.source.lumisToProcess.extend(myLumis)
+
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = ' 80X_dataRun2_2016SeptRepro_v7'
+process.GlobalTag.globaltag = '80X_dataRun2_2016SeptRepro_v7'
 #process.GlobalTag.globaltag = '80X_dataRun2_v17'
 #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2_v1'
 #process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
 
-process.load('MetTools.MetPhiCorrections.zMuMuFilter_cff')
+process.load('MetTools.MetPhiCorrections.MuFilter_cff')
 
 process.load('MetTools.MetPhiCorrections.phiCorrBins_Test_cff')
 #Replacements for mAOD
@@ -41,6 +51,6 @@ process.metPhiCorrInfoWriter.srcMet = cms.InputTag('slimmedMETs')
 
 # RUN!
 process.run = cms.Path(
-    process.zMuMuFilter*
+    process.MuFilter*
     process.metPhiCorrInfoWriterSequence
 )

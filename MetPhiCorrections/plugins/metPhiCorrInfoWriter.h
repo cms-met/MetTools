@@ -20,6 +20,7 @@
 #include <vector>
 #include <TProfile.h>
 #include <TH2F.h>
+#include <TVector2.h>
 
 class metPhiCorrInfoWriter : public edm::EDAnalyzer {
 public:
@@ -40,9 +41,15 @@ private:
 
   std::string moduleLabel_;
   std::vector<edm::ParameterSet> cfgCorrParameters_;
+  //std::vector<TProfile* > profileMetBin_x_ , profileMetBin_y_;
   std::vector<TProfile* > profile_x_ , profile_y_;
-  std::vector<TH2F* > occupancy_ , energy_, pt_;
+  std::vector<TProfile* > profile_phi, profile_phi_valence;
+  TProfile *profile_MET_x , *profile_MET_y;
+  TProfile *profile_nvtx_x , *profile_nvtx_y;
+  std::vector<TH2F* > occupancy_ , energy_, pt_, h2_met_varType_x, h2_met_varType_y;
   std::vector<TH1F* > variable_;
+  TH2F* h2_met_nvtx_MEtX, *h2_met_nvtx_MEtY;
+  TH1F* h1_met;
 
   std::vector<double> etaMin_, etaMax_, MEx_, MEy_, sumPt_;
   std::vector<int> type_, varType_, nbins_, counts_, etaNBins_;
@@ -57,6 +64,7 @@ private:
   static int translateTypeToAbsPdgId( reco::PFCandidate::ParticleType type );
 
   double pfMet_px, pfMet_py, pfMet_pt;
+  double ptclPhi, usedPhi, ptclPt, usedPt;
 
 };
 

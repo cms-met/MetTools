@@ -7,6 +7,7 @@
 #include <string>
 
 #define MetBin 6
+#define PhiBin 12 
 #define MkTree (0)
 
 std::string namePostFix (int varType) {
@@ -14,6 +15,8 @@ std::string namePostFix (int varType) {
   if (varType==0) return std::string("multiplicity");
   if (varType==1) return std::string("ngoodVertices");
   if (varType==2) return std::string("sumPt");
+  if (varType==3) return std::string("pfType1Met");
+  if (varType==4) return std::string("phiPt");
   return std::string("unknown");
 }
 
@@ -39,6 +42,14 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
   metToken_ ( consumes<patMETCollection>(cfg.getParameter<edm::InputTag>("srcMet"))),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
+
+  h1_met=fs->make<TH1F>(std::string(moduleLabel_).append("_").append("pfType1Met").c_str(),"pfType1Met", 100, 0, 300);
+  h2_met_nvtx_MEtX=fs->make<TH2F>(std::string(moduleLabel_).append("_").append("metVsNvtx_MetX").c_str(),"met_nvtx_MEtX", 50, 0, 300,35,0,35 );
+  h2_met_nvtx_MEtY=fs->make<TH2F>(std::string(moduleLabel_).append("_").append("metVsNvtx_MetX").c_str(),"met_nvtx_MEtX", 50, 0, 300,35,0,35 );
+  profile_MET_x=fs->make<TProfile>(std::string(moduleLabel_).append("_").append("pfMet").append("_Px").c_str(),"pfMetVsPx", 100, 0, 300, -300,300);
+  profile_MET_y=fs->make<TProfile>(std::string(moduleLabel_).append("_").append("pfMet").append("_Py").c_str(),"pfMetVsPy", 100, 0, 300, -300,300);
+  profile_nvtx_x=fs->make<TProfile>(std::string(moduleLabel_).append("_").append("nvtx").append("_Px").c_str(),"nvtxVsPx", 50, 0, 50, -300,300);
+  profile_nvtx_y=fs->make<TProfile>(std::string(moduleLabel_).append("_").append("nvtx").append("_Py").c_str(),"nvtxVsPy", 50, 0, 50, -300,300);
 
   cfgCorrParameters_ = cfg.getParameter<std::vector<edm::ParameterSet> >("parameters");
 //  etaNBins_.clear();
@@ -74,17 +85,27 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
     MEy_.push_back(0.);
 //    std::cout<<" n/min/max "<<nbins<<" "<<etaMin<<" "<<etaMax<<std::endl;
     char buffer[20];
-    for( int iMet(0);iMet<MetBin; iMet++)
-    {
-      sprintf(buffer, "_metBin%d",iMet);
-      profile_x_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append(buffer).append("_Px").c_str(),"Px", nbins, nMin, nMax, -300,300));
-      profile_y_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append(buffer).append("_Py").c_str(),"Py", nbins, nMin, nMax, -300,300));
-    }
+    //for( int iMet(0);iMet<MetBin; iMet++)
+    //{
+    //  sprintf(buffer, "_metBin%d",iMet);
+    //  profileMetBin_x_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append(buffer).append("_Px").c_str(),"Px", nbins, nMin, nMax, -300,300));
+    //  profileMetBin_y_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append(buffer).append("_Py").c_str(),"Py", nbins, nMin, nMax, -300,300));
+    //}
+
+    profile_x_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_Px").c_str(),"Px", nbins, nMin, nMax, -300,300));
+    profile_y_.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_Py").c_str(),"Py", nbins, nMin, nMax, -300,300));
+
+    profile_phi.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).c_str(),"phiVsPt", 30, -M_PI, M_PI, -300,300));
+
+    profile_phi_valence.push_back(fs->make<TProfile>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_valence").c_str(),"phiVsPt", 30, 0, M_PI, -300,300));
+
+    h2_met_varType_x.push_back(fs->make<TH2F>(std::string("h2_met").append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_MET_x").c_str(),std::string("h2_met_").append(namePostFix(varType)).append("_MET_x").c_str(),  100, 0, 300, nbins, nMin, nMax));
+    h2_met_varType_y.push_back(fs->make<TH2F>(std::string("h2_met").append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_MET_y").c_str(),std::string("h2_met_").append(namePostFix(varType)).append("_MET_y").c_str(),  100, 0, 300, nbins, nMin, nMax));
+
 
     occupancy_.push_back(fs->make<TH2F>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_occupancy").c_str(),"occupancy",  etaNBins, etaMin, etaMax, phiNBins, phiMin, phiMax));
     energy_.push_back(fs->make<TH2F>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_energy").c_str(),"energy",           etaNBins, etaMin, etaMax, phiNBins, phiMin, phiMax));
     pt_.push_back(fs->make<TH2F>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_pt").c_str(),"pt",                       etaNBins, etaMin, etaMax, phiNBins, phiMin, phiMax));
-
     variable_.push_back(fs->make<TH1F>(std::string(moduleLabel_).append("_").append(namePostFix(varType)).append("_").append(v->getParameter<std::string>("name")).append("_variable").c_str(),"variable", nbins, nMin, nMax));
   }
 }
@@ -141,6 +162,14 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
   }
   int ngoodVertices = goodVertices.size();
 
+  h1_met->Fill(pfMet_pt);
+  h2_met_nvtx_MEtX->Fill(pfMet_pt, ngoodVertices, pfMet_px);
+  h2_met_nvtx_MEtY->Fill(pfMet_pt, ngoodVertices, pfMet_py);
+  profile_MET_x->Fill(pfMet_pt, pfMet_px);
+  profile_MET_y->Fill(pfMet_pt, pfMet_py);
+  profile_nvtx_x->Fill(ngoodVertices, pfMet_px);
+  profile_nvtx_y->Fill(ngoodVertices, pfMet_py);
+
   for (unsigned i=0;i<counts_.size();i++) {
     counts_[i]=0;
     sumPt_[i]=0;
@@ -150,6 +179,7 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
 
   edm::Handle< edm::View<reco::Candidate> > particleFlow;
   evt.getByToken( pflowToken_, particleFlow );
+
   for (unsigned i = 0; i < particleFlow->size(); ++i) {
     const reco::Candidate& c = particleFlow->at(i);
     for (unsigned j=0; j<type_.size(); j++) {
@@ -166,10 +196,29 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
           pt_[j]->Fill(c.eta(), c.phi(), c.pt()); 
           energy_[j]->Fill(c.eta(), c.phi(), c.energy()); 
           occupancy_[j]->Fill(c.eta(), c.phi()); 
+
+	  if(varType_[j]==4) {
+            variable_[j]->Fill(c.pt());
+	    //std::cout<<"c phi:"<<c.phi()<<std::endl;
+	    ptclPhi=c.phi();
+	    ptclPt = c.pt();
+	    if(ptclPhi < 0){
+	      usedPhi = M_PI + ptclPhi;
+	      usedPt = -1*ptclPt;
+	    }else {
+	      usedPhi = ptclPhi;
+	      usedPt = ptclPt;
+	    }
+	    //std::cout<<"ptcl phi: "<<ptclPhi<<" usedPhi: "<<usedPhi<<" M_PI"<<M_PI<<std::endl;
+
+            profile_phi[j]->Fill(ptclPhi, c.pt());
+            profile_phi_valence[j]->Fill(usedPhi, usedPt);
+	  }
         }
       }
     }
   }
+
 
   Count_catagory.clear();
   Count_counts.clear();
@@ -201,26 +250,28 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
 
     if (varType_[j]==0) {
 
-      for( int k(0); k<MetBin;k++)
-      {
-	if(k==MetBin-1){
-	  if( pfMet_pt > k*10 )
-	  {
-	    profile_x_[j*MetBin + k ]->Fill(counts_[j], MEx_[j]);
-	    profile_y_[j*MetBin + k ]->Fill(counts_[j], MEy_[j]);
-	  }
-	}else{
-	  if( pfMet_pt > k*10 && pfMet_pt < (k+1)*10 )
-	  {
-	    profile_x_[j*MetBin + k ]->Fill(counts_[j], MEx_[j]);
-	    profile_y_[j*MetBin + k ]->Fill(counts_[j], MEy_[j]);
-	  }
-	}
-      }
-      //profile_x_[j]->Fill(counts_[j], MEx_[j]);
-      //profile_y_[j]->Fill(counts_[j], MEy_[j]);
-
+      //for( int k(0); k<MetBin;k++)
+      //{
+      //  if(k==MetBin-1){
+      //    if( pfMet_pt > k*10 )
+      //    {
+      //      profileMetBin_x_[j*MetBin + k ]->Fill(counts_[j], MEx_[j]);
+      //      profileMetBin_y_[j*MetBin + k ]->Fill(counts_[j], MEy_[j]);
+      //    }
+      //  }else{
+      //    if( pfMet_pt > k*10 && pfMet_pt < (k+1)*10 )
+      //    {
+      //      profileMetBin_x_[j*MetBin + k ]->Fill(counts_[j], MEx_[j]);
+      //      profileMetBin_y_[j*MetBin + k ]->Fill(counts_[j], MEy_[j]);
+      //    }
+      //  }
+      //}
+      profile_x_[j]->Fill(counts_[j], MEx_[j]);
+      profile_y_[j]->Fill(counts_[j], MEy_[j]);
       variable_[j]->Fill(counts_[j]);
+      h2_met_varType_x[j]->Fill(pfMet_pt,counts_[j], MEx_[j]);
+      h2_met_varType_y[j]->Fill(pfMet_pt,counts_[j], MEy_[j]);
+
 #if(MkTree)
       Count_catagory.push_back(j);
       Count_counts.push_back(counts_[j]);
@@ -233,26 +284,27 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
     } 
     if (varType_[j]==1) {
 
-      for( int k(0); k<MetBin;k++)
-      {
-	if(k==MetBin-1){
-	  if( pfMet_pt > k*10 )
-	  {
-	    profile_x_[j*MetBin + k ]->Fill(ngoodVertices, MEx_[j]);
-	    profile_y_[j*MetBin + k ]->Fill(ngoodVertices, MEy_[j]);
-	  }
-	}else{
-	  if( pfMet_pt > k*10 && pfMet_pt < (k+1)*10 )
-	  {
-	    profile_x_[j*MetBin + k ]->Fill(ngoodVertices, MEx_[j]);
-	    profile_y_[j*MetBin + k ]->Fill(ngoodVertices, MEy_[j]);
-	  }
-	}
-      }
-      //profile_x_[j*MetBin]->Fill(ngoodVertices, MEx_[j]);
-      //profile_y_[j*MetBin]->Fill(ngoodVertices, MEy_[j]);
-
+      //for( int k(0); k<MetBin;k++)
+      //{
+      //  if(k==MetBin-1){
+      //    if( pfMet_pt > k*10 )
+      //    {
+      //      profileMetBin_x_[j*MetBin + k ]->Fill(ngoodVertices, MEx_[j]);
+      //      profileMetBin_y_[j*MetBin + k ]->Fill(ngoodVertices, MEy_[j]);
+      //    }
+      //  }else{
+      //    if( pfMet_pt > k*10 && pfMet_pt < (k+1)*10 )
+      //    {
+      //      profileMetBin_x_[j*MetBin + k ]->Fill(ngoodVertices, MEx_[j]);
+      //      profileMetBin_y_[j*MetBin + k ]->Fill(ngoodVertices, MEy_[j]);
+      //    }
+      //  }
+      //}
+      profile_x_[j]->Fill(ngoodVertices, MEx_[j]);
+      profile_y_[j]->Fill(ngoodVertices, MEy_[j]);
       variable_[j]->Fill(ngoodVertices);
+      h2_met_varType_x[j]->Fill(pfMet_pt,ngoodVertices, MEx_[j]);
+      h2_met_varType_y[j]->Fill(pfMet_pt,ngoodVertices, MEy_[j]);
 
 #if(MkTree)
       nVtx_catagory.push_back(j);
@@ -266,28 +318,28 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
     } 
     if (varType_[j]==2) {
 
-      for( int k(0); k<MetBin;k++)
-      {
-	if(k==MetBin-1){
-	  if( pfMet_pt > k*10 )
-	  {
-	    profile_x_[j*MetBin + k ]->Fill(sumPt_[j], MEx_[j]);
-	    profile_y_[j*MetBin + k ]->Fill(sumPt_[j], MEy_[j]);
-	  }
-	}else{
-	  if( pfMet_pt > k*10 && pfMet_pt < (k+1)*10 )
-	  {
-	    profile_x_[j*MetBin + k ]->Fill(sumPt_[j], MEx_[j]);
-	    profile_y_[j*MetBin + k ]->Fill(sumPt_[j], MEy_[j]);
-	  }
-	}
-      }
+      //for( int k(0); k<MetBin;k++)
+      //{
+      //  if(k==MetBin-1){
+      //    if( pfMet_pt > k*10 )
+      //    {
+      //      profileMetBin_x_[j*MetBin + k ]->Fill(sumPt_[j], MEx_[j]);
+      //      profileMetBin_y_[j*MetBin + k ]->Fill(sumPt_[j], MEy_[j]);
+      //    }
+      //  }else{
+      //    if( pfMet_pt > k*10 && pfMet_pt < (k+1)*10 )
+      //    {
+      //      profileMetBin_x_[j*MetBin + k ]->Fill(sumPt_[j], MEx_[j]);
+      //      profileMetBin_y_[j*MetBin + k ]->Fill(sumPt_[j], MEy_[j]);
+      //    }
+      //  }
+      //}
 
-      //profile_x_[j]->Fill(sumPt_[j], MEx_[j]);
-      //profile_y_[j]->Fill(sumPt_[j], MEy_[j]);
-
-
+      profile_x_[j]->Fill(sumPt_[j], MEx_[j]);
+      profile_y_[j]->Fill(sumPt_[j], MEy_[j]);
       variable_[j]->Fill(sumPt_[j]);
+      h2_met_varType_x[j]->Fill(pfMet_pt,sumPt_[j], MEx_[j]);
+      h2_met_varType_y[j]->Fill(pfMet_pt,sumPt_[j], MEy_[j]);
 
 #if(MkTree)
       sumPt_catagory.push_back(j);
@@ -298,6 +350,12 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
       sumPt_pfMetX.push_back(pfMet_px);
       sumPt_pfMetY.push_back(pfMet_py);
 #endif
+    }
+    if (varType_[j]==3) {
+
+      profile_x_[j]->Fill(pfMet_pt, MEx_[j]);
+      profile_y_[j]->Fill(pfMet_pt, MEy_[j]);
+
     }
   }
 #if(MkTree)
