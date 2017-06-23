@@ -64,7 +64,8 @@ private:
   static int translateTypeToAbsPdgId( reco::PFCandidate::ParticleType type );
 
   double pfMet_px, pfMet_py, pfMet_pt;
-  double ptclPhi, usedPhi, ptclPt, usedPt;
+  double ptclMetPhi, usedPhi, ptclMetPt, usedPt;
+  TVector2 *tv2_ptcMet;
 
 };
 

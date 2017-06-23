@@ -7,9 +7,9 @@ pfTypes = ["X", "h", "e", "mu", "gamma", "h0", "h_HF", "egamma_HF"]
 #Translation of pfCandidate enum to labels and vice versa
 label = {"X":0,"h":1, "e":2, "mu":3,"gamma":4, 'h0':5, 'h_HF':6, 'egamma_HF':7, 0:"X",1:"h", 2:"e", 3:"mu",4:"gamma", 5:'h0', 6:'h_HF', 7:'egamma_HF'}
 #Translation of variable type and vice versa 
-varTypes = ["phiPt"]
-#varTypes = ["multiplicity","ngoodVertices","sumPt","pfType1", "phiPt"]
-varType = {"multiplicity":0, "ngoodVertices":1, "sumPt":2, "pfType1":3, "phiPt":4, 0:"multiplicity",1:"ngoodVertices", 2:"sumPt", 3:"pfType1", 4:"phiPt"} # keep the order
+varTypes = ["ptcMet"]
+#varTypes = ["multiplicity","ngoodVertices","sumPt","pfType1", "ptcMet"]
+varType = {"multiplicity":0, "ngoodVertices":1, "sumPt":2, "pfType1":3, "ptcMet":4, 0:"multiplicity",1:"ngoodVertices", 2:"sumPt", 3:"pfType1", 4:"ptcMet"} # keep the order
 
 #Define categories for MET phi corrections below
 #h                 = {'name':'h', 'type':'h',  'etaPhiBinning':[108,-2.7,2.7,160,-pi,pi]}
@@ -41,22 +41,22 @@ hHFPlus         = {'name':'h_HFPlus', 'type':'h_HF',   'etaPhiBinning':[nEtaBins
 
 #variable 0 (candidate multiplicity): specify binning
 #h['binning']                 = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'ngoodVertices':[50, 0, 50]}
-hEtaPlus['binning']           = {'multiplicity':[300,0,900] ,'sumPt':[200,0,1000],'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-hEtaMinus['binning']          = {'multiplicity':[300,0,900] ,'sumPt':[200,0,1000],'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-h0Barrel['binning']           = {'multiplicity':[50,0,50]   ,'sumPt':[200,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,100]}
-h0EndcapPlus['binning']       = {'multiplicity':[50,0,50]   ,'sumPt':[200,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-h0EndcapMinus['binning']      = {'multiplicity':[50,0,50]   ,'sumPt':[200,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-gammaBarrel['binning']        = {'multiplicity':[500,0,500] ,'sumPt':[100,0,700] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-gammaEndcapPlus['binning']    = {'multiplicity':[150,0,150] ,'sumPt':[100,0,300] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-gammaEndcapMinus['binning']   = {'multiplicity':[150,0,150] ,'sumPt':[100,0,300] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-gammaForwardPlus['binning']   = {'multiplicity':[10,0,10]   ,'sumPt':[25,0,25]   ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-gammaForwardMinus['binning']  = {'multiplicity':[10,0,10]   ,'sumPt':[25,0,25]   ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-e['binning']                  = {'multiplicity':[10,0,10]   ,'sumPt':[100,0,100] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-mu['binning']                 = {'multiplicity':[15,0,15]   ,'sumPt':[100,0,100] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-hHFMinus['binning']           = {'multiplicity':[100,0,400] ,'sumPt':[100,0,600] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-hHFPlus['binning']            = {'multiplicity':[100,0,400] ,'sumPt':[100,0,600] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-egammaHFMinus['binning']      = {'multiplicity':[100,0,200] ,'sumPt':[100,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
-egammaHFPlus['binning']       = {'multiplicity':[100,0,200] ,'sumPt':[100,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'phiPt':[200,0,1000]}
+hEtaPlus['binning']           = {'multiplicity':[300,0,900] ,'sumPt':[200,0,1000],'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+hEtaMinus['binning']          = {'multiplicity':[300,0,900] ,'sumPt':[200,0,1000],'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+h0Barrel['binning']           = {'multiplicity':[50,0,50]   ,'sumPt':[200,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+h0EndcapPlus['binning']       = {'multiplicity':[50,0,50]   ,'sumPt':[200,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+h0EndcapMinus['binning']      = {'multiplicity':[50,0,50]   ,'sumPt':[200,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+gammaBarrel['binning']        = {'multiplicity':[500,0,500] ,'sumPt':[100,0,700] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+gammaEndcapPlus['binning']    = {'multiplicity':[150,0,150] ,'sumPt':[100,0,300] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+gammaEndcapMinus['binning']   = {'multiplicity':[150,0,150] ,'sumPt':[100,0,300] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+gammaForwardPlus['binning']   = {'multiplicity':[10,0,10]   ,'sumPt':[25,0,25]   ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+gammaForwardMinus['binning']  = {'multiplicity':[10,0,10]   ,'sumPt':[25,0,25]   ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+e['binning']                  = {'multiplicity':[10,0,10]   ,'sumPt':[100,0,100] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,100]}
+mu['binning']                 = {'multiplicity':[15,0,15]   ,'sumPt':[100,0,100] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+hHFMinus['binning']           = {'multiplicity':[100,0,400] ,'sumPt':[100,0,600] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+hHFPlus['binning']            = {'multiplicity':[100,0,400] ,'sumPt':[100,0,600] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+egammaHFMinus['binning']      = {'multiplicity':[100,0,200] ,'sumPt':[100,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
+egammaHFPlus['binning']       = {'multiplicity':[100,0,200] ,'sumPt':[100,0,200] ,'ngoodVertices':[50, 0, 50],'pfType1':[100,0,300],'ptcMet':[300,0,300]}
 
 
 

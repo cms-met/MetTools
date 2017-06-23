@@ -37,9 +37,49 @@ echo "import FWCore.ParameterSet.Config as cms">>$ResultDir/$outputScriptFile
 echo "multPhiCorr_${BaseName} = cms.VPSet(">>$ResultDir/$outputScriptFile
 
 
-python profileFitPlots.py  --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir         --map=hEtaPlus  --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,400   --rebin=0 --yZoomRange=-2,4 --xZoomRange=0,600 --batch=$isBatch 
+#######################
+# ptcMet
+#######################
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir  --map=hEtaPlus           --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,50   --rebin=0 --yZoomRange=-4,4 --xZoomRange=0,100 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir   --map=hEtaMinus         --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,50   --rebin=0 --yZoomRange=-9,1 --xZoomRange=0,100 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir   --map=h0Barrel          --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,30   --rebin=0 --yZoomRange=-5,3 --xZoomRange=0,90 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --map=h0EndcapPlus        --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,20   --rebin=0 --yZoomRange=-2,4 --xZoomRange=0,80 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --map=h0EndcapMinus       --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,15   --rebin=0 --yZoomRange=-8,8 --xZoomRange=0,80 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --map=gammaBarrel          --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,20   --rebin=0 --yZoomRange=-4,4 --xZoomRange=0,90 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --map=gammaEndcapPlus      --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,20   --rebin=0 --yZoomRange=-5.,5 --xZoomRange=0,80 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --map=gammaEndcapMinus     --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,20   --rebin=0 --yZoomRange=-3,3 --xZoomRange=0,80 --batch=$isBatch 
+
+#python profileFitPlots.py  --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --plotFileName="gammaForwardPlus_mult.pdf"          --map=gammaForwardPlus          --varType=$varType --func='(x*[0]+x**2*[1]+x**3*[2])' --fitRange=0,12   --rebin=0 --yZoomRange=-4,4 --xZoomRange=0,15 --batch=$isBatch 
+
+#python profileFitPlots.py  --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --plotFileName="gammaForwardMinus_mult.pdf"          --map=gammaForwardMinus          --varType=$varType --func='(x*[0]+x**2*[1]+x**3*[2])' --fitRange=0,12   --rebin=0 --yZoomRange=-4,4 --xZoomRange=0,15 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir       --map=e          --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,10   --rebin=0 --yZoomRange=-2,2 --xZoomRange=0,50 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir    --map=mu          --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,50   --rebin=0 --yZoomRange=-5,5 --xZoomRange=0,100 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir  --map=hHFMinus          --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,40   --rebin=0 --yZoomRange=-7,16 --xZoomRange=0,100 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir   --map=hHFPlus          --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,40   --rebin=0 --yZoomRange=-7,20 --xZoomRange=0,100 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --map=egammaHFMinus      --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,15   --rebin=0 --yZoomRange=-15,3 --xZoomRange=0,25 --batch=$isBatch 
+
+python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --map=egammaHFPlus          --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,15   --rebin=0 --yZoomRange=-3,25 --xZoomRange=0,25 --batch=$isBatch 
+
 
 if false; then
+
+####################################3
+# sumpt
+####################################3
+python profileFitPlots.py  --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir  --map=hEtaPlus  --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,400   --rebin=0 --yZoomRange=-2,4 --xZoomRange=0,600 --batch=$isBatch 
+
 
 python profileFitPlots.py  --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir --plotFileName="hEtaMinus_mult.pdf"          --map=hEtaMinus          --varType=$varType --func='(x*[0]+x**2*[1])' --fitRange=0,400   --rebin=0 --yZoomRange=-8,4 --xZoomRange=0,600 --batch=$isBatch 
 

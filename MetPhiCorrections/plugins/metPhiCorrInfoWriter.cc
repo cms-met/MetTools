@@ -16,7 +16,7 @@ std::string namePostFix (int varType) {
   if (varType==1) return std::string("ngoodVertices");
   if (varType==2) return std::string("sumPt");
   if (varType==3) return std::string("pfType1Met");
-  if (varType==4) return std::string("phiPt");
+  if (varType==4) return std::string("ptcMet");
   return std::string("unknown");
 }
 
@@ -42,6 +42,7 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
   metToken_ ( consumes<patMETCollection>(cfg.getParameter<edm::InputTag>("srcMet"))),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
+  tv2_ptcMet = new TVector2();
 
   h1_met=fs->make<TH1F>(std::string(moduleLabel_).append("_").append("pfType1Met").c_str(),"pfType1Met", 100, 0, 300);
   h2_met_nvtx_MEtX=fs->make<TH2F>(std::string(moduleLabel_).append("_").append("metVsNvtx_MetX").c_str(),"met_nvtx_MEtX", 50, 0, 300,35,0,35 );
@@ -197,25 +198,34 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
           energy_[j]->Fill(c.eta(), c.phi(), c.energy()); 
           occupancy_[j]->Fill(c.eta(), c.phi()); 
 
-	  if(varType_[j]==4) {
-            variable_[j]->Fill(c.pt());
-	    //std::cout<<"c phi:"<<c.phi()<<std::endl;
-	    ptclPhi=c.phi();
-	    ptclPt = c.pt();
-	    if(ptclPhi < 0){
-	      usedPhi = M_PI + ptclPhi;
-	      usedPt = -1*ptclPt;
-	    }else {
-	      usedPhi = ptclPhi;
-	      usedPt = ptclPt;
-	    }
-	    //std::cout<<"ptcl phi: "<<ptclPhi<<" usedPhi: "<<usedPhi<<" M_PI"<<M_PI<<std::endl;
-
-            profile_phi[j]->Fill(ptclPhi, c.pt());
-            profile_phi_valence[j]->Fill(usedPhi, usedPt);
-	  }
         }
       }
+    }
+  }
+  for (unsigned j=0; j<type_.size(); j++) {
+    if(varType_[j]==4) {
+      tv2_ptcMet->Set(MEx_[j], MEy_[j]);
+
+      //std::cout<<"tv2_ptcMet phi:"<<tv2_ptcMet->Phi_mpi_pi(tv2_ptcMet->Phi())<<std::endl;
+      ptclMetPhi=tv2_ptcMet->Phi_mpi_pi(tv2_ptcMet->Phi());
+      ptclMetPt = tv2_ptcMet->Mod();
+      //std::cout<<"c phi:"<<c.phi()<<std::endl;
+      if(ptclMetPhi < 0){
+        usedPhi = M_PI + ptclMetPhi;
+        usedPt = -1*ptclMetPt;
+      }else {
+        usedPhi = ptclMetPhi;
+        usedPt = ptclMetPt;
+      }
+      //std::cout<<"ptcl phi: "<<ptclPhi<<" usedPhi: "<<usedPhi<<" M_PI"<<M_PI<<std::endl;
+
+      profile_phi[j]->Fill(ptclMetPhi, ptclMetPt);
+      profile_phi_valence[j]->Fill(usedPhi, usedPt);
+      profile_x_[j]->Fill(ptclMetPt, MEx_[j]);
+      profile_y_[j]->Fill(ptclMetPt, MEy_[j]);
+
+
+      variable_[j]->Fill(ptclMetPt);
     }
   }
 
