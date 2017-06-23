@@ -94,6 +94,8 @@ if xZoomRange:
 px_clone = px.Clone(map['name'].replace('h_HF','hHF').replace('egamma_HF','egammaHF')+'_'+options.varType+'_Px')
 py_clone = py.Clone(map['name'].replace('h_HF','hHF').replace('egamma_HF','egammaHF')+'_'+options.varType+'_Py')
 
+fx.SetLineColor(ROOT.kBlue);
+fy.SetLineColor(ROOT.kRed);
 px.Fit(fx,'R')
 py.Fit(fy,'R')
 
