@@ -1,13 +1,17 @@
-#./fits.sh Era SampleTag varType[multiplicity,ngoodVertices,sumPt,pfType1,ptcMet] Input isBatch
+#./fits.sh Era SampleTag varType[multiplicity,ngoodVertices,sumPt,pfType1,ptcMet,ptValence, metPhiNvtx] Input isBatch
 
 Era=03Feb2017_V1
-varType=ptcMet
+#varType=ptValence
+#varType=ptcMet
+#varType=metPhiNvtx
+varType=pfType1
 batch=True # background job not real batch
 
 ###############
-# Zmumu filter
+# filter
 ###############
-./fits.sh ${Era} Run2016B ${varType} /u/user/salee/JetMet/CMSSW8026MEtXY/src/MetTools/MetPhiCorrections/test/histo.root $batch
+./fits.sh ${Era} Summer16DY ${varType} /u/user/salee/JetMet/CMSSW8026MEtXY/src/MetTools/MetPhiCorrections/test/JobsMC/histoMC1.root $batch
+#./fits.sh ${Era} Run2016B ${varType} /u/user/salee/JetMet/CMSSW8026MEtXY/src/MetTools/MetPhiCorrections/test/SingleMu_MuFilter_MetNvtx.root $batch
 
 
 ###############

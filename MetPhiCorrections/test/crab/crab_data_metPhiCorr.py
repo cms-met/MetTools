@@ -7,7 +7,7 @@ config.General.transferOutputs = True
 config.General.transferLogs = True
 
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = '../run_metPhiCorr_data.py'
+config.JobType.psetName = '../JobsData/run_metPhiCorr_filter1.py'
 config.JobType.maxJobRuntimeMin = 2750
 config.JobType.outputFiles      = ['histo_data.root']
 

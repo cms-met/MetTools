@@ -9,7 +9,7 @@ config.General.transferOutputs = True
 config.General.transferLogs = True
 
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = '../run_metPhiCorr_mc.py'
+config.JobType.psetName = '../JobsMC/run_metPhiCorr_filterMC1.py'
 config.JobType.outputFiles = ['histo_mc.root']
 
 config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
