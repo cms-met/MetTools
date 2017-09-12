@@ -1,6 +1,6 @@
 #./fits.sh Era SampleTag varType[multiplicity,ngoodVertices,sumPt,pfType1,ptcMet,ptValence, metPhiNvtx] Input isBatch
 
-Era=03Feb2017_V1
+Era=23Aug2017_V1
 #varType=ptValence
 #varType=ptcMet
 #varType=metPhiNvtx
@@ -10,7 +10,17 @@ batch=True # background job not real batch
 ###############
 # filter
 ###############
-./fits.sh ${Era} Summer16DY ${varType} /u/user/salee/JetMet/CMSSW8026MEtXY/src/MetTools/MetPhiCorrections/test/JobsMC/histoMC1.root $batch
+#./fits.sh ${Era} Summer16DY_M_10to50 ${varType} /u/user/sangilpark/WorkDir/MetPhiCorrection/CMSSW_8_0_26/src/MetTools/MetPhiCorrections/test/histo/histo_DYJetsToLL_M-10to50.root $batch
+#./fits.sh ${Era} Summer16DY_M50 ${varType} /u/user/sangilpark/WorkDir/MetPhiCorrection/CMSSW_8_0_26/src/MetTools/MetPhiCorrections/test/histo/histo_DYJetsToLL_M-50.root $batch
+#./fits.sh ${Era} MuonEG_Run2016B ${varType} /u/user/sangilpark/WorkDir/MetPhiCorrection/CMSSW_8_0_26/src/MetTools/MetPhiCorrections/test/histo/histo_MuonEG_Run2016B-03Feb2017_ver2-v2.root $batch
+#./fits.sh ${Era} MuonEG_Run2016C ${varType} /u/user/sangilpark/WorkDir/MetPhiCorrection/CMSSW_8_0_26/src/MetTools/MetPhiCorrections/test/histo/histo_MuonEG_Run2016C-03Feb2017-v1.root $batch
+#./fits.sh ${Era} MuonEG_Run2016D ${varType} /u/user/sangilpark/WorkDir/MetPhiCorrection/CMSSW_8_0_26/src/MetTools/MetPhiCorrections/test/histo/histo_MuonEG_Run2016D-03Feb2017-v1.root $batch
+#./fits.sh ${Era} MuonEG_Run2016E ${varType} /u/user/sangilpark/WorkDir/MetPhiCorrection/CMSSW_8_0_26/src/MetTools/MetPhiCorrections/test/histo/histo_MuonEG_Run2016E-03Feb2017-v1.root $batch
+#./fits.sh ${Era} MuonEG_Run2016F ${varType} /u/user/sangilpark/WorkDir/MetPhiCorrection/CMSSW_8_0_26/src/MetTools/MetPhiCorrections/test/histo/histo_MuonEG_Run2016F-03Feb2017-v1.root $batch
+#./fits.sh ${Era} MuonEG_Run2016G ${varType} /u/user/sangilpark/WorkDir/MetPhiCorrection/CMSSW_8_0_26/src/MetTools/MetPhiCorrections/test/histo/histo_MuonEG_Run2016G-03Feb2017-v1.root $batch
+#./fits.sh ${Era} MuonEG_Run2016H_v2 ${varType} /u/user/sangilpark/WorkDir/MetPhiCorrection/CMSSW_8_0_26/src/MetTools/MetPhiCorrections/test/histo/histo_MuonEG_Run2016H-03Feb2017_ver2-v1.root $batch
+./fits.sh ${Era} MuonEG_Run2016H_v2and3 ${varType} /u/user/salee/JetMet/CMSSW8026MEtXY/src/MetTools/MetPhiCorrections/python/tools/histo_MuonEG_Run2016H-03Feb2017_v2and3.root $batch
+#./fits.sh ${Era} Summer16DY ${varType} /u/user/salee/JetMet/CMSSW8026MEtXY/src/MetTools/MetPhiCorrections/test/JobsMC/histoMC1.root $batch
 #./fits.sh ${Era} Run2016B ${varType} /u/user/salee/JetMet/CMSSW8026MEtXY/src/MetTools/MetPhiCorrections/test/SingleMu_MuFilter_MetNvtx.root $batch
 
 

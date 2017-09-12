@@ -14,6 +14,7 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "TTree.h"
@@ -34,6 +35,10 @@ private:
   virtual void beginJob() override;
   void analyze( const edm::Event& , const edm::EventSetup& );
 
+  static int translateTypeToAbsPdgId( reco::PFCandidate::ParticleType type );
+  const bool passJetID(pat::JetRef jet, int applyID) const;
+
+
   typedef std::vector<pat::MET> patMETCollection;
   edm::InputTag vertices_;
   edm::EDGetTokenT< std::vector<reco::Vertex> >     verticesToken_;
@@ -41,6 +46,9 @@ private:
   edm::EDGetTokenT< edm::View<reco::Candidate> >    pflowToken_;
   edm::EDGetTokenT<patMETCollection> metToken_;
   edm::EDGetTokenT<pat::MuonCollection> MuonLabel_;
+  edm::EDGetTokenT<pat::JetCollection> jetHT_;
+
+  pat::JetRefVector jets_;
 
   std::string moduleLabel_;
   std::vector<edm::ParameterSet> cfgCorrParameters_;
@@ -69,7 +77,8 @@ private:
     profile_phiPtcMet_nvtx7,  profile_phiPtcMet_nvtx8, profile_phiPtcMet_nvtx9,
     profile_phiPtcMet_nvtx10, profile_phiPtcMet_nvtx11;
 
-  std::vector<TProfile* >  prof_MetX_Nvtx, prof_MetY_Nvtx;
+  std::vector<TProfile* >  prof_0jet_MetX_Nvtx, prof_0jet_MetY_Nvtx;
+  std::vector<TProfile* >  prof_jets_MetX_Nvtx, prof_jets_MetY_Nvtx;
   std::vector<TProfile* >  prof_MetX_Pt1Nvtx, prof_MetY_Pt1Nvtx;
   std::vector<TProfile* >  prof_MetX_Pt2Nvtx, prof_MetY_Pt2Nvtx;
   std::vector<TProfile* >  prof_MetX_Pt3Nvtx, prof_MetY_Pt3Nvtx;
@@ -100,7 +109,6 @@ private:
   std::vector<int> sumPt_catagory;
   std::vector<double> sumPt_sumPt, sumPt_MetX, sumPt_MetY, sumPt_pfMetT, sumPt_pfMetX, sumPt_pfMetY;
 
-  static int translateTypeToAbsPdgId( reco::PFCandidate::ParticleType type );
 
   double pfMet_px, pfMet_py, pfMet_pt, pfMet_phi;
   double ptcMetPhi, usedPhi, ptcMet, usedPt, modUsedPt;

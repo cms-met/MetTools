@@ -36,13 +36,14 @@ int metPhiCorrInfoWriter::translateTypeToAbsPdgId( reco::PFCandidate::ParticleTy
 }
 
 metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ): 
-  vertices_ ( cfg.getUntrackedParameter< edm::InputTag >("vertexCollection") ),
+  vertices_      ( cfg.getUntrackedParameter< edm::InputTag >("vertexCollection") ),
   verticesToken_ ( consumes< reco::VertexCollection >(vertices_) ),
-  pflow_ ( cfg.getUntrackedParameter< edm::InputTag >("srcPFlow") ),
-  pflowToken_ ( consumes< edm::View<reco::Candidate> >(pflow_) ),
-  metToken_ ( consumes<patMETCollection>(cfg.getParameter<edm::InputTag>("srcMet"))),
-  MuonLabel_(consumes<pat::MuonCollection>(cfg.getParameter<edm::InputTag>("MuonLabel"))),
-  moduleLabel_(cfg.getParameter<std::string>("@module_label"))
+  pflow_         ( cfg.getUntrackedParameter< edm::InputTag >("srcPFlow") ),
+  pflowToken_    ( consumes< edm::View<reco::Candidate> >(pflow_) ),
+  metToken_      ( consumes<patMETCollection>(cfg.getParameter<edm::InputTag>("srcMet"))),
+  MuonLabel_     ( consumes<pat::MuonCollection>(cfg.getParameter<edm::InputTag>("MuonLabel"))),
+  jetHT_         ( consumes<pat::JetCollection>(cfg.getParameter<edm::InputTag>("jetTag"))),
+  moduleLabel_   (cfg.getParameter<std::string>("@module_label"))
 {
   tv2_ptcMet = new TVector2();
 
@@ -180,8 +181,10 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
 
 
   for (unsigned i(0); i<36; i++) {
-    prof_MetX_Nvtx.push_back(fs->make<TProfile>(std::string("prof_MetX_Nvtx").append(std::to_string(i)).c_str(),"MetX_Nvtx",50,0,150));
-    prof_MetY_Nvtx.push_back(fs->make<TProfile>(std::string("prof_MetY_Nvtx").append(std::to_string(i)).c_str(),"MetY_Nvtx",50,0,150));
+    prof_0jet_MetX_Nvtx.push_back(fs->make<TProfile>(std::string("prof_0jet_MetX_Nvtx").append(std::to_string(i)).c_str(),"0jet_MetX_Nvtx",50,0,150));
+    prof_0jet_MetY_Nvtx.push_back(fs->make<TProfile>(std::string("prof_0jet_MetY_Nvtx").append(std::to_string(i)).c_str(),"0jet_MetY_Nvtx",50,0,150));
+    prof_jets_MetX_Nvtx.push_back(fs->make<TProfile>(std::string("prof_jets_MetX_Nvtx").append(std::to_string(i)).c_str(),"jets_MetX_Nvtx",50,0,150));
+    prof_jets_MetY_Nvtx.push_back(fs->make<TProfile>(std::string("prof_jets_MetY_Nvtx").append(std::to_string(i)).c_str(),"jets_MetY_Nvtx",50,0,150));
 
     prof_MetX_Pt1Nvtx.push_back(fs->make<TProfile>(std::string("prof_MetX_Pt1Nvtx").append(std::to_string(i)).c_str(),"MetX_Nvtx",50,0,150));
     prof_MetY_Pt1Nvtx.push_back(fs->make<TProfile>(std::string("prof_MetY_Pt1Nvtx").append(std::to_string(i)).c_str(),"MetY_Nvtx",50,0,150));
@@ -233,6 +236,22 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
   evt.getByToken(metToken_, srcPatMETCollection);
   edm::Handle<pat::MuonCollection> Muons;
   evt.getByToken(MuonLabel_, Muons);
+  edm::Handle<pat::JetCollection> jetH;
+  evt.getByToken(jetHT_,jetH);
+
+  // set jets
+  jets_.clear();
+  for(size_t i=0;i<jetH->size();++i)
+    jets_.push_back(pat::JetRef(jetH,i));
+ 
+  int numJet(0);
+  for(size_t j=0;j<jets_.size();++j) {
+    if(!(passJetID(jets_[j],7)) ) continue;
+    if( std::fabs(jets_[j]->eta()) >= 4.7) continue;
+    if( jets_[j]->pt()<= 30) continue;
+    //if(isThisJetALepton(jets_[j])) continue;
+    numJet++;
+  }
 
   const pat::MET& srcMET = (*srcPatMETCollection)[0];
   pfMet_px = srcMET.px();
@@ -275,15 +294,28 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
   if(ngoodVtx > 35                   ) profile_pfMet_phi_vtx8->Fill(pfMet_phi, pfMet_pt);
 
   // Nvtx cut
+  if(numJet < 1){ // 0-jet --------------
   for (int i(0); i< 35 ; i++){
     if(ngoodVtx == i){
-      prof_MetX_Nvtx[i]->Fill( pfMet_pt, pfMet_px);
-      prof_MetY_Nvtx[i]->Fill( pfMet_pt, pfMet_py);
+      prof_0jet_MetX_Nvtx[i]->Fill( pfMet_pt, pfMet_px);
+      prof_0jet_MetY_Nvtx[i]->Fill( pfMet_pt, pfMet_py);
     }
   }
   if(ngoodVtx > 34 ){
-    prof_MetX_Nvtx[35]->Fill( pfMet_pt, pfMet_px);
-    prof_MetY_Nvtx[35]->Fill( pfMet_pt, pfMet_py);
+    prof_0jet_MetX_Nvtx[35]->Fill( pfMet_pt, pfMet_px);
+    prof_0jet_MetY_Nvtx[35]->Fill( pfMet_pt, pfMet_py);
+  }
+  }else{          // jet > 0 ------------
+  for (int i(0); i< 35 ; i++){
+    if(ngoodVtx == i){
+      prof_jets_MetX_Nvtx[i]->Fill( pfMet_pt, pfMet_px);
+      prof_jets_MetY_Nvtx[i]->Fill( pfMet_pt, pfMet_py);
+    }
+  }
+  if(ngoodVtx > 34 ){
+    prof_jets_MetX_Nvtx[35]->Fill( pfMet_pt, pfMet_px);
+    prof_jets_MetY_Nvtx[35]->Fill( pfMet_pt, pfMet_py);
+  }
   }
   // Nvtx & MuPt cut
   for(unsigned i(0);i<Muons->size();i++){
@@ -617,6 +649,104 @@ void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup
   OutTree->Fill();
 #endif
 }
+const bool metPhiCorrInfoWriter::passJetID(pat::JetRef jet, int applyID) const{
+  // no ID
+  if(applyID == 0) return true;
+  
+  // old ID
+  else if(applyID == 1) {
+    unsigned int multiplicity = jet->neutralMultiplicity () + jet->chargedMultiplicity ();
+    if(jet->neutralEmEnergyFraction() >=0.99 ||
+      jet->neutralHadronEnergyFraction() >=0.99 ||
+      multiplicity==0 ) return false;
+    if(fabs(jet->eta())<2.4){
+      if(jet->chargedEmEnergyFraction() >=0.99 ||
+        jet->chargedHadronEnergyFraction() == 0 ||
+        jet->chargedMultiplicity()==0 ) return false;
+    }
+    return true;
+  }
+  
+  // MVA ID loose
+  else if(applyID == 4) {
+    if(jet->userInt("jetId") >= 4) return true;
+    else return false;
+  }
+  
+  // MVA ID medium
+  else if(applyID == 5) {
+    if(jet->userInt("jetId") >= 6) return true;
+    else return false;
+  }
+  
+  // MVA ID tight
+  else if(applyID == 6) {
+    if(jet->userInt("jetId") >= 7) return true;
+    else return false;
+  }
+  
+  else if(applyID == 7) { //---- recommended Run II jet ID: LOOSE
+    //---- see https://twiki.cern.ch/twiki/bin/view/CMS/JetID
+    if( fabs(jet->eta()) <= 2.7 ) {
+      if (jet->neutralHadronEnergyFraction() >=0.99) return false;
+      if (jet->neutralEmEnergyFraction() >=0.99) return false;
+      
+      unsigned int multiplicity = jet->chargedMultiplicity() + jet->neutralMultiplicity();
+      if ( multiplicity <= 1) return false;
+      //    if ( jet->muonEnergyFraction() >= 0.8) return false;
+      
+      if(fabs(jet->eta())<=2.4) {
+        if ( jet->chargedHadronEnergyFraction() <= 0 ) return false;
+        if ( jet->chargedMultiplicity() <= 0 ) return false;
+        if ( jet->chargedEmEnergyFraction() >= 0.99 ) return false;
+      }
+    }
+    else if( fabs(jet->eta()) <= 3.0 ){
+      if( jet->neutralEmEnergyFraction() <= 0.01 ) return false;
+      if( jet->neutralMultiplicity() <= 2 ) return false;
+      if (jet->neutralHadronEnergyFraction() >= 0.98) return false;
+    }
+    else {
+      if( jet->neutralEmEnergyFraction() >= 0.90 ) return false;
+      if( jet->neutralMultiplicity() <= 10 ) return false;
+    }
+    
+    return true;  
+  }
+  
+  else if(applyID == 8) { //---- recommended Run II jet ID: TIGHT
+    //---- see https://twiki.cern.ch/twiki/bin/view/CMS/JetID
+    if( fabs(jet->eta()) <= 2.7 ) {
+      if (jet->neutralHadronEnergyFraction() >=0.90) return false;
+      if (jet->neutralEmEnergyFraction() >=0.90) return false;
+      
+      unsigned int multiplicity = jet->chargedMultiplicity() + jet->neutralMultiplicity();
+      if ( multiplicity <= 1) return false;
+      //  if ( jet->muonEnergyFraction() >= 0.8) return false;
+      
+      if(fabs(jet->eta())<=2.4) {
+        if ( jet->chargedHadronEnergyFraction() <= 0 ) return false;
+        if ( jet->chargedMultiplicity() <= 0 ) return false;
+        if ( jet->chargedEmEnergyFraction() >= 0.99 ) return false;
+      }
+    }
+    else if( fabs(jet->eta()) <= 3.0 ){
+      if( jet->neutralEmEnergyFraction() <= 0.01 ) return false;
+      if( jet->neutralMultiplicity() <= 2 ) return false;
+      if (jet->neutralHadronEnergyFraction() >= 0.98) return false;
+    }
+    else {
+      if( jet->neutralEmEnergyFraction() >= 0.90 ) return false;
+      if( jet->neutralMultiplicity() <= 10 ) return false;
+    }
+    
+    return true;  
+  }
+  
+  
+  return false;
+}
+
 
 //define this as a plug-in
 #include "FWCore/Framework/interface/MakerMacros.h"

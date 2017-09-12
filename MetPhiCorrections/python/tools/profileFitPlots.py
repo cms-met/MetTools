@@ -77,8 +77,8 @@ if options.varType == 'pfType1':
     ProfList_MetY.append( ROOT.TProfile())
     ProfList_MetX[i]=getObjFromFile(options.input, options.rootGDir+'/'+'prof_MetX_Nvtx'+str(i))
     ProfList_MetY[i]=getObjFromFile(options.input, options.rootGDir+'/'+'prof_MetY_Nvtx'+str(i))
-    assert ProfList_MetX[i], "Could not read %s from input from file %s, "%(options.rootGDir+'/'+'prof_MetX_Nvtx_Nvtx'+str(i), options.input)
-    assert ProfList_MetY[i], "Could not read %s from input from file %s, "%(options.rootGDir+'/'+'prof_MetX_Nvtx_Nvtx'+str(i), options.input)
+    assert ProfList_MetX[i], "Could not read %s from input from file %s, "%(options.rootGDir+'/'+'prof_MetX_Nvtx'+str(i), options.input)
+    assert ProfList_MetY[i], "Could not read %s from input from file %s, "%(options.rootGDir+'/'+'prof_MetX_Nvtx'+str(i), options.input)
   fx = ROOT.TF1('fx', options.func, *(fitRange))
   fy = ROOT.TF1('fy', options.func, *(fitRange))
 elif options.varType == 'ptValence':
@@ -194,6 +194,8 @@ if options.varType in ["metPhiNvtx"]:
 fitXResList = {}
 fitYResList = {}
 if options.varType == 'pfType1':
+  fx.SetLineColor(ROOT.kBlue);
+  fy.SetLineColor(ROOT.kRed);
   for i in range(0, 36):
 
     ProfList_MetX[i].GetYaxis().SetTitle("<#slash{E}_{x}> (GeV)")

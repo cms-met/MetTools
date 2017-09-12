@@ -27,10 +27,6 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = '80X_dataRun2_2016SeptRepro_v7'
 process.load('MetTools.MetPhiCorrections.MuFilter_cff')
 process.load('MetTools.MetPhiCorrections.phiCorrBins_Test_cff')
-process.metPhiCorrInfoWriter.vertexCollection = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
-process.metPhiCorrInfoWriter.srcPFlow = cms.untracked.InputTag("packedPFCandidates")
-process.metPhiCorrInfoWriter.srcMet = cms.InputTag('slimmedMETs')
-process.metPhiCorrInfoWriter.MuonLabel = cms.InputTag('slimmedMuons')
 process.run = cms.Path(
     process.MuFilter*
     process.metPhiCorrInfoWriterSequence

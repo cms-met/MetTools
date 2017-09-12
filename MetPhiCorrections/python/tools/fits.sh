@@ -12,7 +12,7 @@ isBatch=$5
 BaseName=${Era}_${SampleTag}
 
 outputScriptFile=multPhiCorr_${BaseName}_${varType}_cfi.py
-ResultDir=Re_${BaseName}
+ResultDir=Res_${BaseName}
 rm -rf ${ResultDir}_Old
 mv $ResultDir ${ResultDir}_Old
 mkdir $ResultDir
@@ -28,11 +28,11 @@ echo "Result is installed in " $ResultDir " outParameterScript:" $outputScriptFi
 echo "import FWCore.ParameterSet.Config as cms">>$ResultDir/$outputScriptFile
 echo "multPhiCorr_${BaseName} = cms.VPSet(">>$ResultDir/$outputScriptFile
 
-basicFtn='([0]*x+[1]*x*x)'
+basicFtn='([0]*x+[1]*x*x+[2]*x*x*x)'
 
 if [ $varType = "pfType1" ]; then 
 
-  python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir  --map=AllPtc   --varType=$varType --func=$basicFtn --fitRange=0,80  --rebin=0 --yZoomRange=-5,15 --xZoomRange=0,150 --batch=$isBatch 
+  python profileFitPlots.py --scriptFileName=$outputScriptFile --input=$inputData --rootGDir=metPhiCorrInfoWriter --plotoutPutDir=$ResultDir  --map=AllPtc   --varType=$varType --func=$basicFtn --fitRange=0,100  --rebin=0 --yZoomRange=-5,15 --xZoomRange=0,150 --batch=$isBatch 
 
 
 
