@@ -25,14 +25,14 @@ mu                = {'name':'mu','type':'mu', 'etaPhiBinning':[108/4,-2.4,2.4,16
 etaMaxDepth1 = 5.2
 etaMinDepth1 = 2.901376
 nEtaBinsHF = 13
-egamma_HF_Minus        = {'name':'egamma_HFMinus', 'type':'egamma_HF',  'etaPhiBinning':[nEtaBinsHF,-etaMaxDepth1,-etaMinDepth1,18,-pi,pi]}
-egamma_HF_Plus         = {'name':'egamma_HFPlus', 'type':'egamma_HF',   'etaPhiBinning':[nEtaBinsHF,etaMinDepth1,etaMaxDepth1,18,-pi,pi]}
+egammaHFMinus        = {'name':'egamma_HFMinus', 'type':'egamma_HF',  'etaPhiBinning':[nEtaBinsHF,-etaMaxDepth1,-etaMinDepth1,18,-pi,pi]}
+egammaHFPlus         = {'name':'egamma_HFPlus', 'type':'egamma_HF',   'etaPhiBinning':[nEtaBinsHF,etaMinDepth1,etaMaxDepth1,18,-pi,pi]}
 
 etaMaxDepth1 = 5.2
 etaMinDepth1 = 2.901376
 nEtaBinsHF = 13
-h_HF_Minus        = {'name':'h_HFMinus', 'type':'h_HF',  'etaPhiBinning':[nEtaBinsHF,-etaMaxDepth1,-etaMinDepth1,18,-pi,pi]}
-h_HF_Plus         = {'name':'h_HFPlus', 'type':'h_HF',   'etaPhiBinning':[nEtaBinsHF,etaMinDepth1,etaMaxDepth1,18,-pi,pi]}
+hHFMinus        = {'name':'h_HFMinus', 'type':'h_HF',  'etaPhiBinning':[nEtaBinsHF,-etaMaxDepth1,-etaMinDepth1,18,-pi,pi]}
+hHFPlus         = {'name':'h_HFPlus', 'type':'h_HF',   'etaPhiBinning':[nEtaBinsHF,etaMinDepth1,etaMaxDepth1,18,-pi,pi]}
 
 
 #variable 0 (candidate multiplicity): specify binning
@@ -49,14 +49,14 @@ gammaForwardPlus['binning']               = {'multiplicity':[5*10,0,5*10]   ,'su
 gammaForwardMinus['binning']              = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'nvtx':[50, 0, 50]}
 e['binning']                              = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'nvtx':[50, 0, 50]}
 mu['binning']                             = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'nvtx':[50, 0, 50]}
-h_HF_Minus['binning']                     = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'nvtx':[50, 0, 50]}
-h_HF_Plus['binning']                      = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'nvtx':[50, 0, 50]}
-egamma_HF_Minus['binning']                = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'nvtx':[50, 0, 50]}
-egamma_HF_Plus['binning']                 = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'nvtx':[50, 0, 50]}
+hHFMinus['binning']                     = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'nvtx':[50, 0, 50]}
+hHFPlus['binning']                      = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'nvtx':[50, 0, 50]}
+egammaHFMinus['binning']                = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'nvtx':[50, 0, 50]}
+egammaHFPlus['binning']                 = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'nvtx':[50, 0, 50]}
 
 
 allMaps = [hEtaPlus, hEtaMinus, h0Barrel, h0EndcapPlus, h0EndcapMinus, gammaBarrel, gammaEndcapPlus, gammaEndcapMinus, gammaForwardPlus, gammaForwardMinus, e, 
-           h_HF_Minus, h_HF_Plus, \
-           egamma_HF_Minus, egamma_HF_Plus, 
+           hHFMinus, hHFPlus, \
+           egammaHFMinus, egammaHFPlus, 
           ]
 
