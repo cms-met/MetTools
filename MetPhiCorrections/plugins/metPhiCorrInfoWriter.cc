@@ -6,6 +6,7 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Association.h"
 #include <string>
+#include <TLorentzVector.h>
 
 std::string namePostFix (int varType) {
 
@@ -14,6 +15,15 @@ std::string namePostFix (int varType) {
   if (varType==2) return std::string("sumPt");
   return std::string("unknown");
 }
+
+double delta_phi (float phi1, float phi2)
+{
+  double dPhi = phi1 - phi2; 
+  if (dPhi > 3.1416) dPhi -= 2*3.1416;
+  if (dPhi <= -3.1416) dPhi += 2*3.1416; //So that dPhi is always between -pi and +pi.
+  return dPhi;
+}
+
 
 int metPhiCorrInfoWriter::translateTypeToAbsPdgId( reco::PFCandidate::ParticleType type ) {
   switch( type ) {
@@ -29,9 +39,19 @@ int metPhiCorrInfoWriter::translateTypeToAbsPdgId( reco::PFCandidate::ParticleTy
   }
 }
 
+bool metPhiCorrInfoWriter::passSelection(TLorentzVector firstMuon, TLorentzVector secondMuon) {
+  if((firstMuon + secondMuon).Pt() > 20) return false;
+  if((firstMuon + secondMuon).M() > 110 or (firstMuon + secondMuon).M() < 70) return false;
+  if(firstMuon.Pt()/secondMuon.Pt() > 1.2 or firstMuon.Pt()/secondMuon.Pt() < 0.8) return false;
+  if(fabs(delta_phi(firstMuon.Phi(),secondMuon.Phi()))<2.8) return false;
+  return true;
+}
+
 metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ): 
   vertices_ ( cfg.getUntrackedParameter< edm::InputTag >("vertexCollection") ),
   verticesToken_ ( consumes< reco::VertexCollection >(vertices_) ),
+  muons_ ( cfg.getUntrackedParameter< edm::InputTag >("muonsCollection") ),
+  muonsToken_(consumes< std::vector< pat::Muon> >(muons_)),
   pflow_ ( cfg.getUntrackedParameter< edm::InputTag >("srcPFlow") ),
   pflowToken_ ( consumes< edm::View<reco::Candidate> >(pflow_) ),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
@@ -84,69 +104,99 @@ metPhiCorrInfoWriter::metPhiCorrInfoWriter( const edm::ParameterSet & cfg ):
 
 void metPhiCorrInfoWriter::analyze( const edm::Event& evt, const edm::EventSetup& setup) {
 
-  //get primary vertices
-  edm::Handle< reco::VertexCollection > hpv;
-  try {
-//    evt.getByLabel( vertices_, hpv );
-    evt.getByToken( verticesToken_, hpv );
-  } catch ( cms::Exception & e ) {
-    std::cout <<"[metPhiCorrInfoWriter] error: " << e.what() << std::endl;
+  //Select muons compatible with a Z
+  edm::Handle< std::vector< pat::Muon> > theMuons;
+  evt.getByToken(muonsToken_,theMuons );
+
+  std::vector<TLorentzVector> goodMuons;
+  std::vector<int> muonCharges;
+  bool isGoodEvent = false;
+  for(std::vector<pat::Muon>::const_iterator muon = (*theMuons).begin(); muon != (*theMuons).end(); muon++) {
+    if(!(&*muon)->passed(reco::Muon::CutBasedIdMedium)) continue;
+    if(!(&*muon)->passed(reco::Muon::PFIsoMedium)) continue;
+    TLorentzVector thisMuon;
+    thisMuon.SetPtEtaPhiE((&*muon)->pt(),(&*muon)->eta(),(&*muon)->phi(),(&*muon)->energy());
+    goodMuons.push_back(thisMuon);
+    muonCharges.push_back((&*muon)->charge());
   }
-  std::vector<reco::Vertex> goodVertices;
-  for (unsigned i = 0; i < hpv->size(); i++) {
-    if ( (*hpv)[i].ndof() > 4 &&
-       ( fabs((*hpv)[i].z()) <= 24. ) &&
-       ( fabs((*hpv)[i].position().rho()) <= 2.0 ) )
-       goodVertices.push_back((*hpv)[i]);
-  }
-  int ngoodVertices = goodVertices.size();
-
-  for (unsigned i=0;i<counts_.size();i++) {
-    counts_[i]=0;
-    sumPt_[i]=0;
-    MEx_[i]=0.;
-    MEy_[i]=0.;
-  } 
-
-  edm::Handle< edm::View<reco::Candidate> > particleFlow;
-  evt.getByToken( pflowToken_, particleFlow );
-  for (unsigned i = 0; i < particleFlow->size(); ++i) {
-    const reco::Candidate& c = particleFlow->at(i);
-    for (unsigned j=0; j<type_.size(); j++) {
-//      if (abs(c.pdgId())==211) {
-//        std::cout<<"cand pdgId "<<c.pdgId()<<" testing type:"<<type_[j]<<" translated to pdg:"<<translateTypeToAbsPdgId(reco::PFCandidate::ParticleType(type_[j]))<<std::endl;
-//      }
-      if (abs(c.pdgId())== translateTypeToAbsPdgId(reco::PFCandidate::ParticleType(type_[j]))) {
-        if ((c.eta()>etaMin_[j]) and (c.eta()<etaMax_[j])) {
-          counts_[j]+=1;
-          sumPt_[j]+=c.pt();
-          MEx_[j]-=c.px();
-          MEy_[j]-=c.py();
-
-          pt_[j]->Fill(c.eta(), c.phi(), c.pt()); 
-          energy_[j]->Fill(c.eta(), c.phi(), c.energy()); 
-          occupancy_[j]->Fill(c.eta(), c.phi()); 
-        }
+//  std::cout << "======================================================================================================" << std::endl;
+//  std::cout << "There are " << goodMuons.size() << " good muons." << std::endl;
+  if(goodMuons.size()>1){
+//    std::cout << "First muon has Pt = " << goodMuons[0].Pt() << ", eta = " << goodMuons[0].Eta() << ", phi = " << goodMuons[0].Phi() << ", E = " << goodMuons[0].E() << ", charge = " << muonCharges[0] << std::endl;
+//    std::cout << "Second muon has Pt = " << goodMuons[1].Pt() << ", eta = " << goodMuons[1].Eta() << ", phi = " << goodMuons[1].Phi() << ", E = " << goodMuons[1].E() << ", charge = " << muonCharges[1] << std::endl;
+    for(unsigned int first = 0 ; first < goodMuons.size()-1 ; first++){
+      for(unsigned int second = 1 ; second < goodMuons.size() ; second++){
+        if(passSelection(goodMuons[first],goodMuons[second]) and (muonCharges[first]+muonCharges[second] == 0)) isGoodEvent = true;
       }
     }
   }
-  for (std::vector<edm::ParameterSet>::const_iterator v = cfgCorrParameters_.begin(); v!=cfgCorrParameters_.end(); v++) {
-    unsigned j=v-cfgCorrParameters_.begin();
+
+  if(isGoodEvent){
+//    std::cout << "This is a good event." << std::endl;
+    //get primary vertices
+    edm::Handle< reco::VertexCollection > hpv;
+    try {
+      //    evt.getByLabel( vertices_, hpv );
+      evt.getByToken( verticesToken_, hpv );
+    } catch ( cms::Exception & e ) {
+      std::cout <<"[metPhiCorrInfoWriter] error: " << e.what() << std::endl;
+    }
+    std::vector<reco::Vertex> goodVertices;
+    for (unsigned i = 0; i < hpv->size(); i++) {
+      if ( (*hpv)[i].ndof() > 4 &&
+          ( fabs((*hpv)[i].z()) <= 24. ) &&
+          ( fabs((*hpv)[i].position().rho()) <= 2.0 ) )
+        goodVertices.push_back((*hpv)[i]);
+    }
+    int ngoodVertices = goodVertices.size();
+
+    for (unsigned i=0;i<counts_.size();i++) {
+      counts_[i]=0;
+      sumPt_[i]=0;
+      MEx_[i]=0.;
+      MEy_[i]=0.;
+    } 
+
+    edm::Handle< edm::View<reco::Candidate> > particleFlow;
+    evt.getByToken( pflowToken_, particleFlow );
+    for (unsigned i = 0; i < particleFlow->size(); ++i) {
+      const reco::Candidate& c = particleFlow->at(i);
+      for (unsigned j=0; j<type_.size(); j++) {
+//      if (abs(c.pdgId())==211) {
+//        std::cout<<"cand pdgId "<<c.pdgId()<<" testing type:"<<type_[j]<<" translated to pdg:"<<translateTypeToAbsPdgId(reco::PFCandidate::ParticleType(type_[j]))<<std::endl;
+//      }
+        if (abs(c.pdgId())== translateTypeToAbsPdgId(reco::PFCandidate::ParticleType(type_[j]))) {
+          if ((c.eta()>etaMin_[j]) and (c.eta()<etaMax_[j])) {
+            counts_[j]+=1;
+            sumPt_[j]+=c.pt();
+            MEx_[j]-=c.px();
+            MEy_[j]-=c.py();
+
+            pt_[j]->Fill(c.eta(), c.phi(), c.pt()); 
+            energy_[j]->Fill(c.eta(), c.phi(), c.energy()); 
+            occupancy_[j]->Fill(c.eta(), c.phi()); 
+          }
+        }
+      }
+    }
+    for (std::vector<edm::ParameterSet>::const_iterator v = cfgCorrParameters_.begin(); v!=cfgCorrParameters_.end(); v++) {
+      unsigned j=v-cfgCorrParameters_.begin();
 //    std::cout<<"j "<<j<<" "<<v->getParameter<std::string>("name")<<" varType "<<varType_[j]<<" counts "<<counts_[j]<<" sumPt "<<sumPt_[j]<<" nvtx "<<ngoodVertices<<" "<<MEx_[j]<<" "<<MEy_[j]<<std::endl;
-    if (varType_[j]==0) {
-      profile_x_[j]->Fill(counts_[j], MEx_[j]);
-      profile_y_[j]->Fill(counts_[j], MEy_[j]);
-      variable_[j]->Fill(counts_[j]);
-    } 
-    if (varType_[j]==1) {
-      profile_x_[j]->Fill(ngoodVertices, MEx_[j]);
-      profile_y_[j]->Fill(ngoodVertices, MEy_[j]);
-      variable_[j]->Fill(ngoodVertices);
-    } 
-    if (varType_[j]==2) {
-      profile_x_[j]->Fill(sumPt_[j], MEx_[j]);
-      profile_y_[j]->Fill(sumPt_[j], MEy_[j]);
-      variable_[j]->Fill(sumPt_[j]);
+      if (varType_[j]==0) {
+        profile_x_[j]->Fill(counts_[j], MEx_[j]);
+        profile_y_[j]->Fill(counts_[j], MEy_[j]);
+        variable_[j]->Fill(counts_[j]);
+      } 
+      if (varType_[j]==1) {
+        profile_x_[j]->Fill(ngoodVertices, MEx_[j]);
+        profile_y_[j]->Fill(ngoodVertices, MEy_[j]);
+        variable_[j]->Fill(ngoodVertices);
+      } 
+      if (varType_[j]==2) {
+        profile_x_[j]->Fill(sumPt_[j], MEx_[j]);
+        profile_y_[j]->Fill(sumPt_[j], MEy_[j]);
+        variable_[j]->Fill(sumPt_[j]);
+      }
     }
   }
 }
