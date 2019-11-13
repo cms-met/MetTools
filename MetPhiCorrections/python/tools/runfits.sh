@@ -3,6 +3,10 @@
 ./fits.sh MC_2018 "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_MC2018.root" "/user/npostiau/public_html/MetPhi/MC_2018/" ngoodVertices
 ./fits.sh MC_2017 "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_MC2017.root" "/user/npostiau/public_html/MetPhi/MC_2017/" ngoodVertices
 ./fits.sh MC_2016 "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_MC2016.root" "/user/npostiau/public_html/MetPhi/MC_2016/" ngoodVertices
+./fits.sh Data_2018A "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_DataDoubleMu2018A.root" "/user/npostiau/public_html/MetPhi/Data2018A/" ngoodVertices
+./fits.sh Data_2018B "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_DataDoubleMu2018B.root" "/user/npostiau/public_html/MetPhi/Data2018B/" ngoodVertices
+./fits.sh Data_2018C "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_DataDoubleMu2018C.root" "/user/npostiau/public_html/MetPhi/Data2018C/" ngoodVertices
+./fits.sh Data_2018D "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_DataDoubleMu2018D.root" "/user/npostiau/public_html/MetPhi/Data2018D/" ngoodVertices
 ./fits.sh Data_2017B "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_DataDoubleMu2017B.root" "/user/npostiau/public_html/MetPhi/Data2017B/" ngoodVertices
 ./fits.sh Data_2017C "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_DataDoubleMu2017C.root" "/user/npostiau/public_html/MetPhi/Data2017C/" ngoodVertices
 ./fits.sh Data_2017D "/user/npostiau/CMSSW_10_2_11_MetTools/src/MetTools/MetPhiCorrections/test/fullProd/histo_merged_DataDoubleMu2017D.root" "/user/npostiau/public_html/MetPhi/Data2017D/" ngoodVertices
