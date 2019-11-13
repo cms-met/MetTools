@@ -18,6 +18,7 @@ import ROOT
 import pickle, os
 
 from math import pi, cos, sin, sqrt, atan2
+ROOT.gROOT.SetBatch(True)
 ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/MetTools/Commons/scripts/tdrstyle.C")
 ROOT.setTDRStyle()
 from MetTools.MetPhiCorrections.tools.categories import *
