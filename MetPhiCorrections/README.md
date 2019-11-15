@@ -1,6 +1,8 @@
 
 #### Met phi corrections
-  Tools for the derivation of MET phi corrections. The actual corrections are in cms-met/cmssw
+  Tools for the derivation of MET phi corrections. The actual corrections are in cms-met/cmssw\
+
+  The full recipe below is supposed to work on `CMSSW_10_2_11`.
   
 ###### How to derive MET phi corrections
 1. (Skip this step if the binning in PF Candidate species and eta stays unchanged) Met-phi corrections are constructed separately in bins of PF Candidate species and eta, roughly corresponding to the subdetectors. These Categories are defined in `MetTools/MetPhiCorrections/python/tools/categories.py`\
