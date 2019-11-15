@@ -8,22 +8,79 @@
 #include <TPaveStats.h>
 #include <TLatex.h>
 #include <iostream>
+#include <fstream>
 #include <vector>
+#include <string>
+#include <TF1.h>
 
-int combine_corrections(){
+//Combines the corrections (as a function of nvtx) for all particle types, to have the final plots of MET corrections (in X and Y) to be applied on a given era.
+//Also fits a linear function to these plots. These functions are stored in a txt file.
 
-  //TFile* file = TFile::Open("histo_merged_DataDoubleMu2018A_v2.root");
+double fitFunction(double *x, double *par)
+{
+  double result = -1.;
+  result = par[0]+par[1]*x[0];
+  return result;
+}
+
+int combine_corrections(int year=2016){
+
+  //Modify file names and paths if needed.
+  ofstream outfile;
+  outfile.open("fits_"+std::to_string(year)+".txt");
   std::vector<TFile*> files;
-  files.push_back(TFile::Open("histo_merged_DataDoubleMu2018A_v3.root"));
-  files.push_back(TFile::Open("histo_merged_DataDoubleMu2018B_v3.root"));
-  files.push_back(TFile::Open("histo_merged_DataDoubleMu2018C_v3.root"));
-  files.push_back(TFile::Open("histo_merged_DataDoubleMu2018D_v3.root"));
+  if(year==2018){
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2018A.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2018B.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2018C.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2018D.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_MC2018.root"));
+  }
+  else if(year==2017){
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017B.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017C.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017D.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017E.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017F.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_MC2017.root"));
+  }
+  else if(year==2016){
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016B.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016C.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016D.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016E.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016F.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016G.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016H.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_MC2016.root"));
+  }
 
   std::vector<TFile*> outFiles;
-  outFiles.push_back(new TFile("outFile_combined_DataDoubleMu2018A_v3.root", "RECREATE"));
-  outFiles.push_back(new TFile("outFile_combined_DataDoubleMu2018B_v3.root", "RECREATE"));
-  outFiles.push_back(new TFile("outFile_combined_DataDoubleMu2018C_v3.root", "RECREATE"));
-  outFiles.push_back(new TFile("outFile_combined_DataDoubleMu2018D_v3.root", "RECREATE"));
+  if(year==2018){
+    outFiles.push_back(new TFile("plots_2018/outFile_combined_DataDoubleMu2018A.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2018/outFile_combined_DataDoubleMu2018B.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2018/outFile_combined_DataDoubleMu2018C.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2018/outFile_combined_DataDoubleMu2018D.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2018/outFile_combined_MC2018.root", "RECREATE"));
+  }
+  else if(year==2017){
+    outFiles.push_back(new TFile("plots_2017/outFile_combined_DataDoubleMu2017B.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2017/outFile_combined_DataDoubleMu2017C.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2017/outFile_combined_DataDoubleMu2017D.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2017/outFile_combined_DataDoubleMu2017E.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2017/outFile_combined_DataDoubleMu2017F.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2017/outFile_combined_MC2017.root", "RECREATE"));
+  }
+  else if(year==2016){
+    outFiles.push_back(new TFile("plots_2016/outFile_combined_DataDoubleMu2016B.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2016/outFile_combined_DataDoubleMu2016C.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2016/outFile_combined_DataDoubleMu2016D.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2016/outFile_combined_DataDoubleMu2016E.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2016/outFile_combined_DataDoubleMu2016F.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2016/outFile_combined_DataDoubleMu2016G.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2016/outFile_combined_DataDoubleMu2016H.root", "RECREATE"));
+    outFiles.push_back(new TFile("plots_2016/outFile_combined_MC2016.root", "RECREATE"));
+  }
 
 
   for(unsigned int iFiles = 0 ; iFiles < files.size() ; iFiles++){
@@ -73,7 +130,6 @@ int combine_corrections(){
         binValues_y[iBin] += histos_y[iHist]->GetBinContent(iBin);
         squaredBinErrors_x[iBin] += histos_x[iHist]->GetBinError(iBin)*histos_x[iHist]->GetBinError(iBin);
         squaredBinErrors_y[iBin] += histos_y[iHist]->GetBinError(iBin)*histos_y[iHist]->GetBinError(iBin);
-        //std::cout << "File " << iFiles << ", histo " << histos_x[iHist]->GetName() << ", bin " << iBin << ": value is " << histos_x[iHist]->GetBinContent(iBin) << " and uncertainty is " << histos_x[iHist]->GetBinError(iBin) << ". Current sum is " << binValues_x[iBin] << " and current squared error is " << squaredBinErrors_x[iBin] << "." << std::endl;
       }
     }
     for (int iBin = 0 ; iBin <= histo_combined_x->GetNbinsX() ; iBin++){
@@ -83,12 +139,27 @@ int combine_corrections(){
       histo_combined_y->SetBinError(iBin, sqrt(squaredBinErrors_y[iBin]));
     }
 
-    //histo_combined_x->Draw();
-    //histo_combined_y->Draw();
     outFiles[iFiles]->cd();
     histo_combined_x->Write();
     histo_combined_y->Write();
+    outfile << outFiles[iFiles]->GetName() << " : fit in x is ";
+    TF1* fit_x = new TF1("fit_x", fitFunction, 0, histo_combined_x->GetNbinsX()+1,2);
+    histo_combined_x->Fit("fit_x");
+    double par0_x = fit_x->GetParameter(0);
+    double par1_x = fit_x->GetParameter(1);
+    if(par1_x >= 0.) outfile << par0_x << "+" << par1_x << "*x\n";
+    else outfile << par0_x << par1_x << "*x\n";
+    outfile << outFiles[iFiles]->GetName() << " : fit in y is ";
+    TF1* fit_y = new TF1("fit_y", fitFunction, 0, histo_combined_y->GetNbinsX()+1,2);
+    histo_combined_y->Fit("fit_y");
+    double par0_y = fit_y->GetParameter(0);
+    double par1_y = fit_y->GetParameter(1);
+    if(par1_y >= 0.) outfile << par0_y << "+" << par1_y << "*x\n";
+    else outfile << par0_y << par1_y << "*x\n";
+
   }
 
+  outfile.close();
   return 0;
 }
+

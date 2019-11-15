@@ -10,27 +10,70 @@
 #include <iostream>
 #include <vector>
 
-int prepare_plots(){
+//Prepares plots for the X and Y MET corrections as a function of different variables and of different particle types. Superimposes them for different eras within the same year.
+
+int prepare_plots(int year=2018){
   
+  //Update file names and paths if needed.
   std::vector<TFile*> files;
-  files.push_back(TFile::Open("histo_merged_DataDoubleMu2018A_v3.root"));
-  files.push_back(TFile::Open("histo_merged_DataDoubleMu2018B_v3.root"));
-  files.push_back(TFile::Open("histo_merged_DataDoubleMu2018C_v3.root"));
-  files.push_back(TFile::Open("histo_merged_DataDoubleMu2018D_v3.root"));
+  if(year==2018){
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2018A.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2018B.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2018C.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2018D.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_MC2018.root"));
+  }
+  else if (year==2017){
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017B.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017C.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017D.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017E.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2017F.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_MC2017.root"));
+  }
+  else if (year==2016){
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016B.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016C.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016D.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016E.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016F.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016G.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_DataDoubleMu2016H.root"));
+    files.push_back(TFile::Open("../fullProd/histo_merged_MC2016.root"));
+  }
 
   std::vector<TString> legendNames;
-  //legendNames.push_back("dataDoubleMu2018A");
-  //legendNames.push_back("dataDoubleMu2018B");
-  //legendNames.push_back("dataDoubleMu2018C");
-  //legendNames.push_back("dataDoubleMu2018D");
-  legendNames.push_back("2018A");
-  legendNames.push_back("2018B");
-  legendNames.push_back("2018C");
-  legendNames.push_back("2018D");
+  if(year==2018){
+    legendNames.push_back("2018A");
+    legendNames.push_back("2018B");
+    legendNames.push_back("2018C");
+    legendNames.push_back("2018D");
+    legendNames.push_back("MC2018 (DY)");
+  }
+  else if (year==2017){
+    legendNames.push_back("2017B");
+    legendNames.push_back("2017C");
+    legendNames.push_back("2017D");
+    legendNames.push_back("2017E");
+    legendNames.push_back("2017F");
+    legendNames.push_back("MC2017 (DY)");
+  }
+  else if (year==2016){
+    legendNames.push_back("2016B");
+    legendNames.push_back("2016C");
+    legendNames.push_back("2016D");
+    legendNames.push_back("2016E");
+    legendNames.push_back("2016F");
+    legendNames.push_back("2016G");
+    legendNames.push_back("2016H");
+    legendNames.push_back("MC2016 (DY)");
+  }
 
-  std::vector<int> colors{4,2,3,6,7,8};
+  std::vector<int> colors{4,2,3,6,7,8,42,28};
 
   std::cout << "Files are open." << std::endl;
+
+  int maxNvtx = 50;
 
   std::vector<TString> names, shortNames, xAxis, yAxis;
   std::vector<int> range;
@@ -58,22 +101,22 @@ int prepare_plots(){
   shortNames.push_back("vert_hEtaPlus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_hEtaPlus_Py");
   shortNames.push_back("vert_hEtaPlus_Py");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{y}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_hEtaMinus_Px");
   shortNames.push_back("vert_hEtaMinus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_hEtaMinus_Py");
   shortNames.push_back("vert_hEtaMinus_Py");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{y}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_sumPt_hEtaPlus_Px");
   shortNames.push_back("pt_hEtaPlus_Px");
   xAxis.push_back("sumPt (GeV)");
@@ -198,47 +241,47 @@ int prepare_plots(){
   shortNames.push_back("vert_hHFMinus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_hHFMinus_Py");
   shortNames.push_back("vert_hHFMinus_Py");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{y}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_hHFPlus_Px");
   shortNames.push_back("vert_hHFPlus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_hHFPlus_Py");
   shortNames.push_back("vert_hHFPlus_Py");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{y}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_h0Barrel_Px");
   shortNames.push_back("vert_h0Barrel_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_h0Barrel_Py");
   shortNames.push_back("vert_h0Barrel_Py");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{y}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_h0EndcapPlus_Px");
   shortNames.push_back("vert_h0EndcapPlus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_h0EndcapPlus_Py");
   shortNames.push_back("vert_h0EndcapPlus_Py");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{y}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_h0EndcapMinus_Px");
   shortNames.push_back("vert_h0EndcapMinus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_h0EndcapMinus_Py");
   shortNames.push_back("vert_h0EndcapMinus_Py");
   xAxis.push_back("ngoodVertices");
@@ -248,7 +291,7 @@ int prepare_plots(){
   shortNames.push_back("vert_gammaBarrel_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_gammaBarrel_Py");
   shortNames.push_back("vert_gammaBarrel_Py");
   xAxis.push_back("ngoodVertices");
@@ -258,7 +301,7 @@ int prepare_plots(){
   shortNames.push_back("vert_gammaEndcapPlus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_gammaEndcapPlus_Py");
   shortNames.push_back("vert_gammaEndcapPlus_Py");
   xAxis.push_back("ngoodVertices");
@@ -268,7 +311,7 @@ int prepare_plots(){
   shortNames.push_back("vert_gammaEndcapMinus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_gammaEndcapMinus_Py");
   shortNames.push_back("vert_gammaEndcapMinus_Py");
   xAxis.push_back("ngoodVertices");
@@ -278,22 +321,22 @@ int prepare_plots(){
   shortNames.push_back("vert_egammaHFPlus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_egammaHFPlus_Py");
   shortNames.push_back("vert_egammaHFPlus_Py");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{y}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_egammaHFMinus_Px");
   shortNames.push_back("vert_egammaHFMinus_Px");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{x}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
   names.push_back("metPhiCorrInfoWriter_ngoodVertices_egammaHFMinus_Py");
   shortNames.push_back("vert_egammaHFMinus_Py");
   xAxis.push_back("ngoodVertices");
   yAxis.push_back("p_{y}(GeV)");
-  range.push_back(100);
+  range.push_back(maxNvtx);
 
   for(unsigned iHist = 0; iHist < names.size(); iHist++){
     std::vector<TH1D*> histos;
@@ -319,7 +362,7 @@ int prepare_plots(){
 
       theLegend.AddEntry(histos[iFiles],legendNames[iFiles],"lpfe");
     }
-    TCanvas myCan("can","Nicolas made this awesome canvas",700,500);
+    TCanvas myCan("can","Output canvas",700,500);
     myCan.cd();
     gStyle->SetOptStat(0);
     for(unsigned i = 0 ; i < files.size() ; i++){
@@ -330,7 +373,9 @@ int prepare_plots(){
       histos[i]->Draw("e0same");
     }
     theLegend.Draw();
-    myCan.SaveAs("plots_v3/plot_"+shortNames[iHist]+".pdf");
+    if(year==2018) myCan.SaveAs("plots_2018/plot_"+shortNames[iHist]+".pdf");
+    else if(year==2017) myCan.SaveAs("plots_2017/plot_"+shortNames[iHist]+".pdf");
+    else if(year==2016) myCan.SaveAs("plots_2016/plot_"+shortNames[iHist]+".pdf");
   }
 
   return 0;
