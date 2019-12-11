@@ -6,18 +6,20 @@ parser.add_option("--rebin", dest="rebin", default=0, type="int", action="store"
 parser.add_option("--fitRange", dest="fitRange", default='0,2000', type="string", action="store", help="Which fitRange. Default:0,2000")
 parser.add_option("--xZoomRange", dest="xZoomRange", default='', type="string", action="store", help="Which xZoomRange. Default:Max")
 parser.add_option("--yZoomRange", dest="yZoomRange", default='-40,40', type="string", action="store", help="Which zoom range in y Axis. Default:-40,40")
-parser.add_option("--mode", dest="mode", default='sumPt', type="string", action="store", help="Which mode [ngoodVertices/sumPt/multiplicity]")
+parser.add_option("--mode", dest="mode", default='multiplicity', type="string", action="store", help="Which mode [ngoodVertices/sumPt/multiplicity]")
 parser.add_option("--input", dest="input", default='DYJetsToLL_M-50_HT-100toInf_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1_AODSIM.root', type="string", action="store", help="input file.Default:DYJetsToLL_M-50_HT-100toInf_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1_AODSIM.root")
 parser.add_option("--rootGDir", dest="rootGDir", default='metPhiCorrInfoWriter', type="string", action="store", help="Which gDir was used in the production of the MEx,y profile [metPhiCorrInfoWriter/pfMEtMultCorrInfoWriter].")
 parser.add_option("--plotFileName", dest="plotFileName", default="plot.pdf", type="string", action="store", help="Filename the plot. Default:test.pdf")
 parser.add_option("--plotoutPutDir", dest="plotoutPutDir", default="/", type="string", action="store", help="dir name Default:/")
 parser.add_option("--textFileName", dest="textFileName", default="metPhiCorrections_cfi.py", type="string", action="store", help="Text file name that the corrections are appended to. Default:metPhiCorrections_cfi.py.")
+parser.add_option("--era", dest="era", default="Data_default", type="string", action="store", help="Era (or year, for MC) for which the corrections were produced. Default:Data_default. (Will intentionally not work with this default parameter!)")
 (options, args) = parser.parse_args()
 
 import ROOT
 import pickle, os
 
 from math import pi, cos, sin, sqrt, atan2
+ROOT.gROOT.SetBatch(True)
 ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/MetTools/Commons/scripts/tdrstyle.C")
 ROOT.setTDRStyle()
 from MetTools.MetPhiCorrections.tools.categories import *
@@ -86,12 +88,14 @@ l.SetFillColor(0)
 l.SetShadowColor(ROOT.kWhite)
 l.SetBorderSize(1)
 l.Draw()
+os.system("mkdir -p "+options.plotoutPutDir)
 c1.Print(options.plotoutPutDir+options.plotFileName)
 c1.Print(options.plotoutPutDir+options.plotFileName.replace('.pdf', '.root'))
 c1.Print(options.plotoutPutDir+options.plotFileName.replace('.pdf', '.png'))
 
 with open(options.textFileName, "a") as ofile:
   ofile.write('    cms.PSet(\n')
+  ofile.write('      era=cms.string("'+str(options.era)+'"),\n')
   ofile.write('      name=cms.string("'+map['name'].replace('_','')+'"),\n')
   ofile.write('      type=cms.int32('+str(label[map['type']])+'),\n')
   ofile.write('      varType=cms.int32('+str(varType[options.mode])+'),\n')

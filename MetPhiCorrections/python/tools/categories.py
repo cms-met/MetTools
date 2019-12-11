@@ -37,22 +37,22 @@ hHFPlus         = {'name':'h_HFPlus', 'type':'h_HF',   'etaPhiBinning':[nEtaBins
 
 #variable 0 (candidate multiplicity): specify binning
 #h['binning']                              = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'ngoodVertices':[50, 0, 50]}
-hEtaPlus['binning']                       = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'ngoodVertices':[50, 0, 50]}
-hEtaMinus['binning']                      = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'ngoodVertices':[50, 0, 50]}
-h0Barrel['binning']                       = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'ngoodVertices':[50, 0, 50]}
-h0EndcapPlus['binning']                   = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'ngoodVertices':[50, 0, 50]}
-h0EndcapMinus['binning']                  = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'ngoodVertices':[50, 0, 50]}
-gammaBarrel['binning']                    = {'multiplicity':[5*25,0,5*500]  ,'sumPt':  [5*25,0,5*500] ,'ngoodVertices':[50, 0, 50]}
-gammaEndcapPlus['binning']                = {'multiplicity':[5*25,0,5*150]  ,'sumPt':  [5*25,0,5*150] ,'ngoodVertices':[50, 0, 50]}
-gammaEndcapMinus['binning']               = {'multiplicity':[5*25,0,5*150]  ,'sumPt':  [5*25,0,5*150] ,'ngoodVertices':[50, 0, 50]}
-gammaForwardPlus['binning']               = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'ngoodVertices':[50, 0, 50]}
-gammaForwardMinus['binning']              = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'ngoodVertices':[50, 0, 50]}
-e['binning']                              = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'ngoodVertices':[50, 0, 50]}
-mu['binning']                             = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'ngoodVertices':[50, 0, 50]}
-hHFMinus['binning']                     = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'ngoodVertices':[50, 0, 50]}
-hHFPlus['binning']                      = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'ngoodVertices':[50, 0, 50]}
-egammaHFMinus['binning']                = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'ngoodVertices':[50, 0, 50]}
-egammaHFPlus['binning']                 = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'ngoodVertices':[50, 0, 50]}
+hEtaPlus['binning']                       = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'ngoodVertices':[100, 0, 100]}
+hEtaMinus['binning']                      = {'multiplicity':[5*50,0,5*1500] ,'sumPt':  [5*50,0,5*1500],'ngoodVertices':[100, 0, 100]}
+h0Barrel['binning']                       = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'ngoodVertices':[100, 0, 100]}
+h0EndcapPlus['binning']                   = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'ngoodVertices':[100, 0, 100]}
+h0EndcapMinus['binning']                  = {'multiplicity':[5*50,0,5*50]   ,'sumPt':  [5*50,0,5*50]  ,'ngoodVertices':[100, 0, 100]}
+gammaBarrel['binning']                    = {'multiplicity':[5*25,0,5*500]  ,'sumPt':  [5*25,0,5*500] ,'ngoodVertices':[100, 0, 100]}
+gammaEndcapPlus['binning']                = {'multiplicity':[5*25,0,5*150]  ,'sumPt':  [5*25,0,5*150] ,'ngoodVertices':[100, 0, 100]}
+gammaEndcapMinus['binning']               = {'multiplicity':[5*25,0,5*150]  ,'sumPt':  [5*25,0,5*150] ,'ngoodVertices':[100, 0, 100]}
+gammaForwardPlus['binning']               = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'ngoodVertices':[100, 0, 100]}
+gammaForwardMinus['binning']              = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'ngoodVertices':[100, 0, 100]}
+e['binning']                              = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'ngoodVertices':[100, 0, 100]}
+mu['binning']                             = {'multiplicity':[5*10,0,5*10]   ,'sumPt':  [5*10,0,5*10]  ,'ngoodVertices':[100, 0, 100]}
+hHFMinus['binning']                     = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'ngoodVertices':[100, 0, 100]}
+hHFPlus['binning']                      = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'ngoodVertices':[100, 0, 100]}
+egammaHFMinus['binning']                = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'ngoodVertices':[100, 0, 100]}
+egammaHFPlus['binning']                 = {'multiplicity':[5*25,0,5*250]  ,'sumPt':  [5*25,0,5*250] ,'ngoodVertices':[100, 0, 100]}
 
 
 allMaps = [hEtaPlus, hEtaMinus, h0Barrel, h0EndcapPlus, h0EndcapMinus, gammaBarrel, gammaEndcapPlus, gammaEndcapMinus, gammaForwardPlus, gammaForwardMinus, e, 

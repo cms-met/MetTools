@@ -1,0 +1,12 @@
+plots_2017/outFile_combined_DataDoubleMu2017B.root : fit in x is 1.74961-0.192266*x
+plots_2017/outFile_combined_DataDoubleMu2017B.root : fit in y is -1.77794+0.355999*x
+plots_2017/outFile_combined_DataDoubleMu2017C.root : fit in x is 0.927341-0.147249*x
+plots_2017/outFile_combined_DataDoubleMu2017C.root : fit in y is -1.14252+0.273589*x
+plots_2017/outFile_combined_DataDoubleMu2017D.root : fit in x is 1.55561-0.146475*x
+plots_2017/outFile_combined_DataDoubleMu2017D.root : fit in y is -1.2123+0.247262*x
+plots_2017/outFile_combined_DataDoubleMu2017E.root : fit in x is 2.00513-0.153154*x
+plots_2017/outFile_combined_DataDoubleMu2017E.root : fit in y is -0.632113+0.181838*x
+plots_2017/outFile_combined_DataDoubleMu2017F.root : fit in x is 2.21044-0.206766*x
+plots_2017/outFile_combined_DataDoubleMu2017F.root : fit in y is 0.397701+0.267896*x
+plots_2017/outFile_combined_MC2017.root : fit in x is 0.547989-0.236452*x
+plots_2017/outFile_combined_MC2017.root : fit in y is -0.457084+0.184493*x

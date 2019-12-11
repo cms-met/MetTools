@@ -1,0 +1,16 @@
+plots_2016/outFile_combined_DataDoubleMu2016B.root : fit in x is -0.125174-0.047576*x
+plots_2016/outFile_combined_DataDoubleMu2016B.root : fit in y is 0.398678+0.134724*x
+plots_2016/outFile_combined_DataDoubleMu2016C.root : fit in x is 0.381167-0.0982318*x
+plots_2016/outFile_combined_DataDoubleMu2016C.root : fit in y is 0.216768+0.161233*x
+plots_2016/outFile_combined_DataDoubleMu2016D.root : fit in x is 0.52478-0.0599483*x
+plots_2016/outFile_combined_DataDoubleMu2016D.root : fit in y is 0.437976+0.159499*x
+plots_2016/outFile_combined_DataDoubleMu2016E.root : fit in x is 0.539429-0.0710905*x
+plots_2016/outFile_combined_DataDoubleMu2016E.root : fit in y is 0.520856+0.207195*x
+plots_2016/outFile_combined_DataDoubleMu2016F.root : fit in x is 0.193307-0.0214956*x
+plots_2016/outFile_combined_DataDoubleMu2016F.root : fit in y is 1.08994+0.169809*x
+plots_2016/outFile_combined_DataDoubleMu2016G.root : fit in x is -0.265897+0.0449082*x
+plots_2016/outFile_combined_DataDoubleMu2016G.root : fit in y is 0.71402+0.0991733*x
+plots_2016/outFile_combined_DataDoubleMu2016H.root : fit in x is -0.243752+0.0442548*x
+plots_2016/outFile_combined_DataDoubleMu2016H.root : fit in y is 0.815582+0.155282*x
+plots_2016/outFile_combined_MC2016.root : fit in x is -0.22097-0.201953*x
+plots_2016/outFile_combined_MC2016.root : fit in y is 0.775789-0.0311127*x

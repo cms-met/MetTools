@@ -1,31 +1,29 @@
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("phiCorr")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 process.source = cms.Source(
     'PoolSource',
-# CSA14 RECO
-#    fileNames = cms.untracked.vstring('root://eoscms.cern.ch//eos/cms/store/relval/CMSSW_7_0_5/RelValTTbar_13/GEN-SIM-RECO/POSTLS170_V6-v3/00000/0423767B-B5DD-E311-A1E0-02163E00E5B5.root') 
-# 720 RECO
-#    fileNames = cms.untracked.vstring('root://eoscms.cern.ch//eos/cms/store/relval/CMSSW_7_2_0/RelValTTbar/GEN-SIM-DIGI-RECO/PU_PRE_STA72_V6_FastSim-v2/00000/FE55222C-7359-E411-A563-0025905A60CE.root')
-# PHYS14 mAOD
-#    fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/mc/Phys14DR/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU30bx50_PHYS14_25_V1-v1/00000/003B6371-8D81-E411-8467-003048F0E826.root')
-# PHYS14 mAOD local
-#    fileNames = cms.untracked.vstring('file:/data/schoef/local/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_MINIAODSIM_PU20bx25_PHYS14_25_V1-v1.root')
-# 76X mAODv2
-    fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/mc/RunIIFall15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU25nsData2015v1_HCALDebug_76X_mcRun2_asymptotic_v12-v1/00000/006C9F73-3FB9-E511-9AFE-001E67E95C52.root')
+#    fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15_ext2-v1/50000/CFD5125B-9F57-C440-A34F-BE0018D7F594.root')
+    fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleMuon/MINIAOD/17Jul2018_ver2-v1/00000/6CDED1D1-AA8B-E811-864A-003048FFD71C.root')
     )
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("histo.root") ,
+process.TFileService = cms.Service("TFileService", fileName = cms.string("histo_MC2016.root") ,
       closeFileFast = cms.untracked.bool(True))
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
+#process.GlobalTag.globaltag = '102X_dataRun2_v10' #2018 data
+#process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v18' #2018 MC
+#process.GlobalTag.globaltag = '102X_dataRun2_v8' #2017 data
+#process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v16' #2017 MC
+process.GlobalTag.globaltag = '94X_dataRun2_v10' #2016 data
+#process.GlobalTag.globaltag = '94X_mcRun2_asymptotic_v3' #2016 MC
 
-process.load('MetTools.MetPhiCorrections.phiCorr_PHYS14_cff')
+process.load('MetTools.MetPhiCorrections.phiCorrBins_102X_cff')
 #Replacements for mAOD
 process.metPhiCorrInfoWriter.vertexCollection = cms.untracked.InputTag("offlineSlimmedPrimaryVertices")
+process.metPhiCorrInfoWriter.muonsCollection = cms.untracked.InputTag("slimmedMuons")
 process.metPhiCorrInfoWriter.srcPFlow = cms.untracked.InputTag("packedPFCandidates")
 
 # RUN!

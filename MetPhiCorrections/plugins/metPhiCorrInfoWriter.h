@@ -12,11 +12,13 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
 
 #include <string>
 #include <vector>
 #include <TProfile.h>
 #include <TH2F.h>
+#include <TLorentzVector.h>
 
 class metPhiCorrInfoWriter : public edm::EDAnalyzer {
 public:
@@ -25,6 +27,8 @@ public:
 private:
   edm::InputTag vertices_;
   edm::EDGetTokenT< std::vector<reco::Vertex> >     verticesToken_;
+  edm::InputTag muons_;
+  edm::EDGetTokenT<std::vector< pat::Muon> > muonsToken_;
   edm::InputTag pflow_;
   edm::EDGetTokenT< edm::View<reco::Candidate> >    pflowToken_;
 
@@ -39,6 +43,8 @@ private:
   std::vector<int> type_, varType_, nbins_, counts_, etaNBins_;
 
   static int translateTypeToAbsPdgId( reco::PFCandidate::ParticleType type );
+
+  bool passSelection(TLorentzVector firstMuon, TLorentzVector secondMuon);
 
 };
 
