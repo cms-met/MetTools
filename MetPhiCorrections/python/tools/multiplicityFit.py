@@ -12,6 +12,7 @@ parser.add_option("--rootGDir", dest="rootGDir", default='metPhiCorrInfoWriter',
 parser.add_option("--plotFileName", dest="plotFileName", default="plot.pdf", type="string", action="store", help="Filename the plot. Default:test.pdf")
 parser.add_option("--plotoutPutDir", dest="plotoutPutDir", default="/", type="string", action="store", help="dir name Default:/")
 parser.add_option("--textFileName", dest="textFileName", default="metPhiCorrections_cfi.py", type="string", action="store", help="Text file name that the corrections are appended to. Default:metPhiCorrections_cfi.py.")
+parser.add_option("--era", dest="era", default="Data_default", type="string", action="store", help="Era (or year, for MC) for which the corrections were produced. Default:Data_default. (Will intentionally not work with this default parameter!)")
 (options, args) = parser.parse_args()
 
 import ROOT
@@ -87,12 +88,14 @@ l.SetFillColor(0)
 l.SetShadowColor(ROOT.kWhite)
 l.SetBorderSize(1)
 l.Draw()
+os.system("mkdir -p "+options.plotoutPutDir)
 c1.Print(options.plotoutPutDir+options.plotFileName)
 c1.Print(options.plotoutPutDir+options.plotFileName.replace('.pdf', '.root'))
 c1.Print(options.plotoutPutDir+options.plotFileName.replace('.pdf', '.png'))
 
 with open(options.textFileName, "a") as ofile:
   ofile.write('    cms.PSet(\n')
+  ofile.write('      era=cms.string("'+str(options.era)+'"),\n')
   ofile.write('      name=cms.string("'+map['name'].replace('_','')+'"),\n')
   ofile.write('      type=cms.int32('+str(label[map['type']])+'),\n')
   ofile.write('      varType=cms.int32('+str(varType[options.mode])+'),\n')
